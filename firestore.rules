@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function admin() {
+      return signedIn() &&
+        get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'admin';
+    }
+    function ownsUser(userId) { return signedIn() && request.auth.uid == userId; }
+
+    // Financial records are always private to their owning student.
+    match /{collection}/{document} {
+      allow read, create, update, delete: if collection in [
+        'transactions', 'budgets', 'savingsGoals', 'reports', 'notifications',
+        'supportQueries', 'feedback'
+      ] && (ownsUser(resource.data.userId) || ownsUser(request.resource.data.userId) || admin());
+    }
+    match /users/{userId} { allow read, update: if ownsUser(userId) || admin(); allow create: if ownsUser(userId); }
+    match /userProfiles/{userId} { allow read, update: if ownsUser(userId) || admin(); allow create: if ownsUser(userId); }
+    match /learningContent/{id} { allow read: if signedIn(); allow write: if admin(); }
+    match /categories/{id} { allow read: if signedIn(); allow write: if admin(); }
+  }
+}
