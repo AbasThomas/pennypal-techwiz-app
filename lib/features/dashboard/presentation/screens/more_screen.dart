@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -37,9 +39,12 @@ class MoreScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 20),
 
-              // ── Profile header (Section 17: minimal, no gradient) ──
+              // Profile header
               GestureDetector(
-                onTap: () => context.push('/profile'),
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  context.push('/profile');
+                },
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -86,8 +91,8 @@ class MoreScreen extends ConsumerWidget {
                           ],
                         ),
                       ),
-                      const Icon(
-                        Icons.chevron_right_rounded,
+                      const AppIcon(
+                        AppIcons.chevronRight,
                         color: PennyPalColors.gray,
                       ),
                     ],
@@ -96,81 +101,84 @@ class MoreScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 24),
 
-              // ── Tools ──────────────────────────────────────────
+              // Tools
               const _SectionLabel(label: 'Tools'),
               const SizedBox(height: 8),
               _MenuGroup(items: [
                 _MenuItem(
-                  icon: Icons.insights_rounded,
+                  icon: AppIcons.chartBar,
                   label: 'Financial Insights',
                   onTap: () => context.push('/reports'),
                 ),
                 _MenuItem(
-                  icon: Icons.smart_toy_rounded,
+                  icon: AppIcons.robot,
                   label: 'AI Assistant',
                   onTap: () => context.push('/ai-assistant'),
                 ),
                 _MenuItem(
-                  icon: Icons.notifications_none_rounded,
+                  icon: AppIcons.notification,
                   label: 'Notifications',
                   onTap: () => context.push('/notifications'),
                 ),
               ]),
               const SizedBox(height: 20),
 
-              // ── Account ─────────────────────────────────────────
+              // Account
               const _SectionLabel(label: 'Account'),
               const SizedBox(height: 8),
               _MenuGroup(items: [
                 _MenuItem(
-                  icon: Icons.person_outline_rounded,
+                  icon: AppIcons.user,
                   label: 'Profile',
                   onTap: () => context.push('/profile'),
                 ),
                 _MenuItem(
-                  icon: Icons.lock_outline_rounded,
-                  label: 'Security',
+                  icon: AppIcons.lockCheck,
+                  label: 'Security & PIN',
                   onTap: () {},
                 ),
                 _MenuItem(
-                  icon: Icons.tune_rounded,
-                  label: 'Notification Settings',
+                  icon: AppIcons.settings,
+                  label: 'App Settings',
                   onTap: () {},
                 ),
               ]),
               const SizedBox(height: 20),
 
-              // ── Support ─────────────────────────────────────────
+              // Support
               const _SectionLabel(label: 'Support'),
               const SizedBox(height: 8),
               _MenuGroup(items: [
                 _MenuItem(
-                  icon: Icons.forum_outlined,
+                  icon: AppIcons.bulb,
                   label: 'Give Feedback',
                   onTap: () => context.push('/feedback'),
                 ),
                 _MenuItem(
-                  icon: Icons.support_agent_rounded,
+                  icon: AppIcons.support,
                   label: 'Contact Support',
                   onTap: () => context.push('/support'),
                 ),
                 _MenuItem(
-                  icon: Icons.info_outline_rounded,
+                  icon: AppIcons.info,
                   label: 'About PennyPal',
                   onTap: () => context.push('/about'),
                 ),
               ]),
               const SizedBox(height: 20),
 
-              // ── Log out ──────────────────────────────────────────
+              // Log out
               _MenuGroup(items: [
                 _MenuItem(
-                  icon: Icons.logout_rounded,
+                  icon: AppIcons.logout,
                   label: 'Log Out',
                   showChevron: false,
-                  onTap: () => ref
-                      .read(authControllerProvider.notifier)
-                      .logout(),
+                  onTap: () {
+                    HapticFeedback.mediumImpact();
+                    ref
+                        .read(authControllerProvider.notifier)
+                        .logout();
+                  },
                 ),
               ]),
             ],
@@ -232,55 +240,73 @@ class _MenuGroup extends StatelessWidget {
   }
 }
 
-class _MenuItem extends StatelessWidget {
+class _MenuItem extends StatefulWidget {
   const _MenuItem({
     required this.icon,
     required this.label,
     required this.onTap,
-    this.labelColor,
     this.showChevron = true,
   });
 
-  final IconData icon;
+  final List<List<dynamic>> icon;
   final String label;
   final VoidCallback onTap;
-  final Color? labelColor;
   final bool showChevron;
 
   @override
+  State<_MenuItem> createState() => _MenuItemState();
+}
+
+class _MenuItemState extends State<_MenuItem> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: PennyPalColors.elevated,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: PennyPalColors.border),
-              ),
-              child: Icon(icon, color: PennyPalColors.white, size: 18),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: labelColor ?? PennyPalColors.white,
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) {
+        setState(() => _pressed = false);
+        HapticFeedback.selectionClick();
+        widget.onTap();
+      },
+      onTapCancel: () => setState(() => _pressed = false),
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedScale(
+        scale: _pressed ? 0.98 : 1.0,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOutCubic,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: PennyPalColors.elevated,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: PennyPalColors.border),
+                ),
+                child: Center(
+                  child: AppIcon(widget.icon, color: PennyPalColors.white, size: 18),
                 ),
               ),
-            ),
-            if (showChevron)
-              const Icon(Icons.chevron_right_rounded,
-                  color: PennyPalColors.muted, size: 20),
-          ],
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  widget.label,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: PennyPalColors.white,
+                  ),
+                ),
+              ),
+              if (widget.showChevron)
+                const AppIcon(AppIcons.chevronRight,
+                    color: PennyPalColors.muted, size: 18),
+            ],
+          ),
         ),
       ),
     );

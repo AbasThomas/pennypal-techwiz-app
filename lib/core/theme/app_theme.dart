@@ -61,7 +61,6 @@ abstract final class AppTheme {
     ),
     canvasColor: PennyPalColors.black,
     cardColor: PennyPalColors.surface,
-    dialogBackgroundColor: PennyPalColors.surface,
     dividerColor: PennyPalColors.mutedBorder,
     appBarTheme: const AppBarTheme(
       backgroundColor: PennyPalColors.black,
@@ -145,7 +144,7 @@ abstract final class AppTheme {
           fontWeight: FontWeight.w600,
         ),
       ),
-    ),
+    ), dialogTheme: const DialogThemeData(backgroundColor: PennyPalColors.surface),
   );
 
   static ThemeData get lightTheme => theme;

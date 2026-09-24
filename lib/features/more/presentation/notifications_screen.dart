@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class NotificationsScreen extends StatelessWidget {
@@ -7,74 +8,64 @@ class NotificationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: PennyPalColors.black,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         title: const Text('Notifications',
             style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: AppColors.text)),
-        iconTheme: const IconThemeData(color: AppColors.text),
+                color: PennyPalColors.white)),
+        iconTheme: const IconThemeData(color: PennyPalColors.white),
         actions: [
           TextButton(
             onPressed: () {},
             child: const Text('Mark all read',
                 style:
-                    TextStyle(color: AppColors.primary, fontSize: 13)),
+                    TextStyle(color: PennyPalColors.white, fontSize: 13)),
           ),
         ],
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
-        children: [
+        children: const [
           _DateLabel(label: 'Today'),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           _NotifTile(
-            icon: Icons.warning_amber_rounded,
-            iconColor: AppColors.gold,
-            iconBg: const Color(0xFFFFFBEB),
+            icon: AppIcons.warning,
             title: 'Budget Alert',
             body: "You've used 85% of your Food budget.",
             time: '2 min ago',
             unread: true,
           ),
           _NotifTile(
-            icon: Icons.flag_rounded,
-            iconColor: AppColors.primary,
-            iconBg: const Color(0xFFF0FDF4),
+            icon: AppIcons.piggyBank,
             title: 'Savings Update',
-            body: "You're ₦5,000 away from your Laptop goal.",
+            body: "You're 5,000 away from your Laptop goal.",
             time: '1 hr ago',
             unread: true,
           ),
           _NotifTile(
-            icon: Icons.lightbulb_outline_rounded,
-            iconColor: const Color(0xFF7C3AED),
-            iconBg: const Color(0xFFF5F3FF),
+            icon: AppIcons.bulb,
             title: 'PennyPal Tip',
             body: 'Try setting aside your savings first each month.',
             time: '3 hr ago',
             unread: false,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           _DateLabel(label: 'Yesterday'),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           _NotifTile(
-            icon: Icons.check_circle_outline_rounded,
-            iconColor: AppColors.primary,
-            iconBg: const Color(0xFFF0FDF4),
+            icon: AppIcons.check,
             title: 'Transaction Added',
-            body: 'Expense of ₦3,500 was recorded successfully.',
+            body: 'Expense of 3,500 was recorded successfully.',
             time: 'Sep 23',
             unread: false,
           ),
           _NotifTile(
-            icon: Icons.bar_chart_rounded,
-            iconColor: const Color(0xFF4F46E5),
-            iconBg: const Color(0xFFF0F4FF),
+            icon: AppIcons.chartBar,
             title: 'Monthly Summary Ready',
             body: 'Your September report is now available.',
             time: 'Sep 23',
@@ -99,7 +90,7 @@ class _DateLabel extends StatelessWidget {
             fontSize: 11,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.8,
-            color: AppColors.muted,
+            color: PennyPalColors.muted,
           ),
         ),
       );
@@ -108,17 +99,13 @@ class _DateLabel extends StatelessWidget {
 class _NotifTile extends StatelessWidget {
   const _NotifTile({
     required this.icon,
-    required this.iconColor,
-    required this.iconBg,
     required this.title,
     required this.body,
     required this.time,
     required this.unread,
   });
 
-  final IconData icon;
-  final Color iconColor;
-  final Color iconBg;
+  final List<List<dynamic>> icon;
   final String title;
   final String body;
   final String time;
@@ -129,12 +116,12 @@ class _NotifTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: PennyPalColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: unread
-              ? AppColors.primary.withValues(alpha: 0.25)
-              : const Color(0xFFE2E8F0),
+              ? PennyPalColors.border
+              : PennyPalColors.mutedBorder,
         ),
       ),
       child: Padding(
@@ -146,8 +133,11 @@ class _NotifTile extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                  color: iconBg, borderRadius: BorderRadius.circular(11)),
-              child: Icon(icon, color: iconColor, size: 20),
+                  color: PennyPalColors.elevated,
+                  borderRadius: BorderRadius.circular(11)),
+              child: Center(
+                child: AppIcon(icon, color: PennyPalColors.white, size: 20),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -162,17 +152,17 @@ class _NotifTile extends StatelessWidget {
                               fontWeight: unread
                                   ? FontWeight.w700
                                   : FontWeight.w600,
-                              color: AppColors.text)),
+                              color: PennyPalColors.white)),
                     ),
                     Text(time,
                         style: const TextStyle(
-                            fontSize: 11, color: AppColors.muted)),
+                            fontSize: 11, color: PennyPalColors.muted)),
                   ]),
                   const SizedBox(height: 4),
                   Text(body,
                       style: const TextStyle(
                           fontSize: 13,
-                          color: AppColors.muted,
+                          color: PennyPalColors.gray,
                           height: 1.4)),
                 ],
               ),
@@ -183,7 +173,7 @@ class _NotifTile extends StatelessWidget {
                 width: 8,
                 height: 8,
                 decoration: const BoxDecoration(
-                  color: AppColors.primary,
+                  color: PennyPalColors.white,
                   shape: BoxShape.circle,
                 ),
               ),

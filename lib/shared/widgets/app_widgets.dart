@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/constants/app_constants.dart';
@@ -77,7 +78,7 @@ class AppButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
   final bool loading;
-  final IconData? icon;
+  final List<List<dynamic>>? icon;
 
   @override
   Widget build(BuildContext context) => ElevatedButton.icon(
@@ -108,7 +109,7 @@ class AppButton extends StatelessWidget {
           )
         : icon == null
             ? const SizedBox.shrink()
-            : Icon(icon, color: PennyPalColors.black),
+            : AppIcon(icon!, color: PennyPalColors.black),
     label: Text(text),
   );
 }
@@ -201,8 +202,8 @@ class _AppPasswordFieldState extends State<AppPasswordField> {
         borderSide: const BorderSide(color: PennyPalColors.white, width: 1.5),
       ),
       suffixIcon: IconButton(
-        icon: Icon(
-          _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+        icon: AppIcon(
+          _obscure ? AppIcons.view : AppIcons.viewOff,
           color: PennyPalColors.gray,
           size: 20,
         ),
@@ -229,7 +230,7 @@ abstract final class AppSnackbar {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         content: Row(
           children: [
-            const Icon(Icons.check_circle_rounded, color: PennyPalColors.black, size: 20),
+            const AppIcon(AppIcons.check, color: PennyPalColors.black, size: 20),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -258,7 +259,7 @@ abstract final class AppSnackbar {
         ),
         content: Row(
           children: [
-            const Icon(Icons.error_outline_rounded, color: PennyPalColors.white, size: 20),
+            const AppIcon(AppIcons.warning, color: PennyPalColors.white, size: 20),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -284,7 +285,7 @@ abstract final class AppSnackbar {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         content: Row(
           children: [
-            const Icon(Icons.warning_amber_rounded, color: PennyPalColors.white, size: 20),
+            const AppIcon(AppIcons.warning, color: PennyPalColors.white, size: 20),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -313,7 +314,7 @@ abstract final class AppSnackbar {
         ),
         content: Row(
           children: [
-            const Icon(Icons.info_outline_rounded, color: PennyPalColors.white, size: 20),
+            const AppIcon(AppIcons.info, color: PennyPalColors.white, size: 20),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -344,7 +345,7 @@ class AppErrorState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.error_outline_rounded, size: 48, color: PennyPalColors.gray),
+          const AppIcon(AppIcons.warning, size: 48, color: PennyPalColors.gray),
           const SizedBox(height: 14),
           Text(
             message,
@@ -368,10 +369,10 @@ class AppEmptyState extends StatelessWidget {
   const AppEmptyState({
     super.key,
     required this.message,
-    this.icon = Icons.inbox_outlined,
+    this.icon = AppIcons.fallback,
   });
   final String message;
-  final IconData icon;
+  final List<List<dynamic>> icon;
 
   @override
   Widget build(BuildContext context) => Center(
@@ -380,7 +381,7 @@ class AppEmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 48, color: PennyPalColors.gray),
+          AppIcon(icon, size: 48, color: PennyPalColors.gray),
           const SizedBox(height: 14),
           Text(
             message,

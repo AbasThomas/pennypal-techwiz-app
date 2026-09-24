@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/app_widgets.dart';
 import '../../../../shared/widgets/lottie_placeholder.dart';
@@ -16,20 +18,19 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   String _aiHint = '';
 
   static const _categories = [
-    ('🍔', 'Food'),
-    ('🚌', 'Transport'),
-    ('📚', 'Education'),
-    ('🛍', 'Shopping'),
-    ('🎬', 'Entertainment'),
-    ('💊', 'Health'),
-    ('🏠', 'Housing'),
-    ('⚡', 'Utilities'),
+    (AppIcons.food, 'Food'),
+    (AppIcons.transport, 'Transport'),
+    (AppIcons.education, 'Education'),
+    (AppIcons.shoppingBag, 'Shopping'),
+    (AppIcons.entertainment, 'Entertainment'),
+    (AppIcons.health, 'Health'),
+    (AppIcons.house, 'Housing'),
+    (AppIcons.utilities, 'Utilities'),
   ];
 
   void _onAmountChanged(String v) {
-    // TODO: wire real AI categorization — this simulates a hint
     if (v.contains('35') || v.contains('25')) {
-      setState(() => _aiHint = '🤖 AI detected: Food');
+      setState(() => _aiHint = 'AI detected: Food');
     } else {
       setState(() => _aiHint = '');
     }
@@ -45,21 +46,21 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: PennyPalColors.black,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.text),
+          icon: const AppIcon(AppIcons.arrowBack, color: PennyPalColors.white),
         ),
         title: const Text(
           'Add Expense',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: AppColors.text,
+            color: PennyPalColors.white,
           ),
         ),
       ),
@@ -68,75 +69,75 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Lottie placeholder ─────────────────────────────
-            // TODO: Lottie.asset('assets/animations/add_expense.json', height: 140)
-            const LottiePlaceholder(height: 120, label: 'add_expense.json'),
+            // Lottie placeholder
+            const LottiePlaceholder(
+                height: 120,
+                label: 'add_expense.json',
+                tint: PennyPalColors.white),
             const SizedBox(height: 28),
 
-            // ── Amount ─────────────────────────────────────────
+            // Amount
             const Text('Amount',
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.muted)),
+                    color: PennyPalColors.gray)),
             const SizedBox(height: 8),
             TextField(
               controller: _amount,
               keyboardType: TextInputType.number,
               onChanged: _onAmountChanged,
               style: const TextStyle(
-                  fontSize: 28, fontWeight: FontWeight.w800),
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: PennyPalColors.white),
               decoration: InputDecoration(
-                prefixText: '₦ ',
-                prefixStyle: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.text),
-                hintText: '0',
+                hintText: '0.00',
                 hintStyle: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.muted.withValues(alpha: 0.3)),
+                    color: PennyPalColors.muted.withValues(alpha: 0.3)),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: PennyPalColors.surface,
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide:
-                        const BorderSide(color: Color(0xFFE2E8F0))),
+                        const BorderSide(color: PennyPalColors.border)),
                 enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide:
-                        const BorderSide(color: Color(0xFFE2E8F0))),
+                        const BorderSide(color: PennyPalColors.border)),
                 focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: const BorderSide(
-                        color: AppColors.primary, width: 2)),
+                        color: PennyPalColors.white, width: 2)),
               ),
             ),
 
-            // ── AI hint ────────────────────────────────────────
+            // AI hint
             if (_aiHint.isNotEmpty) ...[
               const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.08),
+                  color: PennyPalColors.card,
                   borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: PennyPalColors.border),
                 ),
                 child: Text(_aiHint,
                     style: const TextStyle(
-                        fontSize: 13, color: AppColors.primary)),
+                        fontSize: 13, color: PennyPalColors.white)),
               ),
             ],
             const SizedBox(height: 24),
 
-            // ── Category ────────────────────────────────────────
+            // Category
             const Text('Category',
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.muted)),
+                    color: PennyPalColors.gray)),
             const SizedBox(height: 10),
             GridView.builder(
               shrinkWrap: true,
@@ -153,36 +154,43 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 final cat = _categories[i];
                 final selected = _selectedCategory == cat.$2;
                 return GestureDetector(
-                  onTap: () =>
-                      setState(() => _selectedCategory = cat.$2),
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    setState(() => _selectedCategory = cat.$2);
+                  },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     decoration: BoxDecoration(
                       color: selected
-                          ? AppColors.primary.withValues(alpha: 0.1)
-                          : Colors.white,
+                          ? PennyPalColors.elevated
+                          : PennyPalColors.surface,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
                         color: selected
-                            ? AppColors.primary
-                            : const Color(0xFFE2E8F0),
-                        width: selected ? 2 : 1,
+                            ? PennyPalColors.white
+                            : PennyPalColors.border,
+                        width: selected ? 1.5 : 1,
                       ),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(cat.$1,
-                            style: const TextStyle(fontSize: 22)),
-                        const SizedBox(height: 4),
+                        AppIcon(
+                          cat.$1,
+                          size: 22,
+                          color: selected
+                              ? PennyPalColors.white
+                              : PennyPalColors.gray,
+                        ),
+                        const SizedBox(height: 6),
                         Text(
                           cat.$2,
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: selected
-                                ? AppColors.primary
-                                : AppColors.muted,
+                                ? PennyPalColors.white
+                                : PennyPalColors.muted,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -194,84 +202,93 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             ),
             const SizedBox(height: 24),
 
-            // ── Date ────────────────────────────────────────────
+            // Date
             const Text('Date',
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.muted)),
+                    color: PennyPalColors.gray)),
             const SizedBox(height: 8),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(
                   horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: PennyPalColors.surface,
                 borderRadius: BorderRadius.circular(14),
-                border: const Border.fromBorderSide(
-                    BorderSide(color: Color(0xFFE2E8F0))),
+                border: Border.all(color: PennyPalColors.border),
               ),
-              child: Row(
+              child: const Row(
                 children: [
-                  const Icon(Icons.calendar_today_outlined,
-                      size: 18, color: AppColors.muted),
-                  const SizedBox(width: 10),
-                  const Text('Today',
+                  AppIcon(AppIcons.calendar,
+                      size: 18, color: PennyPalColors.muted),
+                  SizedBox(width: 10),
+                  Text('Today',
                       style: TextStyle(
-                          fontSize: 15, color: AppColors.text)),
-                  const Spacer(),
-                  const Icon(Icons.chevron_right_rounded,
-                      color: AppColors.muted),
+                          fontSize: 15, color: PennyPalColors.white)),
+                  Spacer(),
+                  AppIcon(AppIcons.chevronRight,
+                      color: PennyPalColors.muted),
                 ],
               ),
             ),
             const SizedBox(height: 24),
 
-            // ── Description ─────────────────────────────────────
+            // Description
             const Text('Description',
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.muted)),
+                    color: PennyPalColors.gray)),
             const SizedBox(height: 8),
             TextField(
               controller: _description,
+              style: const TextStyle(color: PennyPalColors.white),
               decoration: InputDecoration(
                 hintText: 'e.g. Lunch at campus',
+                hintStyle: const TextStyle(color: PennyPalColors.muted),
+                filled: true,
+                fillColor: PennyPalColors.surface,
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide:
-                        const BorderSide(color: Color(0xFFE2E8F0))),
+                        const BorderSide(color: PennyPalColors.border)),
                 enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide:
-                        const BorderSide(color: Color(0xFFE2E8F0))),
+                        const BorderSide(color: PennyPalColors.border)),
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide:
+                        const BorderSide(color: PennyPalColors.white, width: 1.5)),
               ),
             ),
             const SizedBox(height: 24),
 
-            // ── Receipt ─────────────────────────────────────────
+            // Receipt
             GestureDetector(
-              onTap: () {}, // TODO: image_picker
+              onTap: () {
+                HapticFeedback.lightImpact();
+              },
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: PennyPalColors.surface,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.3),
+                    color: PennyPalColors.border,
                     width: 1.5,
                   ),
                 ),
                 child: const Column(
                   children: [
-                    Icon(Icons.add_photo_alternate_outlined,
-                        color: AppColors.primary, size: 28),
+                    AppIcon(AppIcons.image,
+                        color: PennyPalColors.white, size: 28),
                     SizedBox(height: 6),
                     Text('Add receipt',
                         style: TextStyle(
-                            color: AppColors.primary,
+                            color: PennyPalColors.white,
                             fontWeight: FontWeight.w600,
                             fontSize: 13)),
                   ],
@@ -280,10 +297,13 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             ),
             const SizedBox(height: 32),
 
-            // ── Save ────────────────────────────────────────────
+            // Save
             AppButton(
               text: 'Save Expense',
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                Navigator.pop(context);
+              },
             ),
           ],
         ),

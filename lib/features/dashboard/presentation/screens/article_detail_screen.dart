@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/lottie_placeholder.dart';
 
@@ -26,7 +27,7 @@ class ArticleDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Title ─────────────────────────────────────────
+            // â”€â”€ Title â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             const Text(
               'What is a Budget?',
               style: TextStyle(
@@ -39,7 +40,7 @@ class ArticleDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Row(children: [
-              Icon(Icons.access_time_rounded,
+              AppIcon(AppIcons.fallback,
                   size: 14, color: PennyPalColors.gray),
               SizedBox(width: 5),
               Text('5 min read',
@@ -47,17 +48,17 @@ class ArticleDetailScreen extends StatelessWidget {
             ]),
             const SizedBox(height: 20),
 
-            // ── Lottie placeholder ─────────────────────────────
+            // â”€â”€ Lottie placeholder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             const LottiePlaceholder(height: 180, label: 'onboarding_2.json'),
             const SizedBox(height: 24),
 
-            // ── Body ──────────────────────────────────────────
+            // â”€â”€ Body â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _bodyText(
               "A budget is a plan for how you'll spend and save your money. It helps you make intentional decisions instead of wondering where your money went at the end of the month.",
             ),
             const SizedBox(height: 20),
 
-            // ── Example box ───────────────────────────────────
+            // â”€â”€ Example box â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(18),
@@ -75,16 +76,16 @@ class ArticleDetailScreen extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                           color: PennyPalColors.white)),
                   const SizedBox(height: 10),
-                  const Text('You receive ₦100,000/month.',
+                  const Text('You receive 100,000/month.',
                       style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: PennyPalColors.white)),
                   const SizedBox(height: 10),
                   for (final item in [
-                    ('Needs', '₦50,000'),
-                    ('Savings', '₦20,000'),
-                    ('Wants', '₦30,000'),
+                    ('Needs', '50,000'),
+                    ('Savings', '20,000'),
+                    ('Wants', '30,000'),
                   ])
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 3),
@@ -106,15 +107,15 @@ class ArticleDetailScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             _bodyText(
-              'When you give every naira a purpose, you spend less on things that don\'t matter and more on things that do. Start small — even a rough budget is better than no budget.',
+              'When you give every naira a purpose, you spend less on things that don\'t matter and more on things that do. Start small â€” even a rough budget is better than no budget.',
             ),
             const SizedBox(height: 20),
 
-            // ── Second illustration ────────────────────────────
+            // â”€â”€ Second illustration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             const LottiePlaceholder(height: 140, label: 'onboarding_3.json'),
             const SizedBox(height: 24),
 
-            // ── Tip ───────────────────────────────────────────
+            // â”€â”€ Tip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -125,7 +126,7 @@ class ArticleDetailScreen extends StatelessWidget {
               child: const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('💡', style: TextStyle(fontSize: 20)),
+                  AppIcon(AppIcons.bulb, size: 20, color: PennyPalColors.white),
                   SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -138,7 +139,7 @@ class ArticleDetailScreen extends StatelessWidget {
                                 color: PennyPalColors.white)),
                         SizedBox(height: 4),
                         Text(
-                          'Always give your money a job. A budget is just a spending plan — it puts you in control.',
+                          'Always give your money a job. A budget is just a spending plan â€” it puts you in control.',
                           style: TextStyle(
                               fontSize: 13,
                               color: PennyPalColors.gray,

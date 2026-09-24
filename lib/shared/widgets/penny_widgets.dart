@@ -1,9 +1,11 @@
-// Shared UI building blocks used across all PennyPal feature screens.
+﻿// Shared UI building blocks used across all PennyPal feature screens.
 // Import this file to get: BalanceCard, SectionHeader, QuickActionButton,
 // TransactionTile, CategoryProgressBar, GoalCard, PennyEmptyState, InfoCard, InsightChip.
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/app_icon.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Balance card — hero element on the Dashboard
@@ -63,14 +65,14 @@ class BalanceCard extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
+                      AppIcon(
                         changePositive
-                            ? Icons.arrow_upward_rounded
-                            : Icons.arrow_downward_rounded,
+                            ? AppIcons.arrowUp
+                            : AppIcons.arrowDown,
                         size: 11,
                         color: PennyPalColors.white,
                       ),
-                      const SizedBox(width: 3),
+                      const SizedBox(width: 4),
                       Text(
                         changePercent!,
                         style: const TextStyle(
@@ -108,7 +110,7 @@ class BalanceCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _BalanceStat(
-                  icon: Icons.arrow_downward_rounded,
+                  icon: AppIcons.arrowDown,
                   label: 'Income',
                   value: income,
                 ),
@@ -120,7 +122,7 @@ class BalanceCard extends StatelessWidget {
               ),
               Expanded(
                 child: _BalanceStat(
-                  icon: Icons.arrow_upward_rounded,
+                  icon: AppIcons.arrowUp,
                   label: 'Expenses',
                   value: expenses,
                   alignRight: true,
@@ -142,7 +144,7 @@ class _BalanceStat extends StatelessWidget {
     this.alignRight = false,
   });
 
-  final IconData icon;
+  final List<List<dynamic>> icon;
   final String label;
   final String value;
   final bool alignRight;
@@ -162,15 +164,17 @@ class _BalanceStat extends StatelessWidget {
             children: [
               if (!alignRight) ...[
                 Container(
-                  width: 18,
-                  height: 18,
+                  width: 22,
+                  height: 22,
                   decoration: const BoxDecoration(
                     color: PennyPalColors.elevated,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(icon, size: 10, color: PennyPalColors.white),
+                  child: Center(
+                    child: AppIcon(icon, size: 12, color: PennyPalColors.white),
+                  ),
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 8),
               ],
               Text(
                 label,
@@ -181,15 +185,17 @@ class _BalanceStat extends StatelessWidget {
                 ),
               ),
               if (alignRight) ...[
-                const SizedBox(width: 6),
+                const SizedBox(width: 8),
                 Container(
-                  width: 18,
-                  height: 18,
+                  width: 22,
+                  height: 22,
                   decoration: const BoxDecoration(
                     color: PennyPalColors.elevated,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(icon, size: 10, color: PennyPalColors.white),
+                  child: Center(
+                    child: AppIcon(icon, size: 12, color: PennyPalColors.white),
+                  ),
                 ),
               ],
             ],
@@ -262,53 +268,79 @@ class SectionHeader extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Quick action button — large icon tile inside gray container
+// Quick action button — large HugeIcon tile inside elevated container
 // ─────────────────────────────────────────────────────────────────────────────
 
-class QuickActionButton extends StatelessWidget {
+class QuickActionButton extends StatefulWidget {
   const QuickActionButton({
     super.key,
-    required this.icon,
+    this.icon,
+    this.materialIcon,
     required this.label,
     required this.onTap,
     this.color,
     this.iconColor,
   });
 
-  final IconData icon;
+  final List<List<dynamic>>? icon;
+  final IconData? materialIcon;
   final String label;
   final VoidCallback onTap;
   final Color? color;
   final Color? iconColor;
 
   @override
+  State<QuickActionButton> createState() => _QuickActionButtonState();
+}
+
+class _QuickActionButtonState extends State<QuickActionButton> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
+    final effectiveHugeIcon = widget.icon ?? AppIcons.forCategory(widget.label);
+
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: color ?? PennyPalColors.elevated,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: PennyPalColors.border,
-          ),
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 28, color: iconColor ?? PennyPalColors.white),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: iconColor ?? PennyPalColors.white,
-              ),
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) {
+        setState(() => _pressed = false);
+        HapticFeedback.lightImpact();
+        widget.onTap();
+      },
+      onTapCancel: () => setState(() => _pressed = false),
+      child: AnimatedScale(
+        scale: _pressed ? 0.92 : 1.0,
+        duration: const Duration(milliseconds: 140),
+        curve: Curves.easeOutCubic,
+        child: Container(
+          decoration: BoxDecoration(
+            color: widget.color ?? PennyPalColors.elevated,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: PennyPalColors.border,
             ),
-          ],
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AppIcon(
+                effectiveHugeIcon,
+                size: 28,
+                color: widget.iconColor ?? PennyPalColors.white,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                widget.label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: widget.iconColor ?? PennyPalColors.white,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -316,13 +348,14 @@ class QuickActionButton extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Transaction tile — monochrome styling (+ / - distinction)
+// Transaction tile — monochrome styling with HugeIcons & interactive spring
 // ─────────────────────────────────────────────────────────────────────────────
 
-class TransactionTile extends StatelessWidget {
+class TransactionTile extends StatefulWidget {
   const TransactionTile({
     super.key,
-    required this.emoji,
+    this.emoji,
+    this.icon,
     required this.title,
     required this.subtitle,
     required this.amount,
@@ -330,7 +363,8 @@ class TransactionTile extends StatelessWidget {
     this.onTap,
   });
 
-  final String emoji;
+  final String? emoji;
+  final List<List<dynamic>>? icon;
   final String title;
   final String subtitle;
   final String amount;
@@ -338,59 +372,88 @@ class TransactionTile extends StatelessWidget {
   final VoidCallback? onTap;
 
   @override
+  State<TransactionTile> createState() => _TransactionTileState();
+}
+
+class _TransactionTileState extends State<TransactionTile> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-        child: Row(
-          children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: PennyPalColors.card,
-                borderRadius: BorderRadius.circular(13),
-                border: Border.all(color: PennyPalColors.border),
-              ),
-              child: Center(
-                child: Text(emoji, style: const TextStyle(fontSize: 22)),
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: PennyPalColors.white,
-                    ),
+    final effectiveIcon = widget.icon ??
+        AppIcons.forCategory(widget.emoji ?? widget.title);
+
+    final cleanAmount = widget.amount.replaceAll('₦', '').replaceAll(r'$', '').trim();
+
+    return GestureDetector(
+      onTapDown: widget.onTap != null ? (_) => setState(() => _pressed = true) : null,
+      onTapUp: widget.onTap != null
+          ? (_) {
+              setState(() => _pressed = false);
+              HapticFeedback.selectionClick();
+              widget.onTap!();
+            }
+          : null,
+      onTapCancel: widget.onTap != null ? () => setState(() => _pressed = false) : null,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedScale(
+        scale: _pressed ? 0.97 : 1.0,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOutCubic,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+          child: Row(
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: PennyPalColors.card,
+                  borderRadius: BorderRadius.circular(13),
+                  border: Border.all(color: PennyPalColors.border),
+                ),
+                child: Center(
+                  child: AppIcon(
+                    effectiveIcon,
+                    size: 22,
+                    color: PennyPalColors.white,
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: PennyPalColors.gray,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: PennyPalColors.white,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 2),
+                    Text(
+                      widget.subtitle,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: PennyPalColors.gray,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Text(
-              '${isIncome ? '+' : '-'}$amount',
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 15,
-                color: PennyPalColors.white,
+              Text(
+                '${widget.isIncome ? '+ ' : '- '}$cleanAmount',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  color: PennyPalColors.white,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -398,7 +461,7 @@ class TransactionTile extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Category progress bar — monochrome progress
+// Category progress bar — HugeIcon category indicator & smooth animation
 // ─────────────────────────────────────────────────────────────────────────────
 
 enum BudgetStatus { healthy, warning, exceeded }
@@ -410,15 +473,17 @@ class CategoryProgressBar extends StatelessWidget {
     required this.spent,
     required this.limit,
     this.emoji,
+    this.icon,
   });
 
   final String category;
   final double spent;
   final double limit;
   final String? emoji;
+  final List<List<dynamic>>? icon;
 
   BudgetStatus get _status {
-    final ratio = spent / limit;
+    final ratio = limit <= 0 ? 0.0 : (spent / limit);
     if (ratio >= 1.0) return BudgetStatus.exceeded;
     if (ratio >= 0.8) return BudgetStatus.warning;
     return BudgetStatus.healthy;
@@ -436,21 +501,36 @@ class CategoryProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ratio = (spent / limit).clamp(0.0, 1.0);
+    final ratio = limit <= 0 ? 0.0 : (spent / limit).clamp(0.0, 1.0);
     final spentFmt =
-        '₦${spent.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]},')}';
+        spent.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]},');
     final limitFmt =
-        '₦${limit.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]},')}';
+        limit.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]},');
+
+    final effectiveIcon = icon ?? AppIcons.forCategory(emoji ?? category);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            if (emoji != null) ...[
-              Text(emoji!, style: const TextStyle(fontSize: 16)),
-              const SizedBox(width: 8),
-            ],
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: PennyPalColors.elevated,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: PennyPalColors.border),
+              ),
+              child: Center(
+                child: AppIcon(
+                  effectiveIcon,
+                  size: 15,
+                  color: PennyPalColors.white,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
             Text(
               category,
               style: const TextStyle(
@@ -466,14 +546,21 @@ class CategoryProgressBar extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         ClipRRect(
           borderRadius: BorderRadius.circular(6),
-          child: LinearProgressIndicator(
-            value: ratio,
-            minHeight: 8,
-            backgroundColor: PennyPalColors.border,
-            valueColor: AlwaysStoppedAnimation(_color),
+          child: TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0.0, end: ratio),
+            duration: const Duration(milliseconds: 600),
+            curve: Curves.easeOutCubic,
+            builder: (context, animatedRatio, _) {
+              return LinearProgressIndicator(
+                value: animatedRatio,
+                minHeight: 8,
+                backgroundColor: PennyPalColors.border,
+                valueColor: AlwaysStoppedAnimation(_color),
+              );
+            },
           ),
         ),
       ],
@@ -482,109 +569,156 @@ class CategoryProgressBar extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Goal card — used in Savings screen
+// Goal card — HugeIcon goal indicator with interactive spring press
 // ─────────────────────────────────────────────────────────────────────────────
 
-class GoalCard extends StatelessWidget {
+class GoalCard extends StatefulWidget {
   const GoalCard({
     super.key,
-    required this.emoji,
+    this.emoji,
+    this.icon,
     required this.name,
     required this.saved,
     required this.target,
     this.onTap,
   });
 
-  final String emoji;
+  final String? emoji;
+  final List<List<dynamic>>? icon;
   final String name;
   final double saved;
   final double target;
   final VoidCallback? onTap;
 
   @override
+  State<GoalCard> createState() => _GoalCardState();
+}
+
+class _GoalCardState extends State<GoalCard> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    final ratio = (saved / target).clamp(0.0, 1.0);
+    final ratio = widget.target <= 0 ? 0.0 : (widget.saved / widget.target).clamp(0.0, 1.0);
     final pct = (ratio * 100).toStringAsFixed(0);
-    final remaining = target - saved;
+    final remaining = widget.target - widget.saved;
     final remainFmt =
-        '₦${remaining.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]},')}';
+        remaining.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]},');
     final savedFmt =
-        '₦${saved.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]},')}';
+        widget.saved.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]},');
     final targetFmt =
-        '₦${target.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]},')}';
+        widget.target.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]},');
+
+    final effectiveIcon = widget.icon ??
+        AppIcons.forCategory(widget.emoji ?? widget.name);
 
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: PennyPalColors.surface,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: PennyPalColors.border),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(emoji, style: const TextStyle(fontSize: 28)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        name,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: PennyPalColors.white,
-                        ),
+      onTapDown: widget.onTap != null ? (_) => setState(() => _pressed = true) : null,
+      onTapUp: widget.onTap != null
+          ? (_) {
+              setState(() => _pressed = false);
+              HapticFeedback.lightImpact();
+              widget.onTap!();
+            }
+          : null,
+      onTapCancel: widget.onTap != null ? () => setState(() => _pressed = false) : null,
+      child: AnimatedScale(
+        scale: _pressed ? 0.97 : 1.0,
+        duration: const Duration(milliseconds: 140),
+        curve: Curves.easeOutCubic,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: PennyPalColors.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: PennyPalColors.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: PennyPalColors.card,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: PennyPalColors.border),
+                    ),
+                    child: Center(
+                      child: AppIcon(
+                        effectiveIcon,
+                        size: 22,
+                        color: PennyPalColors.white,
                       ),
-                      Text(
-                        '$savedFmt / $targetFmt',
-                        style: const TextStyle(
-                            fontSize: 12, color: PennyPalColors.gray),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: PennyPalColors.elevated,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: PennyPalColors.border),
-                  ),
-                  child: Text(
-                    '$pct%',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: PennyPalColors.white,
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: LinearProgressIndicator(
-                value: ratio,
-                minHeight: 8,
-                backgroundColor: PennyPalColors.border,
-                valueColor:
-                    const AlwaysStoppedAnimation(PennyPalColors.white),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.name,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: PennyPalColors.white,
+                          ),
+                        ),
+                        Text(
+                          '$savedFmt / $targetFmt',
+                          style: const TextStyle(
+                              fontSize: 12, color: PennyPalColors.gray),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: PennyPalColors.elevated,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: PennyPalColors.border),
+                    ),
+                    child: Text(
+                      '$pct%',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: PennyPalColors.white,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              '$remainFmt remaining',
-              style: const TextStyle(fontSize: 12, color: PennyPalColors.gray),
-            ),
-          ],
+              const SizedBox(height: 14),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0.0, end: ratio),
+                  duration: const Duration(milliseconds: 700),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, animatedRatio, _) {
+                    return LinearProgressIndicator(
+                      value: animatedRatio,
+                      minHeight: 8,
+                      backgroundColor: PennyPalColors.border,
+                      valueColor:
+                          const AlwaysStoppedAnimation(PennyPalColors.white),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '$remainFmt remaining',
+                style: const TextStyle(fontSize: 12, color: PennyPalColors.gray),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -592,20 +726,22 @@ class GoalCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Empty state — used across list screens
+// Empty state — HugeIcon centered illustration
 // ─────────────────────────────────────────────────────────────────────────────
 
 class PennyEmptyState extends StatelessWidget {
   const PennyEmptyState({
     super.key,
-    required this.emoji,
+    this.emoji,
+    this.icon,
     required this.title,
     required this.message,
     this.actionLabel,
     this.onAction,
   });
 
-  final String emoji;
+  final String? emoji;
+  final List<List<dynamic>>? icon;
   final String title;
   final String message;
   final String? actionLabel;
@@ -613,6 +749,8 @@ class PennyEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveIcon = icon ?? AppIcons.forCategory(emoji ?? title);
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -626,8 +764,23 @@ class PennyEmptyState extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(emoji, style: const TextStyle(fontSize: 48)),
-              const SizedBox(height: 16),
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: PennyPalColors.card,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: PennyPalColors.border),
+                ),
+                child: Center(
+                  child: AppIcon(
+                    effectiveIcon,
+                    size: 30,
+                    color: PennyPalColors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
               Text(
                 title,
                 style: const TextStyle(
@@ -695,23 +848,28 @@ class InfoCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Insight chip — monochrome tip tile in Reports
+// Insight chip — HugeIcon tip tile in Reports
 // ─────────────────────────────────────────────────────────────────────────────
 
 class InsightChip extends StatelessWidget {
   const InsightChip({
     super.key,
-    required this.emoji,
+    this.emoji,
+    this.icon,
     required this.text,
     this.color,
   });
 
-  final String emoji;
+  final String? emoji;
+  final List<List<dynamic>>? icon;
   final String text;
   final Color? color;
 
   @override
   Widget build(BuildContext context) {
+    final effectiveIcon = icon ??
+        (emoji != null ? AppIcons.forCategory(emoji!) : AppIcons.bulb);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
@@ -721,7 +879,22 @@ class InsightChip extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 18)),
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: PennyPalColors.elevated,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: PennyPalColors.border),
+            ),
+            child: Center(
+              child: AppIcon(
+                effectiveIcon,
+                size: 16,
+                color: PennyPalColors.white,
+              ),
+            ),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(

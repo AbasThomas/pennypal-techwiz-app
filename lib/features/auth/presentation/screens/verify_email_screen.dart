@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/errors/api_error_handler.dart';
 import '../../../../shared/widgets/app_widgets.dart';
@@ -33,7 +34,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.mark_email_unread_outlined, size: 52),
+          const AppIcon(AppIcons.mail, size: 52),
           const SizedBox(height: 20),
           Text(
             'Check your inbox',

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/penny_widgets.dart';
-
-// Plan tab — hosts Budget and Savings as sub-tabs
 
 class PlanScreen extends StatefulWidget {
   const PlanScreen({super.key});
@@ -35,7 +35,7 @@ class _PlanScreenState extends State<PlanScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header ──────────────────────────────────────────
+            // Header
             const Padding(
               padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
               child: Row(
@@ -54,7 +54,7 @@ class _PlanScreenState extends State<PlanScreen>
             ),
             const SizedBox(height: 16),
 
-            // ── Tab bar ──────────────────────────────────────────
+            // Tab bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -86,7 +86,7 @@ class _PlanScreenState extends State<PlanScreen>
             ),
             const SizedBox(height: 4),
 
-            // ── Content ──────────────────────────────────────────
+            // Content
             Expanded(
               child: TabBarView(
                 controller: _tab,
@@ -104,7 +104,7 @@ class _PlanScreenState extends State<PlanScreen>
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Budget sub-tab (Section 10)
+// Budget sub-tab
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _BudgetTab extends StatelessWidget {
@@ -113,18 +113,17 @@ class _BudgetTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const categories = [
-      _BudgetCat('🍔', 'Food', 18000, 25000),
-      _BudgetCat('🚌', 'Transport', 8500, 15000),
-      _BudgetCat('📚', 'Education', 12000, 15000),
-      _BudgetCat('🛍', 'Shopping', 9500, 10000),
-      _BudgetCat('🎬', 'Entertainment', 6000, 5000),
+      _BudgetCat(AppIcons.food, 'Food', 18000, 25000),
+      _BudgetCat(AppIcons.transport, 'Transport', 8500, 15000),
+      _BudgetCat(AppIcons.education, 'Education', 12000, 15000),
+      _BudgetCat(AppIcons.shoppingBag, 'Shopping', 9500, 10000),
+      _BudgetCat(AppIcons.entertainment, 'Entertainment', 6000, 5000),
     ];
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
       child: Column(
         children: [
-          // ── Monthly overview card ──────────────────────────
           InfoCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,7 +144,7 @@ class _BudgetTab extends StatelessWidget {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            '₦72,500 spent',
+                            '72,500 spent',
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w800,
@@ -154,7 +153,7 @@ class _BudgetTab extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'of ₦100,000',
+                            'of 100,000 budget',
                             style: TextStyle(
                                 fontSize: 13, color: PennyPalColors.gray),
                           ),
@@ -194,7 +193,7 @@ class _BudgetTab extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                const Text('₦27,500 remaining',
+                const Text('27,500 remaining',
                     style:
                         TextStyle(fontSize: 13, color: PennyPalColors.gray)),
               ],
@@ -202,14 +201,13 @@ class _BudgetTab extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // ── Category limits ────────────────────────────────
           const SectionHeader(title: 'Category Limits'),
           const SizedBox(height: 14),
           ...categories.map(
             (c) => Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: CategoryProgressBar(
-                emoji: c.emoji,
+                icon: c.icon,
                 category: c.category,
                 spent: c.spent,
                 limit: c.limit,
@@ -223,15 +221,15 @@ class _BudgetTab extends StatelessWidget {
 }
 
 class _BudgetCat {
-  const _BudgetCat(this.emoji, this.category, this.spent, this.limit);
-  final String emoji;
+  const _BudgetCat(this.icon, this.category, this.spent, this.limit);
+  final List<List<dynamic>> icon;
   final String category;
   final double spent;
   final double limit;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Savings sub-tab (Section 11)
+// Savings sub-tab
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _SavingsTab extends StatelessWidget {
@@ -240,17 +238,16 @@ class _SavingsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const goals = [
-      _Goal('🎓', 'New Laptop', 75000, 150000),
-      _Goal('🏠', 'Emergency Fund', 40000, 200000),
-      _Goal('✈️', 'Trip', 22000, 80000),
-      _Goal('📱', 'New Phone', 55000, 80000),
+      _Goal(AppIcons.freelance, 'New Laptop', 75000, 150000),
+      _Goal(AppIcons.emergency, 'Emergency Fund', 40000, 200000),
+      _Goal(AppIcons.travel, 'Trip', 22000, 80000),
+      _Goal(AppIcons.piggyBank, 'Vault Savings', 55000, 80000),
     ];
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
       child: Column(
         children: [
-          // ── Total saved ────────────────────────────────────
           InfoCard(
             child: Row(
               children: [
@@ -262,8 +259,10 @@ class _SavingsTab extends StatelessWidget {
                     borderRadius: BorderRadius.circular(13),
                     border: Border.all(color: PennyPalColors.border),
                   ),
-                  child: const Icon(Icons.flag_rounded,
-                      color: PennyPalColors.white, size: 24),
+                  child: const Center(
+                    child: AppIcon(AppIcons.piggyBank,
+                        color: PennyPalColors.white, size: 24),
+                  ),
                 ),
                 const SizedBox(width: 14),
                 const Column(
@@ -273,7 +272,7 @@ class _SavingsTab extends StatelessWidget {
                         style:
                             TextStyle(fontSize: 13, color: PennyPalColors.gray)),
                     Text(
-                      '₦192,000',
+                      '192,000',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
@@ -288,7 +287,6 @@ class _SavingsTab extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // ── Goals ──────────────────────────────────────────
           SectionHeader(
             title: 'Your Goals',
             actionLabel: '+ New Goal',
@@ -299,7 +297,7 @@ class _SavingsTab extends StatelessWidget {
             (g) => Padding(
               padding: const EdgeInsets.only(bottom: 14),
               child: GoalCard(
-                emoji: g.emoji,
+                icon: g.icon,
                 name: g.name,
                 saved: g.saved,
                 target: g.target,
@@ -312,6 +310,7 @@ class _SavingsTab extends StatelessWidget {
   }
 
   void _showCreateGoalSheet(BuildContext context) {
+    HapticFeedback.mediumImpact();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -322,15 +321,15 @@ class _SavingsTab extends StatelessWidget {
 }
 
 class _Goal {
-  const _Goal(this.emoji, this.name, this.saved, this.target);
-  final String emoji;
+  const _Goal(this.icon, this.name, this.saved, this.target);
+  final List<List<dynamic>> icon;
   final String name;
   final double saved;
   final double target;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Create goal bottom sheet
+// Create goal bottom sheet with HugeIcons selector
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _CreateGoalSheet extends StatefulWidget {
@@ -343,8 +342,17 @@ class _CreateGoalSheetState extends State<_CreateGoalSheet> {
   final _name = TextEditingController();
   final _amount = TextEditingController();
 
-  final _emojis = ['🎓', '🏠', '✈️', '📱', '💻', '🎯', '🛒', '💰'];
-  String _selectedEmoji = '🎯';
+  final _icons = [
+    AppIcons.target,
+    AppIcons.house,
+    AppIcons.travel,
+    AppIcons.piggyBank,
+    AppIcons.education,
+    AppIcons.freelance,
+    AppIcons.shoppingBag,
+    AppIcons.emergency,
+  ];
+  int _selectedIndex = 0;
 
   @override
   void dispose() {
@@ -394,22 +402,25 @@ class _CreateGoalSheetState extends State<_CreateGoalSheet> {
                 style: TextStyle(color: PennyPalColors.gray, fontSize: 14)),
             const SizedBox(height: 20),
 
-            // ── Emoji picker ─────────────────────────────────
+            // HugeIcon selector
             SizedBox(
               height: 50,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: _emojis.length,
+                itemCount: _icons.length,
                 itemBuilder: (_, i) {
-                  final e = _emojis[i];
-                  final selected = e == _selectedEmoji;
+                  final icon = _icons[i];
+                  final selected = i == _selectedIndex;
                   return GestureDetector(
-                    onTap: () => setState(() => _selectedEmoji = e),
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      setState(() => _selectedIndex = i);
+                    },
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 180),
-                      width: 46,
-                      height: 46,
-                      margin: const EdgeInsets.only(right: 8),
+                      width: 48,
+                      height: 48,
+                      margin: const EdgeInsets.only(right: 10),
                       decoration: BoxDecoration(
                         color: selected
                             ? PennyPalColors.elevated
@@ -419,12 +430,17 @@ class _CreateGoalSheetState extends State<_CreateGoalSheet> {
                           color: selected
                               ? PennyPalColors.white
                               : PennyPalColors.border,
-                          width: selected ? 2 : 1,
+                          width: selected ? 1.5 : 1,
                         ),
                       ),
                       child: Center(
-                        child:
-                            Text(e, style: const TextStyle(fontSize: 22)),
+                        child: AppIcon(
+                          icon,
+                          size: 20,
+                          color: selected
+                              ? PennyPalColors.white
+                              : PennyPalColors.gray,
+                        ),
                       ),
                     ),
                   );
@@ -461,7 +477,7 @@ class _CreateGoalSheetState extends State<_CreateGoalSheet> {
               keyboardType: TextInputType.number,
               style: const TextStyle(color: PennyPalColors.white),
               decoration: InputDecoration(
-                labelText: 'Target amount (₦)',
+                labelText: 'Target amount',
                 labelStyle: const TextStyle(color: PennyPalColors.gray),
                 filled: true,
                 fillColor: PennyPalColors.card,
@@ -484,7 +500,10 @@ class _CreateGoalSheetState extends State<_CreateGoalSheet> {
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  Navigator.pop(context);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: PennyPalColors.white,
                   foregroundColor: PennyPalColors.black,

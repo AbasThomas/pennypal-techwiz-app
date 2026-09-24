@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/penny_widgets.dart';
@@ -14,14 +16,14 @@ class _MoneyScreenState extends State<MoneyScreen> {
   final _search = TextEditingController();
 
   static const _transactions = [
-    _Tx('🍔', 'Lunch', 'Food', 'Today', '₦3,500', false),
-    _Tx('🚌', 'Transport', 'Transport', 'Today', '₦1,200', false),
-    _Tx('💼', 'Freelance Payment', 'Income', 'Sep 23', '₦50,000', true),
-    _Tx('📚', 'Textbooks', 'Education', 'Sep 22', '₦8,000', false),
-    _Tx('🛍', 'Shopping', 'Shopping', 'Sep 21', '₦4,500', false),
-    _Tx('💰', 'Salary', 'Income', 'Sep 20', '₦130,000', true),
-    _Tx('🍕', 'Dinner', 'Food', 'Sep 19', '₦5,200', false),
-    _Tx('🎬', 'Netflix', 'Entertainment', 'Sep 18', '₦2,900', false),
+    _Tx(AppIcons.food, 'Lunch', 'Food', 'Today', '3,500', false),
+    _Tx(AppIcons.transport, 'Transport', 'Transport', 'Today', '1,200', false),
+    _Tx(AppIcons.freelance, 'Freelance Payment', 'Income', 'Sep 23', '50,000', true),
+    _Tx(AppIcons.education, 'Textbooks', 'Education', 'Sep 22', '8,000', false),
+    _Tx(AppIcons.shoppingBag, 'Shopping', 'Shopping', 'Sep 21', '4,500', false),
+    _Tx(AppIcons.salary, 'Salary', 'Income', 'Sep 20', '130,000', true),
+    _Tx(AppIcons.food, 'Dinner', 'Food', 'Sep 19', '5,200', false),
+    _Tx(AppIcons.entertainment, 'Netflix', 'Entertainment', 'Sep 18', '2,900', false),
   ];
 
   List<_Tx> get _filtered {
@@ -53,7 +55,7 @@ class _MoneyScreenState extends State<MoneyScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header ──────────────────────────────────────────
+            // Header
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
               child: Row(
@@ -69,8 +71,10 @@ class _MoneyScreenState extends State<MoneyScreen> {
                   ),
                   const Spacer(),
                   IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.filter_list_rounded,
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                    },
+                    icon: const AppIcon(AppIcons.filter,
                         color: PennyPalColors.white),
                   ),
                 ],
@@ -78,7 +82,7 @@ class _MoneyScreenState extends State<MoneyScreen> {
             ),
             const SizedBox(height: 14),
 
-            // ── Search (Section 9) ───────────────────────────────
+            // Search
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextField(
@@ -88,8 +92,11 @@ class _MoneyScreenState extends State<MoneyScreen> {
                 decoration: InputDecoration(
                   hintText: 'Search transactions…',
                   hintStyle: const TextStyle(color: PennyPalColors.muted),
-                  prefixIcon: const Icon(Icons.search_rounded,
-                      color: PennyPalColors.muted, size: 20),
+                  prefixIcon: const Padding(
+                    padding: EdgeInsets.all(12),
+                    child: AppIcon(AppIcons.search,
+                        color: PennyPalColors.muted, size: 20),
+                  ),
                   filled: true,
                   fillColor: PennyPalColors.surface,
                   contentPadding: const EdgeInsets.symmetric(
@@ -112,7 +119,7 @@ class _MoneyScreenState extends State<MoneyScreen> {
             ),
             const SizedBox(height: 14),
 
-            // ── Filter tabs ──────────────────────────────────────
+            // Filter tabs
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -121,8 +128,10 @@ class _MoneyScreenState extends State<MoneyScreen> {
                     .entries
                     .map(
                       (e) => GestureDetector(
-                        onTap: () =>
-                            setState(() => _filterIndex = e.key),
+                        onTap: () {
+                          HapticFeedback.selectionClick();
+                          setState(() => _filterIndex = e.key);
+                        },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 180),
                           margin: const EdgeInsets.only(right: 10),
@@ -157,11 +166,11 @@ class _MoneyScreenState extends State<MoneyScreen> {
             ),
             const SizedBox(height: 8),
 
-            // ── List ─────────────────────────────────────────────
+            // List
             Expanded(
               child: _filtered.isEmpty
                   ? const PennyEmptyState(
-                      emoji: '🔍',
+                      icon: AppIcons.search,
                       title: 'No transactions found',
                       message:
                           'Try adjusting your search or filter.',
@@ -169,12 +178,12 @@ class _MoneyScreenState extends State<MoneyScreen> {
                   : ListView.separated(
                       padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
                       itemCount: _filtered.length,
-                      separatorBuilder: (_, __) => const Divider(
+                      separatorBuilder: (_, _) => const Divider(
                           height: 1, color: PennyPalColors.mutedBorder),
                       itemBuilder: (_, i) {
                         final t = _filtered[i];
                         return TransactionTile(
-                          emoji: t.emoji,
+                          icon: t.icon,
                           title: t.title,
                           subtitle: '${t.category} · ${t.date}',
                           amount: t.amount,
@@ -193,9 +202,9 @@ class _MoneyScreenState extends State<MoneyScreen> {
 }
 
 class _Tx {
-  const _Tx(this.emoji, this.title, this.category, this.date,
+  const _Tx(this.icon, this.title, this.category, this.date,
       this.amount, this.isIncome);
-  final String emoji;
+  final List<List<dynamic>> icon;
   final String title;
   final String category;
   final String date;

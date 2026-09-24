@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/widgets/app_widgets.dart';
 import '../controllers/auth_controller.dart';
@@ -17,7 +18,7 @@ class HomePlaceholderScreen extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.check_circle_outline, size: 52),
+            const AppIcon(AppIcons.check, size: 52),
             const SizedBox(height: 16),
             Text(
               'Authentication succeeded',

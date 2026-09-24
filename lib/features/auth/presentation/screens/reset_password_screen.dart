@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/errors/api_error_handler.dart';
 import '../../../../core/utils/validators.dart';
@@ -47,7 +48,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     title: 'Choose a new password',
     body: _done
         ? const AppEmptyState(
-            icon: Icons.check_circle_outline,
+            icon: AppIcons.check,
             message: 'Your password has been reset. You can now sign in.',
           )
         : Form(

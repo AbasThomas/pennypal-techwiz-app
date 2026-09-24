@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../features/auth/providers/auth_providers.dart';
@@ -18,33 +19,33 @@ class ProfileScreen extends ConsumerWidget {
         : 'S';
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: PennyPalColors.black,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         title: const Text('Profile',
             style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: AppColors.text)),
-        iconTheme: const IconThemeData(color: AppColors.text),
+                color: PennyPalColors.white)),
+        iconTheme: const IconThemeData(color: PennyPalColors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
         child: Column(
           children: [
-            // ── Avatar ────────────────────────────────────────
+            // â”€â”€ Avatar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             const SizedBox(height: 12),
             CircleAvatar(
               radius: 44,
-              backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+              backgroundColor: PennyPalColors.elevated,
               child: Text(
                 initials,
                 style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
+                  color: PennyPalColors.white,
                 ),
               ),
             ),
@@ -54,22 +55,22 @@ class ProfileScreen extends ConsumerWidget {
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
-                color: AppColors.text,
+                color: PennyPalColors.white,
               ),
             ),
             Text(
               user?.email ?? '',
-              style: const TextStyle(fontSize: 14, color: AppColors.muted),
+              style: const TextStyle(fontSize: 14, color: PennyPalColors.muted),
             ),
             const SizedBox(height: 28),
 
-            // ── Info ──────────────────────────────────────────
+            // â”€â”€ Info â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _InfoSection(title: 'Personal Information', items: [
-              _InfoRow(label: 'Full Name', value: name.isNotEmpty ? name : '—'),
-              _InfoRow(label: 'Email', value: user?.email ?? '—'),
+              _InfoRow(label: 'Full Name', value: name.isNotEmpty ? name : 'â€”'),
+              _InfoRow(label: 'Email', value: user?.email ?? 'â€”'),
               _InfoRow(
                   label: 'Phone',
-                  value: user?.phoneNumber ?? '—'),
+                  value: user?.phoneNumber ?? 'â€”'),
             ]),
             const SizedBox(height: 20),
 
@@ -81,21 +82,22 @@ class ProfileScreen extends ConsumerWidget {
             ]),
             const SizedBox(height: 28),
 
-            // ── Logout ────────────────────────────────────────
+            // â”€â”€ Logout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             SizedBox(
               width: double.infinity,
               height: 52,
               child: OutlinedButton.icon(
                 onPressed: () =>
                     ref.read(authControllerProvider.notifier).logout(),
-                icon: const Icon(Icons.logout_rounded,
-                    color: AppColors.error, size: 18),
+                icon: const AppIcon(AppIcons.logout,
+                    color: PennyPalColors.white, size: 18),
                 label: const Text('Log Out',
                     style: TextStyle(
-                        color: AppColors.error,
+                        color: PennyPalColors.white,
                         fontWeight: FontWeight.w600)),
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: AppColors.error),
+                  backgroundColor: PennyPalColors.card,
+                  side: const BorderSide(color: PennyPalColors.border),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14)),
                 ),
@@ -126,16 +128,15 @@ class _InfoSection extends StatelessWidget {
               fontSize: 11,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.8,
-              color: AppColors.muted,
+              color: PennyPalColors.muted,
             ),
           ),
         ),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: PennyPalColors.surface,
             borderRadius: BorderRadius.circular(16),
-            border: const Border.fromBorderSide(
-                BorderSide(color: Color(0xFFE2E8F0))),
+            border: Border.all(color: PennyPalColors.border),
           ),
           child: Column(
             children: items.asMap().entries.map((e) {
@@ -144,7 +145,7 @@ class _InfoSection extends StatelessWidget {
                 e.value,
                 if (!isLast)
                   const Divider(
-                      height: 1, indent: 16, color: Color(0xFFF1F5F9)),
+                      height: 1, indent: 16, color: PennyPalColors.mutedBorder),
               ]);
             }).toList(),
           ),
@@ -166,13 +167,13 @@ class _InfoRow extends StatelessWidget {
       child: Row(children: [
         Text(label,
             style:
-                const TextStyle(fontSize: 14, color: AppColors.muted)),
+                const TextStyle(fontSize: 14, color: PennyPalColors.gray)),
         const Spacer(),
         Text(value,
             style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: AppColors.text)),
+                color: PennyPalColors.white)),
       ]),
     );
   }

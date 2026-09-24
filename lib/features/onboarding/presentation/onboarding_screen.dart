@@ -65,7 +65,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final isLast = _page == _slides.length - 1;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       body: SafeArea(
         child: Column(
           children: [
@@ -77,7 +77,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: TextButton(
                   onPressed: _finish,
                   style: TextButton.styleFrom(
-                    foregroundColor: AppColors.muted,
+                    foregroundColor: PennyPalColors.muted,
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   ),
                   child: const Text('Skip', style: TextStyle(fontSize: 14)),
@@ -106,8 +106,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   height: 7,
                   decoration: BoxDecoration(
                     color: _page == i
-                        ? AppColors.primary
-                        : AppColors.primary.withValues(alpha: 0.2),
+                        ? PennyPalColors.white
+                        : PennyPalColors.darkGray,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 );
@@ -125,8 +125,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: ElevatedButton(
                   onPressed: _next,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
+                    backgroundColor: PennyPalColors.white,
+                    foregroundColor: PennyPalColors.black,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -137,6 +137,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
+                      color: PennyPalColors.black,
                     ),
                   ),
                 ),
@@ -174,12 +175,11 @@ class _SlideView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // TODO: replace with Lottie.asset('assets/animations/${slide.lottie}',
-          //   width: 280, height: 280, fit: BoxFit.contain)
           LottiePlaceholder(
             width: 280,
             height: 260,
             label: slide.lottie,
+            tint: PennyPalColors.white,
           ),
           const SizedBox(height: 44),
           Text(
@@ -190,7 +190,7 @@ class _SlideView extends StatelessWidget {
               fontWeight: FontWeight.w800,
               letterSpacing: -0.6,
               height: 1.15,
-              color: AppColors.text,
+              color: PennyPalColors.white,
             ),
           ),
           const SizedBox(height: 16),
@@ -199,7 +199,7 @@ class _SlideView extends StatelessWidget {
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 16,
-              color: AppColors.muted,
+              color: PennyPalColors.gray,
               height: 1.6,
             ),
           ),

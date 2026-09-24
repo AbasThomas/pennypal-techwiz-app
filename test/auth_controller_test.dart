@@ -1,7 +1,6 @@
 import 'package:bootstrap_flutter/features/auth/data/models/auth_user.dart';
 import 'package:bootstrap_flutter/features/auth/data/repositories/firebase_auth_repository.dart';
 import 'package:bootstrap_flutter/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

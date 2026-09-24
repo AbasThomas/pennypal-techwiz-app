@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/lottie_placeholder.dart';
 
@@ -24,20 +25,22 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     if (text.trim().isEmpty) return;
     setState(() {
       _messages.add(_Message(text: text, isUser: true));
-      // Simulated AI reply — replace with real API call
-      _messages.add(_Message(
+      // Simulated AI reply
+      _messages.add(const _Message(
         text:
-            "Based on your recent spending, here are some practical tips to help you with that. I'd recommend reviewing your biggest expense categories first, then setting a specific target. Remember, I provide educational guidance — not professional financial advice.",
+            "Based on your recent spending, here are some practical tips to help you with that. I'd recommend reviewing your biggest expense categories first, then setting a specific target. Remember, I provide educational guidance â€” not professional financial advice.",
         isUser: false,
       ));
     });
     _controller.clear();
     Future.delayed(const Duration(milliseconds: 100), () {
-      _scroll.animateTo(
-        _scroll.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+      if (_scroll.hasClients) {
+        _scroll.animateTo(
+          _scroll.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
     });
   }
 
@@ -51,18 +54,18 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: PennyPalColors.black,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         title: const Row(
           children: [
             CircleAvatar(
               radius: 16,
-              backgroundColor: Color(0xFFF0FDFA),
-              child: Icon(Icons.smart_toy_rounded,
-                  color: AppColors.teal, size: 18),
+              backgroundColor: PennyPalColors.elevated,
+              child: AppIcon(AppIcons.robot,
+                  color: PennyPalColors.white, size: 18),
             ),
             SizedBox(width: 10),
             Column(
@@ -72,15 +75,15 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.text)),
+                        color: PennyPalColors.white)),
                 Text('Financial learning assistant',
                     style:
-                        TextStyle(fontSize: 11, color: AppColors.muted)),
+                        TextStyle(fontSize: 11, color: PennyPalColors.gray)),
               ],
             ),
           ],
         ),
-        iconTheme: const IconThemeData(color: AppColors.text),
+        iconTheme: const IconThemeData(color: PennyPalColors.white),
       ),
       body: Column(
         children: [
@@ -99,21 +102,28 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                   ),
           ),
 
-          // ── Disclaimer ────────────────────────────────────────
+          // â”€â”€ Disclaimer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Container(
-            color: Colors.white,
+            color: PennyPalColors.nearBlack,
             padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            child: const Text(
-              '⚠️  Educational guidance only — not professional financial advice.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 11, color: AppColors.muted),
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AppIcon(AppIcons.warning, size: 12, color: PennyPalColors.muted),
+                SizedBox(width: 6),
+                Text(
+                  'Educational guidance only — not professional financial advice.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 11, color: PennyPalColors.muted),
+                ),
+              ],
             ),
           ),
 
-          // ── Input bar ─────────────────────────────────────────
+          // â”€â”€ Input bar (Section 13) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Container(
-            color: Colors.white,
+            color: PennyPalColors.nearBlack,
             padding: EdgeInsets.only(
               left: 16,
               right: 16,
@@ -127,28 +137,29 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                     controller: _controller,
                     textInputAction: TextInputAction.send,
                     onSubmitted: _send,
+                    style: const TextStyle(color: PennyPalColors.white, fontSize: 14),
                     decoration: InputDecoration(
-                      hintText: 'Ask me anything…',
+                      hintText: 'Ask me anythingâ€¦',
                       hintStyle:
-                          const TextStyle(color: AppColors.muted),
+                          const TextStyle(color: PennyPalColors.muted),
                       filled: true,
-                      fillColor: AppColors.background,
+                      fillColor: PennyPalColors.surface,
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 12),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(28),
                         borderSide: const BorderSide(
-                            color: Color(0xFFE2E8F0)),
+                            color: PennyPalColors.border),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(28),
                         borderSide: const BorderSide(
-                            color: Color(0xFFE2E8F0)),
+                            color: PennyPalColors.border),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(28),
                         borderSide: const BorderSide(
-                            color: AppColors.primary, width: 2),
+                            color: PennyPalColors.white, width: 1.5),
                       ),
                     ),
                   ),
@@ -159,12 +170,12 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                   child: Container(
                     width: 44,
                     height: 44,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
+                    decoration: const BoxDecoration(
+                      color: PennyPalColors.white,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.send_rounded,
-                        color: Colors.white, size: 20),
+                    child: const AppIcon(AppIcons.arrowForward,
+                        color: PennyPalColors.black, size: 20),
                   ),
                 ),
               ],
@@ -190,16 +201,15 @@ class _EmptyChat extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
       child: Column(
         children: [
-          // TODO: Lottie.asset('assets/animations/ai_assistant.json', height: 180)
           const LottiePlaceholder(
-              height: 180, label: 'ai_assistant.json', tint: AppColors.teal),
+              height: 180, label: 'ai_assistant.json'),
           const SizedBox(height: 24),
           const Text(
-            'Hi! What would you like help with?',
+            'How can I help you today?',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: AppColors.text,
+              color: PennyPalColors.white,
             ),
             textAlign: TextAlign.center,
           ),
@@ -207,7 +217,7 @@ class _EmptyChat extends StatelessWidget {
           const Text(
             'I can help you understand your finances\nand build better money habits.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: AppColors.muted),
+            style: TextStyle(fontSize: 14, color: PennyPalColors.gray),
           ),
           const SizedBox(height: 28),
           ...suggestions.map(
@@ -220,19 +230,18 @@ class _EmptyChat extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: PennyPalColors.surface,
                     borderRadius: BorderRadius.circular(14),
-                    border: const Border.fromBorderSide(
-                        BorderSide(color: Color(0xFFE2E8F0))),
+                    border: Border.all(color: PennyPalColors.border),
                   ),
                   child: Row(
                     children: [
                       Expanded(
                           child: Text(s,
                               style: const TextStyle(
-                                  fontSize: 14, color: AppColors.text))),
-                      const Icon(Icons.arrow_forward_rounded,
-                          size: 16, color: AppColors.muted),
+                                  fontSize: 14, color: PennyPalColors.white))),
+                      const AppIcon(AppIcons.arrowForward,
+                          size: 16, color: PennyPalColors.gray),
                     ],
                   ),
                 ),
@@ -268,9 +277,9 @@ class _ChatBubble extends StatelessWidget {
           if (!message.isUser) ...[
             const CircleAvatar(
               radius: 14,
-              backgroundColor: Color(0xFFF0FDFA),
+              backgroundColor: PennyPalColors.elevated,
               child:
-                  Icon(Icons.smart_toy_rounded, size: 14, color: AppColors.teal),
+                  AppIcon(AppIcons.robot, size: 14, color: PennyPalColors.white),
             ),
             const SizedBox(width: 8),
           ],
@@ -280,8 +289,8 @@ class _ChatBubble extends StatelessWidget {
                   horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
                 color: message.isUser
-                    ? AppColors.primary
-                    : Colors.white,
+                    ? PennyPalColors.white
+                    : PennyPalColors.card,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(16),
                   topRight: const Radius.circular(16),
@@ -292,14 +301,13 @@ class _ChatBubble extends StatelessWidget {
                 ),
                 border: message.isUser
                     ? null
-                    : const Border.fromBorderSide(
-                        BorderSide(color: Color(0xFFE2E8F0))),
+                    : Border.all(color: PennyPalColors.border),
               ),
               child: Text(
                 message.text,
                 style: TextStyle(
                   fontSize: 14,
-                  color: message.isUser ? Colors.white : AppColors.text,
+                  color: message.isUser ? PennyPalColors.black : PennyPalColors.white,
                   height: 1.5,
                 ),
               ),

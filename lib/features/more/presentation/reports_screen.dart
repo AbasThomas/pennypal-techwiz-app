@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/penny_widgets.dart';
 
@@ -16,7 +17,7 @@ class ReportsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Month selector ────────────────────────────────
+            // Month selector
             Row(
               children: [
                 const Spacer(),
@@ -31,7 +32,7 @@ class ReportsScreen extends StatelessWidget {
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.calendar_month_outlined,
+                      AppIcon(AppIcons.calendar,
                           size: 16, color: PennyPalColors.gray),
                       SizedBox(width: 6),
                       Text('September',
@@ -40,7 +41,7 @@ class ReportsScreen extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                               color: PennyPalColors.white)),
                       SizedBox(width: 4),
-                      Icon(Icons.keyboard_arrow_down_rounded,
+                      AppIcon(AppIcons.chevronDown,
                           size: 16, color: PennyPalColors.gray),
                     ],
                   ),
@@ -49,29 +50,29 @@ class ReportsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // ── Summary row ───────────────────────────────────
+            // Summary row
             const Row(children: [
               Expanded(
                   child: _StatCard(
                       label: 'Income',
-                      value: '₦180,000',
-                      icon: Icons.arrow_downward_rounded)),
+                      value: '180,000',
+                      icon: AppIcons.arrowDown)),
               SizedBox(width: 12),
               Expanded(
                   child: _StatCard(
                       label: 'Expenses',
-                      value: '₦54,500',
-                      icon: Icons.arrow_upward_rounded)),
+                      value: '54,500',
+                      icon: AppIcons.arrowUp)),
               SizedBox(width: 12),
               Expanded(
                   child: _StatCard(
                       label: 'Savings',
-                      value: '₦75,500',
-                      icon: Icons.savings_rounded)),
+                      value: '75,500',
+                      icon: AppIcons.piggyBank)),
             ]),
             const SizedBox(height: 28),
 
-            // ── Spending trend (Section 12: monochrome line chart) ──
+            // Spending trend
             const SectionHeader(title: 'Spending Trend'),
             const SizedBox(height: 14),
             InfoCard(
@@ -131,7 +132,7 @@ class ReportsScreen extends StatelessWidget {
                         barWidth: 2.5,
                         dotData: FlDotData(
                           show: true,
-                          getDotPainter: (_, __, ___, ____) =>
+                          getDotPainter: (_, _, _, _) =>
                               FlDotCirclePainter(
                             radius: 4,
                             color: PennyPalColors.white,
@@ -151,7 +152,7 @@ class ReportsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 28),
 
-            // ── By category donut (Section 12: monochrome donut) ──
+            // By category donut
             const SectionHeader(title: 'Spending by Category'),
             const SizedBox(height: 14),
             InfoCard(
@@ -192,25 +193,27 @@ class ReportsScreen extends StatelessWidget {
                     )),
                   ),
                   const SizedBox(height: 14),
-                  for (final item in <(String, String, String, Color)>[
-                    ('🍔', 'Food', '₦25,000', PennyPalColors.white),
-                    ('🚌', 'Transport', '₦12,500', PennyPalColors.offWhite),
-                    ('📚', 'Education', '₦8,000', PennyPalColors.lightGray),
-                    ('🎬', 'Entertainment', '₦5,000', PennyPalColors.gray),
-                    ('🛒', 'Other', '₦4,000', PennyPalColors.darkGray),
+                  for (final item in <(List<List<dynamic>>, String, String, Color)>[
+                    (AppIcons.food, 'Food', '25,000', PennyPalColors.white),
+                    (AppIcons.transport, 'Transport', '12,500', PennyPalColors.offWhite),
+                    (AppIcons.education, 'Education', '8,000', PennyPalColors.lightGray),
+                    (AppIcons.entertainment, 'Entertainment', '5,000', PennyPalColors.gray),
+                    (AppIcons.wallet, 'Other', '4,000', PennyPalColors.darkGray),
                   ])
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      padding: const EdgeInsets.symmetric(vertical: 6),
                       child: Row(children: [
                         Container(
-                            width: 10,
-                            height: 10,
+                            width: 22,
+                            height: 22,
                             decoration: BoxDecoration(
-                                color: item.$4, shape: BoxShape.circle)),
-                        const SizedBox(width: 8),
-                        Text(item.$1,
-                            style: const TextStyle(fontSize: 14)),
-                        const SizedBox(width: 6),
+                              color: PennyPalColors.elevated,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Center(
+                              child: AppIcon(item.$1, size: 12, color: item.$4),
+                            )),
+                        const SizedBox(width: 10),
                         Expanded(
                             child: Text(item.$2,
                                 style: const TextStyle(
@@ -228,7 +231,7 @@ class ReportsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 28),
 
-            // ── Monthly comparison ────────────────────────────
+            // Monthly comparison
             const SectionHeader(title: 'Monthly Comparison'),
             const SizedBox(height: 14),
             InfoCard(
@@ -260,7 +263,7 @@ class ReportsScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          '₦${(item.$2 * 100).toStringAsFixed(0)}k',
+                          '${(item.$2 * 100).toStringAsFixed(0)}k',
                           style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -273,21 +276,21 @@ class ReportsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 28),
 
-            // ── Insights ──────────────────────────────────────
+            // Insights
             const SectionHeader(title: 'Insights'),
             const SizedBox(height: 12),
             const InsightChip(
-              emoji: '💡',
+              icon: AppIcons.bulb,
               text: 'You spent 18% less on food this month.',
             ),
             const SizedBox(height: 10),
             const InsightChip(
-              emoji: '📊',
+              icon: AppIcons.chartBar,
               text: 'Entertainment spending increased by 12%.',
             ),
             const SizedBox(height: 10),
             const InsightChip(
-              emoji: '🎯',
+              icon: AppIcons.target,
               text: "You're on track to reach your savings goal.",
             ),
           ],
@@ -305,7 +308,7 @@ class _StatCard extends StatelessWidget {
   });
   final String label;
   final String value;
-  final IconData icon;
+  final List<List<dynamic>> icon;
 
   @override
   Widget build(BuildContext context) {
@@ -327,7 +330,7 @@ class _StatCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: PennyPalColors.border),
             ),
-            child: Icon(icon, color: PennyPalColors.white, size: 16),
+            child: AppIcon(icon, color: PennyPalColors.white, size: 16),
           ),
           const SizedBox(height: 10),
           Text(value,

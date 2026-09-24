@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../features/auth/providers/auth_providers.dart';
@@ -26,9 +27,9 @@ class _AdminDashboardScreenState
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: PennyPalColors.black,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
@@ -38,11 +39,12 @@ class _AdminDashboardScreenState
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: AppColors.primary,
+                color: PennyPalColors.elevated,
                 borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: PennyPalColors.border),
               ),
-              child: const Icon(Icons.savings_rounded,
-                  color: Colors.white, size: 18),
+              child: const AppIcon(AppIcons.wallet,
+                  color: PennyPalColors.white, size: 18),
             ),
             const SizedBox(width: 8),
             const Text(
@@ -50,14 +52,14 @@ class _AdminDashboardScreenState
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
-                color: AppColors.text,
+                color: PennyPalColors.white,
               ),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout_rounded, color: AppColors.text),
+            icon: const AppIcon(AppIcons.logout, color: PennyPalColors.white),
             onPressed: () =>
                 ref.read(authControllerProvider.notifier).logout(),
           ),
@@ -65,7 +67,7 @@ class _AdminDashboardScreenState
       ),
       body: Column(
         children: [
-          // ── Tab bar ────────────────────────────────────────────
+          // Tab bar
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -82,12 +84,12 @@ class _AdminDashboardScreenState
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: sel ? AppColors.primary : Colors.white,
+                        color: sel ? PennyPalColors.white : PennyPalColors.surface,
                         borderRadius: BorderRadius.circular(22),
                         border: Border.all(
                           color: sel
-                              ? AppColors.primary
-                              : const Color(0xFFE2E8F0),
+                              ? PennyPalColors.white
+                              : PennyPalColors.border,
                         ),
                       ),
                       child: Text(
@@ -95,7 +97,7 @@ class _AdminDashboardScreenState
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: sel ? Colors.white : AppColors.muted,
+                          color: sel ? PennyPalColors.black : PennyPalColors.gray,
                         ),
                       ),
                     ),
@@ -110,10 +112,6 @@ class _AdminDashboardScreenState
     );
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Dashboard tab
-// ─────────────────────────────────────────────────────────────────────────────
 
 class _AdminHome extends StatelessWidget {
   const _AdminHome();
@@ -130,7 +128,7 @@ class _AdminHome extends StatelessWidget {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: AppColors.text,
+              color: PennyPalColors.white,
             ),
           ),
           const SizedBox(height: 14),
@@ -145,26 +143,22 @@ class _AdminHome extends StatelessWidget {
               _AdminStatCard(
                 value: '1,248',
                 label: 'Students',
-                icon: Icons.people_outline_rounded,
-                color: AppColors.primary,
+                icon: AppIcons.users,
               ),
               _AdminStatCard(
                 value: '842',
                 label: 'Active Users',
-                icon: Icons.person_rounded,
-                color: Color(0xFF7C3AED),
+                icon: AppIcons.user,
               ),
               _AdminStatCard(
                 value: '12,450',
                 label: 'Transactions',
-                icon: Icons.receipt_long_outlined,
-                color: Color(0xFF0D9488),
+                icon: AppIcons.fallback,
               ),
               _AdminStatCard(
                 value: '23',
                 label: 'Support Requests',
-                icon: Icons.support_agent_rounded,
-                color: AppColors.gold,
+                icon: AppIcons.support,
               ),
             ],
           ),
@@ -172,14 +166,14 @@ class _AdminHome extends StatelessWidget {
           const SectionHeader(title: 'Quick Actions'),
           const SizedBox(height: 12),
           _AdminQuickAction(
-            icon: Icons.bar_chart_rounded,
+            icon: AppIcons.chartBar,
             label: 'View Analytics',
             sub: 'Activity, categories, and trends',
             onTap: () {},
           ),
           const SizedBox(height: 10),
           _AdminQuickAction(
-            icon: Icons.notifications_active_outlined,
+            icon: AppIcons.notification,
             label: 'Send Notification',
             sub: 'Push a message to all students',
             onTap: () {},
@@ -195,22 +189,19 @@ class _AdminStatCard extends StatelessWidget {
     required this.value,
     required this.label,
     required this.icon,
-    required this.color,
   });
   final String value;
   final String label;
-  final IconData icon;
-  final Color color;
+  final List<List<dynamic>> icon;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: PennyPalColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: const Border.fromBorderSide(
-            BorderSide(color: Color(0xFFE2E8F0))),
+        border: Border.all(color: PennyPalColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,10 +211,10 @@ class _AdminStatCard extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
+              color: PennyPalColors.elevated,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: color, size: 18),
+            child: AppIcon(icon, color: PennyPalColors.white, size: 18),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,11 +223,11 @@ class _AdminStatCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.text,
+                    color: PennyPalColors.white,
                   )),
               Text(label,
                   style: const TextStyle(
-                      fontSize: 12, color: AppColors.muted)),
+                      fontSize: 12, color: PennyPalColors.gray)),
             ],
           ),
         ],
@@ -252,7 +243,7 @@ class _AdminQuickAction extends StatelessWidget {
     required this.sub,
     required this.onTap,
   });
-  final IconData icon;
+  final List<List<dynamic>> icon;
   final String label;
   final String sub;
   final VoidCallback onTap;
@@ -265,21 +256,20 @@ class _AdminQuickAction extends StatelessWidget {
         padding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: PennyPalColors.surface,
           borderRadius: BorderRadius.circular(14),
-          border: const Border.fromBorderSide(
-              BorderSide(color: Color(0xFFE2E8F0))),
+          border: Border.all(color: PennyPalColors.border),
         ),
         child: Row(children: [
           Container(
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.08),
+              color: PennyPalColors.elevated,
               borderRadius: BorderRadius.circular(10),
             ),
             child:
-                Icon(icon, color: AppColors.primary, size: 20),
+                AppIcon(icon, color: PennyPalColors.white, size: 20),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -290,24 +280,20 @@ class _AdminQuickAction extends StatelessWidget {
                     style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.text)),
+                        color: PennyPalColors.white)),
                 Text(sub,
                     style: const TextStyle(
-                        fontSize: 12, color: AppColors.muted)),
+                        fontSize: 12, color: PennyPalColors.gray)),
               ],
             ),
           ),
-          const Icon(Icons.chevron_right_rounded,
-              color: AppColors.muted),
+          const AppIcon(AppIcons.chevronRight,
+              color: PennyPalColors.muted),
         ]),
       ),
     );
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Users tab
-// ─────────────────────────────────────────────────────────────────────────────
 
 class _AdminUsers extends StatelessWidget {
   const _AdminUsers();
@@ -327,27 +313,28 @@ class _AdminUsers extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
           child: TextField(
+            style: const TextStyle(color: PennyPalColors.white),
             decoration: InputDecoration(
-              hintText: 'Search students…',
-              hintStyle: const TextStyle(color: AppColors.muted),
-              prefixIcon: const Icon(Icons.search_rounded,
-                  color: AppColors.muted, size: 20),
+              hintText: 'Search studentsâ€¦',
+              hintStyle: const TextStyle(color: PennyPalColors.muted),
+              prefixIcon: const AppIcon(AppIcons.search,
+                  color: PennyPalColors.muted, size: 20),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: PennyPalColors.surface,
               contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16, vertical: 13),
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide:
-                      const BorderSide(color: Color(0xFFE2E8F0))),
+                      const BorderSide(color: PennyPalColors.border)),
               enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide:
-                      const BorderSide(color: Color(0xFFE2E8F0))),
+                      const BorderSide(color: PennyPalColors.border)),
               focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: const BorderSide(
-                      color: AppColors.primary, width: 2)),
+                      color: PennyPalColors.white, width: 1.5)),
             ),
           ),
         ),
@@ -355,28 +342,26 @@ class _AdminUsers extends StatelessWidget {
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
             itemCount: _users.length,
-            separatorBuilder: (_, __) =>
+            separatorBuilder: (_, _) =>
                 const SizedBox(height: 8),
             itemBuilder: (_, i) {
               final u = _users[i];
               return Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: PennyPalColors.surface,
                   borderRadius: BorderRadius.circular(14),
-                  border: const Border.fromBorderSide(
-                      BorderSide(color: Color(0xFFE2E8F0))),
+                  border: Border.all(color: PennyPalColors.border),
                 ),
                 child: Row(children: [
                   CircleAvatar(
                     radius: 20,
-                    backgroundColor:
-                        AppColors.primary.withValues(alpha: 0.1),
+                    backgroundColor: PennyPalColors.elevated,
                     child: Text(
                       u.$1[0],
                       style: const TextStyle(
                           fontWeight: FontWeight.w800,
-                          color: AppColors.primary),
+                          color: PennyPalColors.white),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -388,10 +373,10 @@ class _AdminUsers extends StatelessWidget {
                             style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.text)),
+                                color: PennyPalColors.white)),
                         Text(u.$2,
                             style: const TextStyle(
-                                fontSize: 12, color: AppColors.muted)),
+                                fontSize: 12, color: PennyPalColors.gray)),
                       ],
                     ),
                   ),
@@ -399,10 +384,9 @@ class _AdminUsers extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: u.$3
-                          ? const Color(0xFFF0FDF4)
-                          : const Color(0xFFFFF1F2),
+                      color: PennyPalColors.card,
                       borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: PennyPalColors.border),
                     ),
                     child: Text(
                       u.$3 ? 'Active' : 'Suspended',
@@ -410,8 +394,8 @@ class _AdminUsers extends StatelessWidget {
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: u.$3
-                            ? const Color(0xFF16A34A)
-                            : const Color(0xFFDC2626),
+                            ? PennyPalColors.white
+                            : PennyPalColors.lightGray,
                       ),
                     ),
                   ),
@@ -425,18 +409,14 @@ class _AdminUsers extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Content tab
-// ─────────────────────────────────────────────────────────────────────────────
-
 class _AdminContent extends StatelessWidget {
   const _AdminContent();
 
   static const _content = [
-    ('📊', 'Budgeting 101', 'Published'),
-    ('💰', 'Saving Basics', 'Published'),
-    ('🛒', 'Needs vs Wants', 'Published'),
-    ('💼', 'Understanding Income', 'Draft'),
+    ('Budgeting 101', 'Published'),
+    ('Saving Basics', 'Published'),
+    ('Needs vs Wants', 'Published'),
+    ('Understanding Income', 'Draft'),
   ];
 
   @override
@@ -450,15 +430,15 @@ class _AdminContent extends StatelessWidget {
                 style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.text)),
+                    color: PennyPalColors.white)),
             const Spacer(),
             ElevatedButton.icon(
               onPressed: () {},
-              icon: const Icon(Icons.add_rounded, size: 16),
-              label: const Text('Add Content'),
+              icon: const AppIcon(AppIcons.add, size: 16, color: PennyPalColors.black),
+              label: const Text('Add Content', style: TextStyle(color: PennyPalColors.black)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                backgroundColor: PennyPalColors.white,
+                foregroundColor: PennyPalColors.black,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 8),
@@ -474,56 +454,53 @@ class _AdminContent extends StatelessWidget {
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
             itemCount: _content.length,
-            separatorBuilder: (_, __) =>
+            separatorBuilder: (_, _) =>
                 const SizedBox(height: 8),
             itemBuilder: (_, i) {
               final c = _content[i];
-              final published = c.$3 == 'Published';
+              final published = c.$2 == 'Published';
               return Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: PennyPalColors.surface,
                   borderRadius: BorderRadius.circular(14),
-                  border: const Border.fromBorderSide(
-                      BorderSide(color: Color(0xFFE2E8F0))),
+                  border: Border.all(color: PennyPalColors.border),
                 ),
                 child: Row(children: [
                   Container(
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.07),
+                      color: PennyPalColors.elevated,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Center(
-                        child: Text(c.$1,
-                            style: const TextStyle(fontSize: 22))),
+                    child: const Center(
+                        child: AppIcon(AppIcons.book, color: PennyPalColors.white, size: 20)),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(c.$2,
+                    child: Text(c.$1,
                         style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.text)),
+                            color: PennyPalColors.white)),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: published
-                          ? const Color(0xFFF0FDF4)
-                          : const Color(0xFFFFFBEB),
+                      color: PennyPalColors.card,
                       borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: PennyPalColors.border),
                     ),
                     child: Text(
-                      c.$3,
+                      c.$2,
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: published
-                            ? const Color(0xFF16A34A)
-                            : AppColors.gold,
+                            ? PennyPalColors.white
+                            : PennyPalColors.lightGray,
                       ),
                     ),
                   ),
@@ -536,10 +513,6 @@ class _AdminContent extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Support tab
-// ─────────────────────────────────────────────────────────────────────────────
 
 class _AdminSupport extends StatelessWidget {
   const _AdminSupport();
@@ -556,19 +529,17 @@ class _AdminSupport extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
       itemCount: _tickets.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (_, i) {
         final t = _tickets[i];
         final pending = t.$3 == 'Pending';
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: PennyPalColors.surface,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: pending
-                  ? AppColors.gold.withValues(alpha: 0.35)
-                  : const Color(0xFFE2E8F0),
+              color: PennyPalColors.border,
             ),
           ),
           child: Row(children: [
@@ -576,16 +547,14 @@ class _AdminSupport extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: pending
-                    ? const Color(0xFFFFFBEB)
-                    : const Color(0xFFF0FDF4),
+                color: PennyPalColors.elevated,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(
+              child: AppIcon(
                 pending
-                    ? Icons.pending_outlined
-                    : Icons.check_circle_outline_rounded,
-                color: pending ? AppColors.gold : AppColors.primary,
+                    ? AppIcons.fallback
+                    : AppIcons.check,
+                color: PennyPalColors.white,
                 size: 20,
               ),
             ),
@@ -598,10 +567,10 @@ class _AdminSupport extends StatelessWidget {
                       style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.text)),
+                          color: PennyPalColors.white)),
                   Text(t.$1,
                       style: const TextStyle(
-                          fontSize: 12, color: AppColors.muted)),
+                          fontSize: 12, color: PennyPalColors.gray)),
                 ],
               ),
             ),
@@ -609,17 +578,16 @@ class _AdminSupport extends StatelessWidget {
               padding:
                   const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: pending
-                    ? const Color(0xFFFFFBEB)
-                    : const Color(0xFFF0FDF4),
+                color: PennyPalColors.card,
                 borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: PennyPalColors.border),
               ),
               child: Text(
                 t.$3,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
-                  color: pending ? AppColors.gold : AppColors.primary,
+                  color: PennyPalColors.white,
                 ),
               ),
             ),

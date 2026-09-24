@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
@@ -21,7 +23,6 @@ class DashboardScreen extends ConsumerWidget {
       backgroundColor: PennyPalColors.black,
       body: CustomScrollView(
         slivers: [
-          // ── Status bar spacer ───────────────────────────────────
           const SliverToBoxAdapter(
             child: SafeArea(bottom: false, child: SizedBox.shrink()),
           ),
@@ -34,35 +35,30 @@ class DashboardScreen extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                // ── Balance card (Section 6) ──────────────────────
                 const _BalanceCard(),
                 const SizedBox(height: 24),
 
-                // ── Quick actions (Section 7) ─────────────────────
                 _QuickActions(context: context),
                 const SizedBox(height: 28),
 
-                // ── Budget (Section 10) ───────────────────────────
                 _SectionTitle(
                   title: 'Monthly Budget',
                   action: 'View all',
-                  onAction: () {},
+                  onAction: () => context.push('/budget'),
                 ),
                 const SizedBox(height: 12),
                 const _BudgetCard(),
                 const SizedBox(height: 28),
 
-                // ── Spending breakdown (Section 12) ───────────────
-                const _SectionTitle(title: 'Spending breakdown'),
+                const _SectionTitle(title: 'Spending Breakdown'),
                 const SizedBox(height: 12),
                 const _SpendingCard(),
                 const SizedBox(height: 28),
 
-                // ── Recent transactions (Section 9) ───────────────
                 _SectionTitle(
-                  title: 'Recent activity',
+                  title: 'Recent Activity',
                   action: 'See all',
-                  onAction: () {},
+                  onAction: () => context.push('/transactions'),
                 ),
                 const SizedBox(height: 12),
                 const _RecentActivity(),
@@ -106,25 +102,23 @@ class _DashHeader extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // ── Lottie ──────────────────────────────────────────
             Lottie.asset(
               lottiePath,
-              width: 58,
-              height: 58,
+              width: 54,
+              height: 54,
               fit: BoxFit.contain,
               repeat: true,
-              errorBuilder: (_, __, ___) =>
-                  const SizedBox(width: 58, height: 58),
+              errorBuilder: (_, _, _) =>
+                  const SizedBox(width: 54, height: 54),
             ),
             const SizedBox(width: 14),
 
-            // ── Text ─────────────────────────────────────────────
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '$greeting, 👋',
+                    greeting,
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -159,28 +153,30 @@ class _DashHeader extends StatelessWidget {
             ),
             const SizedBox(width: 10),
 
-            // ── Notification button ──────────────────────────────
             GestureDetector(
-              onTap: () => context.push('/notifications'),
+              onTap: () {
+                HapticFeedback.lightImpact();
+                context.push('/notifications');
+              },
               child: Container(
-                width: 42,
-                height: 42,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
                   color: PennyPalColors.elevated,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(13),
                   border: Border.all(color: PennyPalColors.border),
                 ),
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    const Icon(
-                      Icons.notifications_none_rounded,
+                    const AppIcon(
+                      AppIcons.notification,
                       size: 20,
                       color: PennyPalColors.white,
                     ),
                     Positioned(
-                      top: 10,
-                      right: 10,
+                      top: 11,
+                      right: 11,
                       child: Container(
                         width: 6,
                         height: 6,
@@ -202,7 +198,7 @@ class _DashHeader extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Balance card (Section 6)
+// Balance card
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _BalanceCard extends StatelessWidget {
@@ -221,7 +217,6 @@ class _BalanceCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Label + change badge
           Row(
             children: [
               const Text(
@@ -245,12 +240,12 @@ class _BalanceCard extends StatelessWidget {
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.arrow_upward_rounded,
+                    AppIcon(
+                      AppIcons.arrowUp,
                       size: 10,
                       color: PennyPalColors.white,
                     ),
-                    SizedBox(width: 3),
+                    SizedBox(width: 4),
                     Text(
                       '8.4% this month',
                       style: TextStyle(
@@ -266,9 +261,8 @@ class _BalanceCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
 
-          // Amount
           const Text(
-            '₦125,500',
+            '125,500.00',
             style: TextStyle(
               fontSize: 38,
               fontWeight: FontWeight.w800,
@@ -278,17 +272,15 @@ class _BalanceCard extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // Divider
           const Divider(color: PennyPalColors.border, height: 1),
           const SizedBox(height: 18),
 
-          // Income / Expenses
           const Row(
             children: [
               Expanded(
                 child: _BalanceStat(
                   label: 'Income',
-                  value: '₦180,000',
+                  value: '180,000',
                   up: true,
                 ),
               ),
@@ -303,7 +295,7 @@ class _BalanceCard extends StatelessWidget {
               Expanded(
                 child: _BalanceStat(
                   label: 'Expenses',
-                  value: '₦54,500',
+                  value: '54,500',
                   up: false,
                   alignRight: true,
                 ),
@@ -344,21 +336,21 @@ class _BalanceStat extends StatelessWidget {
             children: [
               if (!alignRight) ...[
                 Container(
-                  width: 18,
-                  height: 18,
+                  width: 20,
+                  height: 20,
                   decoration: const BoxDecoration(
                     color: PennyPalColors.elevated,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
-                    up
-                        ? Icons.arrow_downward_rounded
-                        : Icons.arrow_upward_rounded,
-                    size: 10,
-                    color: PennyPalColors.white,
+                  child: Center(
+                    child: AppIcon(
+                      up ? AppIcons.arrowDown : AppIcons.arrowUp,
+                      size: 11,
+                      color: PennyPalColors.white,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 8),
               ],
               Text(
                 label,
@@ -369,20 +361,20 @@ class _BalanceStat extends StatelessWidget {
                 ),
               ),
               if (alignRight) ...[
-                const SizedBox(width: 6),
+                const SizedBox(width: 8),
                 Container(
-                  width: 18,
-                  height: 18,
+                  width: 20,
+                  height: 20,
                   decoration: const BoxDecoration(
                     color: PennyPalColors.elevated,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
-                    up
-                        ? Icons.arrow_downward_rounded
-                        : Icons.arrow_upward_rounded,
-                    size: 10,
-                    color: PennyPalColors.white,
+                  child: Center(
+                    child: AppIcon(
+                      up ? AppIcons.arrowDown : AppIcons.arrowUp,
+                      size: 11,
+                      color: PennyPalColors.white,
+                    ),
                   ),
                 ),
               ],
@@ -404,7 +396,7 @@ class _BalanceStat extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Quick actions (Section 7) — large prominent icons inside gray containers
+// Quick actions — interactive spring touch with HugeIcons
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _QuickActions extends StatelessWidget {
@@ -414,56 +406,20 @@ class _QuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final actions = [
-      _Action('Add Income', Icons.add_rounded, () => context.push('/add-income')),
-      _Action('Add Expense', Icons.remove_rounded, () => context.push('/add-expense')),
-      _Action('Savings', Icons.flag_outlined, () {}),
-      _Action('Budget', Icons.donut_large_outlined, () {}),
+      _Action('Add Income', AppIcons.arrowDown, () => context.push('/add-income')),
+      _Action('Add Expense', AppIcons.arrowUp, () => context.push('/add-expense')),
+      _Action('Savings', AppIcons.piggyBank, () => context.push('/savings')),
+      _Action('Budget', AppIcons.chart, () => context.push('/budget')),
     ];
 
     return Row(
-      children: actions.map((a) {
+      children: actions.asMap().entries.map((e) {
+        final a = e.value;
+        final isLast = e.key == actions.length - 1;
         return Expanded(
           child: Padding(
-            padding: EdgeInsets.only(
-              right: a == actions.last ? 0 : 10,
-            ),
-            child: GestureDetector(
-              onTap: a.onTap,
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                decoration: BoxDecoration(
-                  color: PennyPalColors.elevated,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: PennyPalColors.border),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: PennyPalColors.card,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: PennyPalColors.border),
-                      ),
-                      child: Icon(a.icon, size: 24, color: PennyPalColors.white),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      a.label,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: PennyPalColors.white,
-                        height: 1.2,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            padding: EdgeInsets.only(right: isLast ? 0 : 10),
+            child: _InteractiveQuickActionTile(action: a),
           ),
         );
       }).toList(),
@@ -471,10 +427,76 @@ class _QuickActions extends StatelessWidget {
   }
 }
 
+class _InteractiveQuickActionTile extends StatefulWidget {
+  const _InteractiveQuickActionTile({required this.action});
+  final _Action action;
+
+  @override
+  State<_InteractiveQuickActionTile> createState() => _InteractiveQuickActionTileState();
+}
+
+class _InteractiveQuickActionTileState extends State<_InteractiveQuickActionTile> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) {
+        setState(() => _pressed = false);
+        HapticFeedback.lightImpact();
+        widget.action.onTap();
+      },
+      onTapCancel: () => setState(() => _pressed = false),
+      child: AnimatedScale(
+        scale: _pressed ? 0.92 : 1.0,
+        duration: const Duration(milliseconds: 140),
+        curve: Curves.easeOutCubic,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          decoration: BoxDecoration(
+            color: PennyPalColors.elevated,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: PennyPalColors.border),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: PennyPalColors.card,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: PennyPalColors.border),
+                ),
+                child: Center(
+                  child: AppIcon(widget.action.icon, size: 22, color: PennyPalColors.white),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                widget.action.label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: PennyPalColors.white,
+                  height: 1.2,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _Action {
   const _Action(this.label, this.icon, this.onTap);
   final String label;
-  final IconData icon;
+  final List<List<dynamic>> icon;
   final VoidCallback onTap;
 }
 
@@ -504,7 +526,10 @@ class _SectionTitle extends StatelessWidget {
         const Spacer(),
         if (action != null)
           GestureDetector(
-            onTap: onAction,
+            onTap: () {
+              HapticFeedback.selectionClick();
+              onAction?.call();
+            },
             child: Text(
               action!,
               style: const TextStyle(
@@ -520,7 +545,7 @@ class _SectionTitle extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Budget card (Section 10)
+// Budget card
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _BudgetCard extends StatelessWidget {
@@ -546,7 +571,7 @@ class _BudgetCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               const Text(
-                '₦72,500',
+                '72,500',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
@@ -558,7 +583,7 @@ class _BudgetCard extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.only(bottom: 2),
                 child: Text(
-                  'of ₦100,000',
+                  'of 100,000',
                   style: TextStyle(
                     fontSize: 13,
                     color: PennyPalColors.gray,
@@ -575,7 +600,7 @@ class _BudgetCard extends StatelessWidget {
                   border: Border.all(color: PennyPalColors.border),
                 ),
                 child: const Text(
-                  '₦27,500 left',
+                  '27,500 left',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -588,12 +613,19 @@ class _BudgetCard extends StatelessWidget {
           const SizedBox(height: 14),
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
-            child: LinearProgressIndicator(
-              value: ratio,
-              minHeight: 7,
-              backgroundColor: PennyPalColors.border,
-              valueColor:
-                  const AlwaysStoppedAnimation(PennyPalColors.white),
+            child: TweenAnimationBuilder<double>(
+              tween: Tween<double>(begin: 0.0, end: ratio),
+              duration: const Duration(milliseconds: 600),
+              curve: Curves.easeOutCubic,
+              builder: (context, animatedRatio, _) {
+                return LinearProgressIndicator(
+                  value: animatedRatio,
+                  minHeight: 7,
+                  backgroundColor: PennyPalColors.border,
+                  valueColor:
+                      const AlwaysStoppedAnimation(PennyPalColors.white),
+                );
+              },
             ),
           ),
           const SizedBox(height: 10),
@@ -608,18 +640,18 @@ class _BudgetCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Spending breakdown (Section 12) — monochrome bars
+// Spending breakdown — monochrome bars
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _SpendingCard extends StatelessWidget {
   const _SpendingCard();
 
   static const _items = [
-    _SpendItem('Food', 25000, 54500, PennyPalColors.white),
-    _SpendItem('Transport', 12500, 54500, PennyPalColors.offWhite),
-    _SpendItem('Education', 8000, 54500, PennyPalColors.lightGray),
-    _SpendItem('Entertainment', 5000, 54500, PennyPalColors.gray),
-    _SpendItem('Other', 4000, 54500, PennyPalColors.darkGray),
+    _SpendItem('Food', 25000, 54500, PennyPalColors.white, AppIcons.food),
+    _SpendItem('Transport', 12500, 54500, PennyPalColors.offWhite, AppIcons.transport),
+    _SpendItem('Education', 8000, 54500, PennyPalColors.lightGray, AppIcons.education),
+    _SpendItem('Entertainment', 5000, 54500, PennyPalColors.gray, AppIcons.entertainment),
+    _SpendItem('Other', 4000, 54500, PennyPalColors.darkGray, AppIcons.wallet),
   ];
 
   @override
@@ -646,21 +678,22 @@ class _SpendingCard extends StatelessWidget {
 }
 
 class _SpendItem {
-  const _SpendItem(this.category, this.amount, this.total, this.color);
+  const _SpendItem(this.category, this.amount, this.total, this.color, this.icon);
   final String category;
   final double amount;
   final double total;
   final Color color;
+  final List<List<dynamic>> icon;
 }
 
 class _SpendRow extends StatelessWidget {
   const _SpendRow({required this.item});
   final _SpendItem item;
 
-  String _fmt(double v) => '₦${v.toStringAsFixed(0).replaceAllMapped(
+  String _fmt(double v) => v.toStringAsFixed(0).replaceAllMapped(
         RegExp(r'(\d)(?=(\d{3})+$)'),
         (m) => '${m[1]},',
-      )}';
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -671,14 +704,18 @@ class _SpendRow extends StatelessWidget {
         Row(
           children: [
             Container(
-              width: 8,
-              height: 8,
+              width: 24,
+              height: 24,
               decoration: BoxDecoration(
-                color: item.color,
-                shape: BoxShape.circle,
+                color: PennyPalColors.elevated,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: PennyPalColors.border),
+              ),
+              child: Center(
+                child: AppIcon(item.icon, size: 13, color: item.color),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
                 item.category,
@@ -715,19 +752,16 @@ class _SpendRow extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Recent activity (Section 9) — monochrome icons & + / - distinction
+// Recent activity
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _RecentActivity extends StatelessWidget {
   const _RecentActivity();
 
   static const _items = [
-    _TxItem('Lunch', 'Food', 'Today', '₦3,500', false,
-        Icons.restaurant_outlined),
-    _TxItem('Transport', 'Transport', 'Today', '₦1,200', false,
-        Icons.directions_bus_outlined),
-    _TxItem('Freelance payment', 'Income', 'Yesterday', '₦50,000', true,
-        Icons.work_outline_rounded),
+    _TxItem('Lunch', 'Food', 'Today', '3,500', false, AppIcons.food),
+    _TxItem('Transport', 'Transport', 'Today', '1,200', false, AppIcons.transport),
+    _TxItem('Freelance payment', 'Income', 'Yesterday', '50,000', true, AppIcons.freelance),
   ];
 
   @override
@@ -767,67 +801,84 @@ class _TxItem {
   final String date;
   final String amount;
   final bool isIncome;
-  final IconData icon;
+  final List<List<dynamic>> icon;
 }
 
-class _TxRow extends StatelessWidget {
+class _TxRow extends StatefulWidget {
   const _TxRow({required this.item});
   final _TxItem item;
 
   @override
+  State<_TxRow> createState() => _TxRowState();
+}
+
+class _TxRowState extends State<_TxRow> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Row(
-        children: [
-          // Icon container
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: PennyPalColors.elevated,
-              borderRadius: BorderRadius.circular(11),
-              border: Border.all(color: PennyPalColors.border),
-            ),
-            child: Icon(item.icon, size: 18, color: PennyPalColors.white),
-          ),
-          const SizedBox(width: 12),
-
-          // Title + category·date
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: PennyPalColors.white,
-                  ),
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) => setState(() => _pressed = false),
+      onTapCancel: () => setState(() => _pressed = false),
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedScale(
+        scale: _pressed ? 0.98 : 1.0,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOutCubic,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: PennyPalColors.elevated,
+                  borderRadius: BorderRadius.circular(11),
+                  border: Border.all(color: PennyPalColors.border),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  '${item.category}  ·  ${item.date}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: PennyPalColors.gray,
-                  ),
+                child: Center(
+                  child: AppIcon(widget.item.icon, size: 18, color: PennyPalColors.white),
                 ),
-              ],
-            ),
-          ),
+              ),
+              const SizedBox(width: 12),
 
-          // Amount
-          Text(
-            '${item.isIncome ? '+' : '-'}${item.amount}',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: PennyPalColors.white,
-            ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.item.title,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: PennyPalColors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${widget.item.category}  ·  ${widget.item.date}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: PennyPalColors.gray,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              Text(
+                '${widget.item.isIncome ? '+ ' : '- '}${widget.item.amount}',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: PennyPalColors.white,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_providers.dart';
@@ -18,7 +19,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   void initState() {
     super.initState();
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     _fade = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
@@ -37,7 +38,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       body: SafeArea(
         child: FadeTransition(
           opacity: _fade,
@@ -47,17 +48,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               children: [
                 const Spacer(),
 
-                // ── Brand mark ────────────────────────────────────
+                // â”€â”€ Brand mark â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 Container(
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
-                    color: AppColors.primary,
+                    color: PennyPalColors.elevated,
                     borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: PennyPalColors.border),
                   ),
-                  child: const Icon(
-                    Icons.savings_rounded,
-                    color: Colors.white,
+                  child: const AppIcon(
+                    AppIcons.wallet,
+                    color: PennyPalColors.white,
                     size: 34,
                   ),
                 ),
@@ -68,20 +70,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     fontSize: 30,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.5,
-                    color: AppColors.text,
+                    color: PennyPalColors.white,
                   ),
                 ),
 
                 const SizedBox(height: 48),
 
-                // ── Lottie animation ──────────────────────────────
-                // TODO: replace with:
-                // Lottie.asset('assets/animations/splash.json',
-                //   width: 260, height: 260, fit: BoxFit.contain)
+                // â”€â”€ Lottie animation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 const LottiePlaceholder(
                   width: 260,
                   height: 260,
                   label: 'splash.json',
+                  tint: PennyPalColors.white,
                 ),
 
                 const SizedBox(height: 40),
@@ -92,7 +92,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     letterSpacing: -0.2,
-                    color: AppColors.text,
+                    color: PennyPalColors.white,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -100,19 +100,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   'Smart money management for student life.',
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.muted,
+                    color: PennyPalColors.gray,
                   ),
                 ),
 
                 const Spacer(),
 
-                // ── Loading indicator ─────────────────────────────
-                SizedBox(
+                // â”€â”€ Loading indicator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                const SizedBox(
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: AppColors.primary.withValues(alpha: 0.5),
+                    color: PennyPalColors.white,
                   ),
                 ),
                 const SizedBox(height: 40),

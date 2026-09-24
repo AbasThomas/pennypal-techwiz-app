@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -53,13 +54,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: PennyPalColors.black,
       body: Column(
         children: [
-          // ── Top panel — green header with lottie ─────────────────
+          // Top panel â€” brand header with lottie
           _TopPanel(),
 
-          // ── Form panel ───────────────────────────────────────────
+          // Form panel
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(28, 32, 28, 24),
@@ -77,7 +78,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             fontSize: 26,
                             fontWeight: FontWeight.w800,
                             letterSpacing: -0.6,
-                            color: AppColors.text,
+                            color: PennyPalColors.white,
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -85,27 +86,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           'Enter your credentials to continue.',
                           style: TextStyle(
                             fontSize: 14,
-                            color: AppColors.muted,
+                            color: PennyPalColors.gray,
                             height: 1.4,
                           ),
                         ),
                         const SizedBox(height: 28),
 
-                        // ── Email ─────────────────────────────────
+                        // Email
                         _AuthField(
                           controller: _email,
                           focusNode: _emailFocus,
                           label: 'Email address',
                           hint: 'you@example.com',
                           keyboardType: TextInputType.emailAddress,
-                          prefixIcon: Icons.alternate_email_rounded,
+                          prefixIcon: AppIcons.mail,
                           validator: Validators.email,
                           onFieldSubmitted: (_) => FocusScope.of(context)
                               .requestFocus(_passwordFocus),
                         ),
                         const SizedBox(height: 16),
 
-                        // ── Password ──────────────────────────────
+                        // Password
                         _AuthPasswordField(
                           controller: _password,
                           focusNode: _passwordFocus,
@@ -116,13 +117,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           onFieldSubmitted: (_) => _submit(),
                         ),
 
-                        // ── Forgot password ───────────────────────
+                        // Forgot password
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () => context.go('/forgot-password'),
                             style: TextButton.styleFrom(
-                              foregroundColor: AppColors.primary,
+                              foregroundColor: PennyPalColors.white,
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 0, vertical: 10),
                               minimumSize: Size.zero,
@@ -134,13 +135,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
+                                color: PennyPalColors.white,
                               ),
                             ),
                           ),
                         ),
                         const SizedBox(height: 20),
 
-                        // ── Sign in button ────────────────────────
+                        // Sign in button
                         _PrimaryButton(
                           label: 'Sign In',
                           loading: loading,
@@ -148,34 +150,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         const SizedBox(height: 32),
 
-                        // ── Divider ───────────────────────────────
+                        // Divider
                         const _OrDivider(),
                         const SizedBox(height: 24),
 
-                        // ── Create account ────────────────────────
+                        // Create account
                         _SecondaryButton(
                           label: 'Create an account',
                           onPressed: () => context.go('/register'),
                         ),
                         const SizedBox(height: 28),
 
-                        // ── Trust note ────────────────────────────
-                        Center(
+                        // Trust note
+                        const Center(
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
-                                Icons.lock_outline_rounded,
+                              AppIcon(
+                                AppIcons.lock,
                                 size: 13,
-                                color: AppColors.muted.withValues(alpha: 0.6),
+                                color: PennyPalColors.muted,
                               ),
-                              const SizedBox(width: 6),
+                              SizedBox(width: 6),
                               Text(
                                 'Secured with end-to-end encryption.',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color:
-                                      AppColors.muted.withValues(alpha: 0.6),
+                                  color: PennyPalColors.muted,
                                 ),
                               ),
                             ],
@@ -194,16 +195,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Top panel — green brand header + lottie zone
-// ─────────────────────────────────────────────────────────────────────────────
-
 class _TopPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      color: AppColors.primaryDark,
+      color: PennyPalColors.nearBlack,
       child: SafeArea(
         bottom: false,
         child: Padding(
@@ -218,12 +215,13 @@ class _TopPanel extends StatelessWidget {
                     width: 34,
                     height: 34,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
+                      color: PennyPalColors.elevated,
                       borderRadius: BorderRadius.circular(9),
+                      border: Border.all(color: PennyPalColors.border),
                     ),
-                    child: const Icon(
-                      Icons.savings_rounded,
-                      color: Colors.white,
+                    child: const AppIcon(
+                      AppIcons.wallet,
+                      color: PennyPalColors.white,
                       size: 19,
                     ),
                   ),
@@ -231,7 +229,7 @@ class _TopPanel extends StatelessWidget {
                   const Text(
                     'PennyPal',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: PennyPalColors.white,
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.2,
@@ -242,12 +240,10 @@ class _TopPanel extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Lottie zone
-              // TODO: replace with Lottie.asset('assets/animations/login.json',
-              //   height: 160, fit: BoxFit.contain)
-              LottiePlaceholder(
+              const LottiePlaceholder(
                 height: 160,
                 label: 'login.json',
-                tint: Colors.white,
+                tint: PennyPalColors.white,
               ),
             ],
           ),
@@ -256,10 +252,6 @@ class _TopPanel extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared form components — used by login & register
-// ─────────────────────────────────────────────────────────────────────────────
 
 class _AuthField extends StatelessWidget {
   const _AuthField({
@@ -270,15 +262,14 @@ class _AuthField extends StatelessWidget {
     this.focusNode,
     this.keyboardType,
     this.validator,
-    this.textInputAction = TextInputAction.next,
     this.onFieldSubmitted,
-  });
+  }) : textInputAction = TextInputAction.next;
 
   final TextEditingController controller;
   final FocusNode? focusNode;
   final String label;
   final String hint;
-  final IconData prefixIcon;
+  final List<List<dynamic>> prefixIcon;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
   final TextInputAction textInputAction;
@@ -294,7 +285,7 @@ class _AuthField extends StatelessWidget {
           style: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: AppColors.text,
+            color: PennyPalColors.gray,
             letterSpacing: 0.1,
           ),
         ),
@@ -306,40 +297,40 @@ class _AuthField extends StatelessWidget {
           textInputAction: textInputAction,
           onFieldSubmitted: onFieldSubmitted,
           validator: validator,
-          style: const TextStyle(fontSize: 15, color: AppColors.text),
+          style: const TextStyle(fontSize: 15, color: PennyPalColors.white),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(
-              color: AppColors.muted.withValues(alpha: 0.5),
+            hintStyle: const TextStyle(
+              color: PennyPalColors.muted,
               fontSize: 14,
             ),
-            prefixIcon: Icon(prefixIcon, size: 18, color: AppColors.muted),
+            prefixIcon: AppIcon(prefixIcon, size: 18, color: PennyPalColors.muted),
             filled: true,
-            fillColor: const Color(0xFFF8FAFC),
+            fillColor: PennyPalColors.surface,
             contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16, vertical: 15),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              borderSide: const BorderSide(color: PennyPalColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              borderSide: const BorderSide(color: PennyPalColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide:
-                  const BorderSide(color: AppColors.primary, width: 2),
+                  const BorderSide(color: PennyPalColors.white, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide:
-                  const BorderSide(color: AppColors.error, width: 1.5),
+                  const BorderSide(color: PennyPalColors.lightGray, width: 1.5),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide:
-                  const BorderSide(color: AppColors.error, width: 2),
+                  const BorderSide(color: PennyPalColors.white, width: 2),
             ),
           ),
         ),
@@ -384,7 +375,7 @@ class _AuthPasswordFieldState extends State<_AuthPasswordField> {
           style: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: AppColors.text,
+            color: PennyPalColors.gray,
             letterSpacing: 0.1,
           ),
         ),
@@ -396,51 +387,51 @@ class _AuthPasswordFieldState extends State<_AuthPasswordField> {
           validator: widget.validator,
           textInputAction: widget.textInputAction,
           onFieldSubmitted: widget.onFieldSubmitted,
-          style: const TextStyle(fontSize: 15, color: AppColors.text),
+          style: const TextStyle(fontSize: 15, color: PennyPalColors.white),
           decoration: InputDecoration(
             hintText: widget.hint,
-            hintStyle: TextStyle(
-              color: AppColors.muted.withValues(alpha: 0.5),
+            hintStyle: const TextStyle(
+              color: PennyPalColors.muted,
               fontSize: 14,
             ),
-            prefixIcon: const Icon(Icons.lock_outline_rounded,
-                size: 18, color: AppColors.muted),
+            prefixIcon: const AppIcon(AppIcons.lock,
+                size: 18, color: PennyPalColors.muted),
             suffixIcon: IconButton(
               onPressed: () => setState(() => _obscure = !_obscure),
-              icon: Icon(
+              icon: AppIcon(
                 _obscure
-                    ? Icons.visibility_outlined
-                    : Icons.visibility_off_outlined,
+                    ? AppIcons.view
+                    : AppIcons.viewOff,
                 size: 18,
-                color: AppColors.muted,
+                color: PennyPalColors.muted,
               ),
             ),
             filled: true,
-            fillColor: const Color(0xFFF8FAFC),
+            fillColor: PennyPalColors.surface,
             contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16, vertical: 15),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              borderSide: const BorderSide(color: PennyPalColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              borderSide: const BorderSide(color: PennyPalColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide:
-                  const BorderSide(color: AppColors.primary, width: 2),
+                  const BorderSide(color: PennyPalColors.white, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide:
-                  const BorderSide(color: AppColors.error, width: 1.5),
+                  const BorderSide(color: PennyPalColors.lightGray, width: 1.5),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide:
-                  const BorderSide(color: AppColors.error, width: 2),
+                  const BorderSide(color: PennyPalColors.white, width: 2),
             ),
           ),
         ),
@@ -468,9 +459,9 @@ class _PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: loading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.5),
+          backgroundColor: PennyPalColors.white,
+          foregroundColor: PennyPalColors.black,
+          disabledBackgroundColor: PennyPalColors.lightGray,
           elevation: 0,
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
@@ -483,7 +474,7 @@ class _PrimaryButton extends StatelessWidget {
                 height: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  color: Colors.white,
+                  color: PennyPalColors.black,
                 ),
               )
             : Text(
@@ -492,6 +483,7 @@ class _PrimaryButton extends StatelessWidget {
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.2,
+                  color: PennyPalColors.black,
                 ),
               ),
       ),
@@ -516,8 +508,9 @@ class _SecondaryButton extends StatelessWidget {
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.text,
-          side: const BorderSide(color: Color(0xFFCBD5E1), width: 1.5),
+          backgroundColor: PennyPalColors.card,
+          foregroundColor: PennyPalColors.white,
+          side: const BorderSide(color: PennyPalColors.border, width: 1.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -527,6 +520,7 @@ class _SecondaryButton extends StatelessWidget {
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
+            color: PennyPalColors.white,
           ),
         ),
       ),
@@ -539,24 +533,24 @@ class _OrDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return const Row(
       children: [
-        const Expanded(
-          child: Divider(color: Color(0xFFE2E8F0), thickness: 1),
+        Expanded(
+          child: Divider(color: PennyPalColors.mutedBorder, thickness: 1),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             'or',
             style: TextStyle(
               fontSize: 13,
-              color: AppColors.muted.withValues(alpha: 0.7),
+              color: PennyPalColors.muted,
               fontWeight: FontWeight.w500,
             ),
           ),
         ),
-        const Expanded(
-          child: Divider(color: Color(0xFFE2E8F0), thickness: 1),
+        Expanded(
+          child: Divider(color: PennyPalColors.mutedBorder, thickness: 1),
         ),
       ],
     );

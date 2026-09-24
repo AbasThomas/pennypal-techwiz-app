@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/theme/app_theme.dart';
 import '../../features/admin/presentation/admin_dashboard_screen.dart';
 import '../../features/auth/presentation/controllers/auth_controller.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
@@ -27,7 +28,7 @@ import '../../features/onboarding/presentation/onboarding_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final notifier = _RouterRefreshNotifier();
-  ref.listen<AuthState>(authControllerProvider, (_, __) => notifier.refresh());
+  ref.listen<AuthState>(authControllerProvider, (_, _) => notifier.refresh());
   ref.onDispose(notifier.dispose);
 
   return GoRouter(
@@ -87,53 +88,53 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     },
     routes: [
       // ── Pre-auth ─────────────────────────────────────────────────
-      GoRoute(path: '/splash', builder: (_, __) => const SplashScreen()),
+      GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
       GoRoute(
           path: '/onboarding',
-          builder: (_, __) => const OnboardingScreen()),
-      GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
+          builder: (_, _) => const OnboardingScreen()),
+      GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(
-          path: '/register', builder: (_, __) => const RegisterScreen()),
+          path: '/register', builder: (_, _) => const RegisterScreen()),
       GoRoute(
           path: '/forgot-password',
-          builder: (_, __) => const ForgotPasswordScreen()),
+          builder: (_, _) => const ForgotPasswordScreen()),
       GoRoute(
           path: '/reset-password',
-          builder: (_, __) => const ResetPasswordScreen()),
+          builder: (_, _) => const ResetPasswordScreen()),
       GoRoute(
           path: '/verify-email',
-          builder: (_, __) => const VerifyEmailScreen()),
+          builder: (_, _) => const VerifyEmailScreen()),
 
       // ── Main shell ───────────────────────────────────────────────
-      GoRoute(path: '/home', builder: (_, __) => const PennyPalShell()),
+      GoRoute(path: '/home', builder: (_, _) => const PennyPalShell()),
 
       // ── Transaction flows ────────────────────────────────────────
       GoRoute(
           path: '/add-expense',
-          builder: (_, __) => const AddExpenseScreen()),
+          builder: (_, _) => const AddExpenseScreen()),
       GoRoute(
           path: '/add-income',
-          builder: (_, __) => const AddIncomeScreen()),
+          builder: (_, _) => const AddIncomeScreen()),
       GoRoute(
           path: '/transaction-detail',
-          builder: (_, __) => const _TransactionDetailPlaceholder()),
+          builder: (_, _) => const _TransactionDetailPlaceholder()),
 
       // ── More screens ─────────────────────────────────────────────
       GoRoute(
-          path: '/reports', builder: (_, __) => const ReportsScreen()),
+          path: '/reports', builder: (_, _) => const ReportsScreen()),
       GoRoute(
           path: '/ai-assistant',
-          builder: (_, __) => const AiAssistantScreen()),
+          builder: (_, _) => const AiAssistantScreen()),
       GoRoute(
           path: '/notifications',
-          builder: (_, __) => const NotificationsScreen()),
+          builder: (_, _) => const NotificationsScreen()),
       GoRoute(
-          path: '/profile', builder: (_, __) => const ProfileScreen()),
+          path: '/profile', builder: (_, _) => const ProfileScreen()),
       GoRoute(
-          path: '/feedback', builder: (_, __) => const FeedbackScreen()),
+          path: '/feedback', builder: (_, _) => const FeedbackScreen()),
       GoRoute(
-          path: '/support', builder: (_, __) => const SupportScreen()),
-      GoRoute(path: '/about', builder: (_, __) => const AboutScreen()),
+          path: '/support', builder: (_, _) => const SupportScreen()),
+      GoRoute(path: '/about', builder: (_, _) => const AboutScreen()),
 
       // ── Learning ─────────────────────────────────────────────────
       GoRoute(
@@ -145,7 +146,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // ── Admin ────────────────────────────────────────────────────
       GoRoute(
           path: '/admin',
-          builder: (_, __) => const AdminDashboardScreen()),
+          builder: (_, _) => const AdminDashboardScreen()),
     ],
   );
 });
@@ -156,14 +157,19 @@ class _TransactionDetailPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: PennyPalColors.black,
       appBar: AppBar(
-        title: const Text('Transaction Detail'),
-        backgroundColor: Colors.white,
+        title: const Text('Transaction Detail',
+            style: TextStyle(color: PennyPalColors.white, fontWeight: FontWeight.w700)),
+        backgroundColor: PennyPalColors.black,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
+        iconTheme: const IconThemeData(color: PennyPalColors.white),
       ),
-      body: const Center(child: Text('Transaction detail coming soon.')),
+      body: const Center(
+        child: Text('Transaction detail coming soon.',
+            style: TextStyle(color: PennyPalColors.gray)),
+      ),
     );
   }
 }

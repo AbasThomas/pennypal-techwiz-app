@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class SupportScreen extends StatefulWidget {
@@ -22,17 +23,17 @@ class _SupportScreenState extends State<SupportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: PennyPalColors.black,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         title: const Text('Contact Support',
             style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: AppColors.text)),
-        iconTheme: const IconThemeData(color: AppColors.text),
+                color: PennyPalColors.white)),
+        iconTheme: const IconThemeData(color: PennyPalColors.white),
       ),
       body: _sent ? _SentView() : _FormView(
         subject: _subject,
@@ -56,26 +57,25 @@ class _SentView extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: const Color(0xFFF0FDF4),
+                color: PennyPalColors.elevated,
                 shape: BoxShape.circle,
-                border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.25)),
+                border: Border.all(color: PennyPalColors.border),
               ),
-              child: const Icon(Icons.check_rounded,
-                  color: AppColors.primary, size: 40),
+              child: const AppIcon(AppIcons.check,
+                  color: PennyPalColors.white, size: 40),
             ),
             const SizedBox(height: 20),
             const Text('Message Sent',
                 style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.text)),
+                    color: PennyPalColors.white)),
             const SizedBox(height: 10),
             const Text(
               'Our support team will review your\nrequest and get back to you.',
               textAlign: TextAlign.center,
               style:
-                  TextStyle(fontSize: 14, color: AppColors.muted, height: 1.5),
+                  TextStyle(fontSize: 14, color: PennyPalColors.gray, height: 1.5),
             ),
           ],
         ),
@@ -104,12 +104,13 @@ class _FormView extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.07),
+              color: PennyPalColors.surface,
               borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: PennyPalColors.border),
             ),
             child: const Row(children: [
-              Icon(Icons.support_agent_rounded,
-                  color: AppColors.primary, size: 22),
+              AppIcon(AppIcons.support,
+                  color: PennyPalColors.white, size: 22),
               SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -117,7 +118,7 @@ class _FormView extends StatelessWidget {
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.primary),
+                      color: PennyPalColors.white),
                 ),
               ),
             ]),
@@ -134,22 +135,24 @@ class _FormView extends StatelessWidget {
           TextField(
             controller: message,
             maxLines: 6,
+            style: const TextStyle(color: PennyPalColors.white),
             decoration: InputDecoration(
-              hintText: 'Describe your issue in detail…',
+              hintText: 'Describe your issue in detailâ€¦',
+              hintStyle: const TextStyle(color: PennyPalColors.muted),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: PennyPalColors.surface,
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide:
-                      const BorderSide(color: Color(0xFFE2E8F0))),
+                      const BorderSide(color: PennyPalColors.border)),
               enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide:
-                      const BorderSide(color: Color(0xFFE2E8F0))),
+                      const BorderSide(color: PennyPalColors.border)),
               focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: const BorderSide(
-                      color: AppColors.primary, width: 2)),
+                      color: PennyPalColors.white, width: 1.5)),
             ),
           ),
           const SizedBox(height: 28),
@@ -160,15 +163,17 @@ class _FormView extends StatelessWidget {
             child: ElevatedButton(
               onPressed: onSend,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                backgroundColor: PennyPalColors.white,
+                foregroundColor: PennyPalColors.black,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14)),
               ),
               child: const Text('Send Message',
                   style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w700)),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: PennyPalColors.black)),
             ),
           ),
         ],
@@ -180,27 +185,29 @@ class _FormView extends StatelessWidget {
       style: const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          color: AppColors.muted));
+          color: PennyPalColors.gray));
 
   Widget _field(
           {required TextEditingController controller,
           required String hint}) =>
       TextField(
         controller: controller,
+        style: const TextStyle(color: PennyPalColors.white),
         decoration: InputDecoration(
           hintText: hint,
+          hintStyle: const TextStyle(color: PennyPalColors.muted),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: PennyPalColors.surface,
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+              borderSide: const BorderSide(color: PennyPalColors.border)),
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+              borderSide: const BorderSide(color: PennyPalColors.border)),
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide:
-                  const BorderSide(color: AppColors.primary, width: 2)),
+                  const BorderSide(color: PennyPalColors.white, width: 1.5)),
         ),
       );
 }

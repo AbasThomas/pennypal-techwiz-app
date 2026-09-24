@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/lottie_placeholder.dart';
 
@@ -31,17 +32,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: PennyPalColors.black,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         title: const Text('Give Feedback',
             style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: AppColors.text)),
-        iconTheme: const IconThemeData(color: AppColors.text),
+                color: PennyPalColors.white)),
+        iconTheme: const IconThemeData(color: PennyPalColors.white),
       ),
       body: _submitted ? _SuccessView() : _FormView(
         name: _name,
@@ -58,29 +59,28 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 class _SuccessView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // TODO: Lottie.asset('assets/animations/feedback_success.json', height: 200)
-            const LottiePlaceholder(
+            LottiePlaceholder(
               height: 200,
               label: 'feedback_success.json',
-              tint: AppColors.primary,
+              tint: PennyPalColors.white,
             ),
-            const SizedBox(height: 24),
-            const Text('Thank you! 💚',
+            SizedBox(height: 24),
+            Text('Thank you!',
                 style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.text)),
-            const SizedBox(height: 10),
-            const Text(
+                    color: PennyPalColors.white)),
+            SizedBox(height: 10),
+            Text(
               'Thanks for helping us improve PennyPal!',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 15, color: AppColors.muted),
+              style: TextStyle(fontSize: 15, color: PennyPalColors.gray),
             ),
           ],
         ),
@@ -118,12 +118,12 @@ class _FormView extends StatelessWidget {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: AppColors.text,
+              color: PennyPalColors.white,
             ),
           ),
           const SizedBox(height: 20),
 
-          // ── Star rating ──────────────────────────────────────
+          // â”€â”€ Star rating â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Row(
             children: List.generate(5, (i) {
               final filled = i < rating;
@@ -131,10 +131,10 @@ class _FormView extends StatelessWidget {
                 onTap: () => onRating(i + 1),
                 child: Padding(
                   padding: const EdgeInsets.only(right: 8),
-                  child: Icon(
-                    filled ? Icons.star_rounded : Icons.star_border_rounded,
+                  child: AppIcon(
+                    filled ? AppIcons.star : AppIcons.starOff,
                     size: 38,
-                    color: filled ? AppColors.gold : const Color(0xFFCBD5E1),
+                    color: filled ? PennyPalColors.white : PennyPalColors.border,
                   ),
                 ),
               );
@@ -160,22 +160,24 @@ class _FormView extends StatelessWidget {
           TextField(
             controller: comments,
             maxLines: 5,
+            style: const TextStyle(color: PennyPalColors.white),
             decoration: InputDecoration(
-              hintText: 'Tell us what you think…',
+              hintText: 'Tell us what you thinkâ€¦',
+              hintStyle: const TextStyle(color: PennyPalColors.muted),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: PennyPalColors.surface,
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide:
-                      const BorderSide(color: Color(0xFFE2E8F0))),
+                      const BorderSide(color: PennyPalColors.border)),
               enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide:
-                      const BorderSide(color: Color(0xFFE2E8F0))),
+                      const BorderSide(color: PennyPalColors.border)),
               focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: const BorderSide(
-                      color: AppColors.primary, width: 2)),
+                      color: PennyPalColors.white, width: 1.5)),
             ),
           ),
           const SizedBox(height: 28),
@@ -186,15 +188,17 @@ class _FormView extends StatelessWidget {
             child: ElevatedButton(
               onPressed: onSubmit,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                backgroundColor: PennyPalColors.white,
+                foregroundColor: PennyPalColors.black,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14)),
               ),
               child: const Text('Submit Feedback',
                   style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w700)),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: PennyPalColors.black)),
             ),
           ),
         ],
@@ -206,7 +210,7 @@ class _FormView extends StatelessWidget {
       style: const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          color: AppColors.muted));
+          color: PennyPalColors.gray));
 
   Widget _field({
     required TextEditingController controller,
@@ -216,20 +220,22 @@ class _FormView extends StatelessWidget {
       TextField(
         controller: controller,
         keyboardType: type,
+        style: const TextStyle(color: PennyPalColors.white),
         decoration: InputDecoration(
           hintText: hint,
+          hintStyle: const TextStyle(color: PennyPalColors.muted),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: PennyPalColors.surface,
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+              borderSide: const BorderSide(color: PennyPalColors.border)),
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+              borderSide: const BorderSide(color: PennyPalColors.border)),
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide:
-                  const BorderSide(color: AppColors.primary, width: 2)),
+                  const BorderSide(color: PennyPalColors.white, width: 1.5)),
         ),
       );
 }

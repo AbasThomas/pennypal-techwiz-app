@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/errors/api_error_handler.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../shared/widgets/app_widgets.dart';
+import '../../../../shared/widgets/lottie_placeholder.dart';
 import '../../providers/auth_providers.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
@@ -52,7 +54,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   }
 }
 
-// ── Success state ─────────────────────────────────────────────────────────────
+// â”€â”€ Success state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _SentState extends StatelessWidget {
   @override
@@ -65,17 +67,17 @@ class _SentState extends StatelessWidget {
             width: 72,
             height: 72,
             decoration: BoxDecoration(
-              color: const Color(0xFFF0FDF4),
+              color: PennyPalColors.elevated,
               shape: BoxShape.circle,
               border: Border.all(
-                color: AppColors.primary.withValues(alpha: 0.25),
+                color: PennyPalColors.border,
                 width: 1.5,
               ),
             ),
-            child: const Icon(
-              Icons.mark_email_read_outlined,
+            child: const AppIcon(
+              AppIcons.mail,
               size: 32,
-              color: AppColors.primary,
+              color: PennyPalColors.white,
             ),
           ),
           const SizedBox(height: 20),
@@ -84,7 +86,7 @@ class _SentState extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              color: AppColors.text,
+              color: PennyPalColors.white,
             ),
           ),
           const SizedBox(height: 8),
@@ -93,7 +95,7 @@ class _SentState extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
-              color: AppColors.muted,
+              color: PennyPalColors.gray,
               height: 1.5,
             ),
           ),
@@ -103,7 +105,7 @@ class _SentState extends StatelessWidget {
   }
 }
 
-// ── Form state ────────────────────────────────────────────────────────────────
+// â”€â”€ Form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _FormState extends StatelessWidget {
   const _FormState({
@@ -125,37 +127,10 @@ class _FormState extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Lottie placeholder ──────────────────────────────────
-          // TODO: replace with Lottie.asset('assets/animations/forgot_password.json')
-          Container(
-            width: double.infinity,
+          const LottiePlaceholder(
             height: 160,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF0FDF4),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: AppColors.primary.withValues(alpha: 0.25),
-                width: 1.5,
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.play_circle_outline_rounded,
-                  size: 36,
-                  color: AppColors.primary.withValues(alpha: 0.45),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Lottie animation',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.primary.withValues(alpha: 0.55),
-                  ),
-                ),
-              ],
-            ),
+            label: 'forgot_password.json',
+            tint: PennyPalColors.white,
           ),
 
           const SizedBox(height: 28),
@@ -166,7 +141,7 @@ class _FormState extends StatelessWidget {
               fontSize: 22,
               fontWeight: FontWeight.w700,
               letterSpacing: -0.3,
-              color: AppColors.text,
+              color: PennyPalColors.white,
             ),
           ),
           const SizedBox(height: 6),
@@ -174,7 +149,7 @@ class _FormState extends StatelessWidget {
             'Enter your email and we\'ll send you reset instructions.',
             style: TextStyle(
               fontSize: 14,
-              color: AppColors.muted,
+              color: PennyPalColors.gray,
               height: 1.4,
             ),
           ),

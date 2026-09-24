@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/lottie_placeholder.dart';
 
@@ -14,14 +16,14 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
   final _description = TextEditingController();
 
   static const _sources = [
-    ('💼', 'Freelance'),
-    ('💰', 'Salary'),
-    ('🎁', 'Gift'),
-    ('📈', 'Investment'),
-    ('🏫', 'Scholarship'),
-    ('👨‍👩‍👧', 'Family'),
-    ('🤝', 'Part-time'),
-    ('➕', 'Other'),
+    (AppIcons.freelance, 'Freelance'),
+    (AppIcons.salary, 'Salary'),
+    (AppIcons.gift, 'Gift'),
+    (AppIcons.investment, 'Investment'),
+    (AppIcons.education, 'Scholarship'),
+    (AppIcons.users, 'Family'),
+    (AppIcons.wallet, 'Part-time'),
+    (AppIcons.add, 'Other'),
   ];
 
   String _selectedSource = 'Salary';
@@ -37,21 +39,21 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: PennyPalColors.black,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.text),
+          icon: const AppIcon(AppIcons.arrowBack, color: PennyPalColors.white),
         ),
         title: const Text(
           'Add Income',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: AppColors.text,
+            color: PennyPalColors.white,
           ),
         ),
       ),
@@ -60,61 +62,56 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Lottie placeholder ─────────────────────────────
-            // TODO: Lottie.asset('assets/animations/add_income.json', height: 120)
             const LottiePlaceholder(
                 height: 120,
                 label: 'add_income.json',
-                tint: Color(0xFF16A34A)),
+                tint: PennyPalColors.white),
             const SizedBox(height: 28),
 
-            // ── Amount ─────────────────────────────────────────
+            // Amount
             const Text('Amount',
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.muted)),
+                    color: PennyPalColors.gray)),
             const SizedBox(height: 8),
             TextField(
               controller: _amount,
               keyboardType: TextInputType.number,
               style: const TextStyle(
-                  fontSize: 28, fontWeight: FontWeight.w800),
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: PennyPalColors.white),
               decoration: InputDecoration(
-                prefixText: '₦ ',
-                prefixStyle: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.text),
-                hintText: '0',
+                hintText: '0.00',
                 hintStyle: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.muted.withValues(alpha: 0.3)),
+                    color: PennyPalColors.muted.withValues(alpha: 0.3)),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: PennyPalColors.surface,
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide:
-                        const BorderSide(color: Color(0xFFE2E8F0))),
+                        const BorderSide(color: PennyPalColors.border)),
                 enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide:
-                        const BorderSide(color: Color(0xFFE2E8F0))),
+                        const BorderSide(color: PennyPalColors.border)),
                 focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: const BorderSide(
-                        color: Color(0xFF16A34A), width: 2)),
+                        color: PennyPalColors.white, width: 2)),
               ),
             ),
             const SizedBox(height: 24),
 
-            // ── Source ─────────────────────────────────────────
+            // Source
             const Text('Source',
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.muted)),
+                    color: PennyPalColors.gray)),
             const SizedBox(height: 10),
             GridView.builder(
               shrinkWrap: true,
@@ -131,36 +128,43 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
                 final s = _sources[i];
                 final selected = _selectedSource == s.$2;
                 return GestureDetector(
-                  onTap: () =>
-                      setState(() => _selectedSource = s.$2),
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    setState(() => _selectedSource = s.$2);
+                  },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     decoration: BoxDecoration(
                       color: selected
-                          ? const Color(0xFFF0FDF4)
-                          : Colors.white,
+                          ? PennyPalColors.elevated
+                          : PennyPalColors.surface,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
                         color: selected
-                            ? const Color(0xFF16A34A)
-                            : const Color(0xFFE2E8F0),
-                        width: selected ? 2 : 1,
+                            ? PennyPalColors.white
+                            : PennyPalColors.border,
+                        width: selected ? 1.5 : 1,
                       ),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(s.$1,
-                            style: const TextStyle(fontSize: 22)),
-                        const SizedBox(height: 4),
+                        AppIcon(
+                          s.$1,
+                          size: 22,
+                          color: selected
+                              ? PennyPalColors.white
+                              : PennyPalColors.gray,
+                        ),
+                        const SizedBox(height: 6),
                         Text(
                           s.$2,
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: selected
-                                ? const Color(0xFF16A34A)
-                                : AppColors.muted,
+                                ? PennyPalColors.white
+                                : PennyPalColors.muted,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -172,78 +176,90 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> {
             ),
             const SizedBox(height: 24),
 
-            // ── Date ────────────────────────────────────────────
+            // Date
             const Text('Date',
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.muted)),
+                    color: PennyPalColors.gray)),
             const SizedBox(height: 8),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(
                   horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: PennyPalColors.surface,
                 borderRadius: BorderRadius.circular(14),
-                border: const Border.fromBorderSide(
-                    BorderSide(color: Color(0xFFE2E8F0))),
+                border: Border.all(color: PennyPalColors.border),
               ),
               child: const Row(
                 children: [
-                  Icon(Icons.calendar_today_outlined,
-                      size: 18, color: AppColors.muted),
+                  AppIcon(AppIcons.calendar,
+                      size: 18, color: PennyPalColors.muted),
                   SizedBox(width: 10),
                   Text('Today',
                       style: TextStyle(
-                          fontSize: 15, color: AppColors.text)),
+                          fontSize: 15, color: PennyPalColors.white)),
                   Spacer(),
-                  Icon(Icons.chevron_right_rounded,
-                      color: AppColors.muted),
+                  AppIcon(AppIcons.chevronRight,
+                      color: PennyPalColors.muted),
                 ],
               ),
             ),
             const SizedBox(height: 24),
 
-            // ── Description ─────────────────────────────────────
+            // Description
             const Text('Description',
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.muted)),
+                    color: PennyPalColors.gray)),
             const SizedBox(height: 8),
             TextField(
               controller: _description,
+              style: const TextStyle(color: PennyPalColors.white),
               decoration: InputDecoration(
                 hintText: 'e.g. Website project payment',
+                hintStyle: const TextStyle(color: PennyPalColors.muted),
+                filled: true,
+                fillColor: PennyPalColors.surface,
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide:
-                        const BorderSide(color: Color(0xFFE2E8F0))),
+                        const BorderSide(color: PennyPalColors.border)),
                 enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide:
-                        const BorderSide(color: Color(0xFFE2E8F0))),
+                        const BorderSide(color: PennyPalColors.border)),
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide:
+                        const BorderSide(color: PennyPalColors.white, width: 1.5)),
               ),
             ),
             const SizedBox(height: 32),
 
-            // ── Save ────────────────────────────────────────────
+            // Save
             SizedBox(
               width: double.infinity,
               height: 54,
               child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  Navigator.pop(context);
+                },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF16A34A),
-                  foregroundColor: Colors.white,
+                  backgroundColor: PennyPalColors.white,
+                  foregroundColor: PennyPalColors.black,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14)),
                 ),
                 child: const Text('Save Income',
                     style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w700)),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: PennyPalColors.black)),
               ),
             ),
           ],

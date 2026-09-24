@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../core/theme/app_theme.dart';
 
 /// Drop-in placeholder for every Lottie animation in the app.
@@ -37,8 +38,8 @@ class LottiePlaceholder extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.play_circle_outline_rounded,
+          AppIcon(
+            AppIcons.fallback,
             size: height * 0.22,
             color: color.withValues(alpha: 0.6),
           ),
