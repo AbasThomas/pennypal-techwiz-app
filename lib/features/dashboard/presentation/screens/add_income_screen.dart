@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../shared/widgets/app_widgets.dart';
 import '../../../../shared/widgets/lottie_placeholder.dart';
 
 class AddIncomeScreen extends StatefulWidget {

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../features/auth/providers/auth_providers.dart';
-import '../../../features/auth/presentation/controllers/auth_controller.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/money_screen.dart';
 import 'screens/plan_screen.dart';
@@ -80,33 +79,34 @@ class _PennyPalShellState extends ConsumerState<PennyPalShell> {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        indicatorColor: AppColors.primary.withValues(alpha: 0.12),
+        height: 62,
+        indicatorColor: AppColors.primary.withValues(alpha: 0.10),
         labelBehavior:
-            NavigationDestinationLabelBehavior.onlyShowSelected,
+            NavigationDestinationLabelBehavior.alwaysShow,
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.grid_view_outlined),
-            selectedIcon: Icon(Icons.grid_view_rounded),
+            icon: Icon(Icons.home_outlined, size: 22),
+            selectedIcon: Icon(Icons.home_rounded, size: 22),
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.receipt_long_outlined),
-            selectedIcon: Icon(Icons.receipt_long_rounded),
+            icon: Icon(Icons.receipt_long_outlined, size: 22),
+            selectedIcon: Icon(Icons.receipt_long_rounded, size: 22),
             label: 'Money',
           ),
           NavigationDestination(
-            icon: Icon(Icons.track_changes_outlined),
-            selectedIcon: Icon(Icons.track_changes_rounded),
+            icon: Icon(Icons.track_changes_outlined, size: 22),
+            selectedIcon: Icon(Icons.track_changes_rounded, size: 22),
             label: 'Plan',
           ),
           NavigationDestination(
-            icon: Icon(Icons.menu_book_outlined),
-            selectedIcon: Icon(Icons.menu_book_rounded),
+            icon: Icon(Icons.menu_book_outlined, size: 22),
+            selectedIcon: Icon(Icons.menu_book_rounded, size: 22),
             label: 'Learn',
           ),
           NavigationDestination(
-            icon: Icon(Icons.more_horiz_rounded),
-            selectedIcon: Icon(Icons.more_horiz_rounded),
+            icon: Icon(Icons.grid_view_outlined, size: 22),
+            selectedIcon: Icon(Icons.grid_view_rounded, size: 22),
             label: 'More',
           ),
         ],
