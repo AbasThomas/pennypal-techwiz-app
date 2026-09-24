@@ -49,7 +49,7 @@ class _LearnScreenState extends State<LearnScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -66,14 +66,14 @@ class _LearnScreenState extends State<LearnScreen> {
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.4,
-                        color: AppColors.text,
+                        color: PennyPalColors.white,
                       ),
                     ),
                     const SizedBox(height: 4),
                     const Text(
                       'Learn how to make your money work for you.',
                       style:
-                          TextStyle(fontSize: 14, color: AppColors.muted),
+                          TextStyle(fontSize: 14, color: PennyPalColors.gray),
                     ),
                     const SizedBox(height: 16),
 
@@ -81,30 +81,31 @@ class _LearnScreenState extends State<LearnScreen> {
                     TextField(
                       controller: _search,
                       onChanged: (_) => setState(() {}),
+                      style: const TextStyle(color: PennyPalColors.white, fontSize: 14),
                       decoration: InputDecoration(
                         hintText: 'Search topics…',
                         hintStyle:
-                            const TextStyle(color: AppColors.muted),
+                            const TextStyle(color: PennyPalColors.muted),
                         prefixIcon: const Icon(Icons.search_rounded,
-                            color: AppColors.muted, size: 20),
+                            color: PennyPalColors.muted, size: 20),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: PennyPalColors.surface,
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 13),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
                           borderSide: const BorderSide(
-                              color: Color(0xFFE2E8F0)),
+                              color: PennyPalColors.border),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
                           borderSide: const BorderSide(
-                              color: Color(0xFFE2E8F0)),
+                              color: PennyPalColors.border),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
                           borderSide: const BorderSide(
-                              color: AppColors.primary, width: 2),
+                              color: PennyPalColors.white, width: 1.5),
                         ),
                       ),
                     ),
@@ -117,19 +118,18 @@ class _LearnScreenState extends State<LearnScreen> {
                       onTap: () => context.push('/learn/budgeting-101'),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: PennyPalColors.surface,
                           borderRadius: BorderRadius.circular(18),
-                          border: const Border.fromBorderSide(
-                              BorderSide(color: Color(0xFFE2E8F0))),
+                          border: Border.all(color: PennyPalColors.border),
                         ),
                         child: Column(
                           crossAxisAlignment:
                               CrossAxisAlignment.start,
                           children: [
-                            ClipRRect(
-                              borderRadius: const BorderRadius.vertical(
+                            const ClipRRect(
+                              borderRadius: BorderRadius.vertical(
                                   top: Radius.circular(18)),
-                              child: const LottiePlaceholder(
+                              child: LottiePlaceholder(
                                 height: 160,
                                 label: 'onboarding_2.json',
                               ),
@@ -144,14 +144,14 @@ class _LearnScreenState extends State<LearnScreen> {
                                       style: TextStyle(
                                         fontSize: 17,
                                         fontWeight: FontWeight.w700,
-                                        color: AppColors.text,
+                                        color: PennyPalColors.white,
                                       )),
                                   SizedBox(height: 4),
                                   Text(
                                     'Learn the basics of managing your\nmoney with a clear and simple budget.',
                                     style: TextStyle(
                                         fontSize: 13,
-                                        color: AppColors.muted,
+                                        color: PennyPalColors.gray,
                                         height: 1.4),
                                   ),
                                   SizedBox(height: 8),
@@ -159,12 +159,12 @@ class _LearnScreenState extends State<LearnScreen> {
                                     Icon(
                                         Icons.access_time_rounded,
                                         size: 13,
-                                        color: AppColors.muted),
+                                        color: PennyPalColors.gray),
                                     SizedBox(width: 4),
                                     Text('5 min read',
                                         style: TextStyle(
                                             fontSize: 12,
-                                            color: AppColors.muted)),
+                                            color: PennyPalColors.gray)),
                                   ]),
                                 ],
                               ),
@@ -197,19 +197,19 @@ class _LearnScreenState extends State<LearnScreen> {
                     return GestureDetector(
                       onTap: () => setState(() => _topicIndex = i),
                       child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
+                        duration: const Duration(milliseconds: 180),
                         margin: const EdgeInsets.only(right: 8),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
                           color: sel
-                              ? AppColors.primary
-                              : Colors.white,
+                              ? PennyPalColors.white
+                              : PennyPalColors.surface,
                           borderRadius: BorderRadius.circular(22),
                           border: Border.all(
                             color: sel
-                                ? AppColors.primary
-                                : const Color(0xFFE2E8F0),
+                                ? PennyPalColors.white
+                                : PennyPalColors.border,
                           ),
                         ),
                         child: Row(
@@ -225,7 +225,7 @@ class _LearnScreenState extends State<LearnScreen> {
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color:
-                                    sel ? Colors.white : AppColors.muted,
+                                    sel ? PennyPalColors.black : PennyPalColors.gray,
                               ),
                             ),
                           ],
@@ -253,10 +253,9 @@ class _LearnScreenState extends State<LearnScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: PennyPalColors.surface,
                             borderRadius: BorderRadius.circular(14),
-                            border: const Border.fromBorderSide(
-                                BorderSide(color: Color(0xFFE2E8F0))),
+                            border: Border.all(color: PennyPalColors.border),
                           ),
                           child: Row(
                             children: [
@@ -264,10 +263,10 @@ class _LearnScreenState extends State<LearnScreen> {
                                 width: 48,
                                 height: 48,
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary
-                                      .withValues(alpha: 0.08),
+                                  color: PennyPalColors.card,
                                   borderRadius:
                                       BorderRadius.circular(12),
+                                  border: Border.all(color: PennyPalColors.border),
                                 ),
                                 child: Center(
                                   child: Text(a.emoji,
@@ -285,12 +284,12 @@ class _LearnScreenState extends State<LearnScreen> {
                                         style: const TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w700,
-                                            color: AppColors.text)),
+                                            color: PennyPalColors.white)),
                                     const SizedBox(height: 3),
                                     Text(a.subtitle,
                                         style: const TextStyle(
                                             fontSize: 12,
-                                            color: AppColors.muted),
+                                            color: PennyPalColors.gray),
                                         maxLines: 2,
                                         overflow:
                                             TextOverflow.ellipsis),
@@ -299,19 +298,19 @@ class _LearnScreenState extends State<LearnScreen> {
                                       const Icon(
                                           Icons.access_time_rounded,
                                           size: 11,
-                                          color: AppColors.muted),
+                                          color: PennyPalColors.gray),
                                       const SizedBox(width: 3),
                                       Text(a.readTime,
                                           style: const TextStyle(
                                               fontSize: 11,
-                                              color: AppColors.muted)),
+                                              color: PennyPalColors.gray)),
                                     ]),
                                   ],
                                 ),
                               ),
                               const Icon(
                                   Icons.chevron_right_rounded,
-                                  color: AppColors.muted),
+                                  color: PennyPalColors.muted),
                             ],
                           ),
                         ),

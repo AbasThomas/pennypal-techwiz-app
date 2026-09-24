@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -17,12 +18,12 @@ class DashboardScreen extends ConsumerWidget {
             : 'Good evening';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: PennyPalColors.black,
       body: CustomScrollView(
         slivers: [
           // ── Status bar spacer ───────────────────────────────────
-          SliverToBoxAdapter(
-            child: SafeArea(bottom: false, child: const SizedBox.shrink()),
+          const SliverToBoxAdapter(
+            child: SafeArea(bottom: false, child: SizedBox.shrink()),
           ),
 
           SliverToBoxAdapter(
@@ -33,15 +34,15 @@ class DashboardScreen extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                // ── Balance card ──────────────────────────────────
+                // ── Balance card (Section 6) ──────────────────────
                 const _BalanceCard(),
                 const SizedBox(height: 24),
 
-                // ── Quick actions ─────────────────────────────────
+                // ── Quick actions (Section 7) ─────────────────────
                 _QuickActions(context: context),
                 const SizedBox(height: 28),
 
-                // ── Budget ────────────────────────────────────────
+                // ── Budget (Section 10) ───────────────────────────
                 _SectionTitle(
                   title: 'Monthly Budget',
                   action: 'View all',
@@ -51,13 +52,13 @@ class DashboardScreen extends ConsumerWidget {
                 const _BudgetCard(),
                 const SizedBox(height: 28),
 
-                // ── Spending breakdown ────────────────────────────
+                // ── Spending breakdown (Section 12) ───────────────
                 const _SectionTitle(title: 'Spending breakdown'),
                 const SizedBox(height: 12),
                 const _SpendingCard(),
                 const SizedBox(height: 28),
 
-                // ── Recent transactions ───────────────────────────
+                // ── Recent transactions (Section 9) ───────────────
                 _SectionTitle(
                   title: 'Recent activity',
                   action: 'See all',
@@ -75,7 +76,7 @@ class DashboardScreen extends ConsumerWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Header — greeting + notification bell
+// Header — clean monochrome greeting card with time-of-day lottie
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _DashHeader extends StatelessWidget {
@@ -83,84 +84,125 @@ class _DashHeader extends StatelessWidget {
   final String greeting;
   final String firstName;
 
+  static String _lottiePath(int hour) =>
+      (hour >= 18 || hour < 6)
+          ? 'assets/animations/Moon.json'
+          : 'assets/animations/sunny.json';
+
   @override
   Widget build(BuildContext context) {
+    final hour = DateTime.now().hour;
+    final lottiePath = _lottiePath(hour);
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 16, 20),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  greeting,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.muted,
-                    letterSpacing: 0.1,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  firstName,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.text,
-                    letterSpacing: -0.4,
-                  ),
-                ),
-              ],
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        decoration: BoxDecoration(
+          color: PennyPalColors.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: PennyPalColors.border),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // ── Lottie ──────────────────────────────────────────
+            Lottie.asset(
+              lottiePath,
+              width: 58,
+              height: 58,
+              fit: BoxFit.contain,
+              repeat: true,
+              errorBuilder: (_, __, ___) =>
+                  const SizedBox(width: 58, height: 58),
             ),
-          ),
-          // Notification button
-          GestureDetector(
-            onTap: () => context.push('/notifications'),
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(11),
-                border: const Border.fromBorderSide(
-                  BorderSide(color: Color(0xFFE8EDF2)),
-                ),
-              ),
-              child: Stack(
-                alignment: Alignment.center,
+            const SizedBox(width: 14),
+
+            // ── Text ─────────────────────────────────────────────
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
-                    Icons.notifications_none_rounded,
-                    size: 20,
-                    color: AppColors.text,
+                  Text(
+                    '$greeting, 👋',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: PennyPalColors.lightGray,
+                      letterSpacing: 0.1,
+                    ),
                   ),
-                  Positioned(
-                    top: 9,
-                    right: 9,
-                    child: Container(
-                      width: 7,
-                      height: 7,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFDC2626),
-                        shape: BoxShape.circle,
-                      ),
+                  const SizedBox(height: 3),
+                  Text(
+                    firstName,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: PennyPalColors.white,
+                      letterSpacing: -0.5,
+                      height: 1.1,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    "Here's your financial overview.",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: PennyPalColors.gray,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 10),
+
+            // ── Notification button ──────────────────────────────
+            GestureDetector(
+              onTap: () => context.push('/notifications'),
+              child: Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: PennyPalColors.elevated,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: PennyPalColors.border),
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    const Icon(
+                      Icons.notifications_none_rounded,
+                      size: 20,
+                      color: PennyPalColors.white,
+                    ),
+                    Positioned(
+                      top: 10,
+                      right: 10,
+                      child: Container(
+                        width: 6,
+                        height: 6,
+                        decoration: const BoxDecoration(
+                          color: PennyPalColors.white,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Balance card
+// Balance card (Section 6)
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _BalanceCard extends StatelessWidget {
@@ -172,8 +214,9 @@ class _BalanceCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.primaryDark,
+        color: PennyPalColors.surface,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: PennyPalColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,37 +224,38 @@ class _BalanceCard extends StatelessWidget {
           // Label + change badge
           Row(
             children: [
-              Text(
+              const Text(
                 'TOTAL BALANCE',
                 style: TextStyle(
                   fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.1,
-                  color: Colors.white.withValues(alpha: 0.65),
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                  color: PennyPalColors.gray,
                 ),
               ),
               const Spacer(),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.12),
+                  color: PennyPalColors.elevated,
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: PennyPalColors.border),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       Icons.arrow_upward_rounded,
                       size: 10,
-                      color: Colors.white.withValues(alpha: 0.9),
+                      color: PennyPalColors.white,
                     ),
-                    const SizedBox(width: 3),
+                    SizedBox(width: 3),
                     Text(
                       '8.4% this month',
                       style: TextStyle(
                         fontSize: 11,
-                        color: Colors.white.withValues(alpha: 0.9),
+                        color: PennyPalColors.white,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -228,18 +272,18 @@ class _BalanceCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 38,
               fontWeight: FontWeight.w800,
-              color: Colors.white,
+              color: PennyPalColors.white,
               letterSpacing: -1,
             ),
           ),
           const SizedBox(height: 24),
 
           // Divider
-          Divider(color: Colors.white.withValues(alpha: 0.12), height: 1),
+          const Divider(color: PennyPalColors.border, height: 1),
           const SizedBox(height: 18),
 
           // Income / Expenses
-          Row(
+          const Row(
             children: [
               Expanded(
                 child: _BalanceStat(
@@ -248,10 +292,13 @@ class _BalanceCard extends StatelessWidget {
                   up: true,
                 ),
               ),
-              Container(
-                width: 1,
+              SizedBox(
                 height: 32,
-                color: Colors.white.withValues(alpha: 0.12),
+                child: VerticalDivider(
+                  width: 1,
+                  thickness: 1,
+                  color: PennyPalColors.border,
+                ),
               ),
               Expanded(
                 child: _BalanceStat(
@@ -295,30 +342,50 @@ class _BalanceStat extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 16,
-                height: 16,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
+              if (!alignRight) ...[
+                Container(
+                  width: 18,
+                  height: 18,
+                  decoration: const BoxDecoration(
+                    color: PennyPalColors.elevated,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    up
+                        ? Icons.arrow_downward_rounded
+                        : Icons.arrow_upward_rounded,
+                    size: 10,
+                    color: PennyPalColors.white,
+                  ),
                 ),
-                child: Icon(
-                  up
-                      ? Icons.arrow_downward_rounded
-                      : Icons.arrow_upward_rounded,
-                  size: 9,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(width: 5),
+                const SizedBox(width: 6),
+              ],
               Text(
                 label,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
-                  color: Colors.white.withValues(alpha: 0.65),
+                  color: PennyPalColors.gray,
                   fontWeight: FontWeight.w500,
                 ),
               ),
+              if (alignRight) ...[
+                const SizedBox(width: 6),
+                Container(
+                  width: 18,
+                  height: 18,
+                  decoration: const BoxDecoration(
+                    color: PennyPalColors.elevated,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    up
+                        ? Icons.arrow_downward_rounded
+                        : Icons.arrow_upward_rounded,
+                    size: 10,
+                    color: PennyPalColors.white,
+                  ),
+                ),
+              ],
             ],
           ),
           const SizedBox(height: 4),
@@ -327,7 +394,7 @@ class _BalanceStat extends StatelessWidget {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: Colors.white,
+              color: PennyPalColors.white,
             ),
           ),
         ],
@@ -337,7 +404,7 @@ class _BalanceStat extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Quick actions — horizontal scrollable row
+// Quick actions (Section 7) — large prominent icons inside gray containers
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _QuickActions extends StatelessWidget {
@@ -347,14 +414,10 @@ class _QuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final actions = [
-      _Action('Add Income', Icons.add_rounded, const Color(0xFF16A34A),
-          const Color(0xFFF0FDF4), () => context.push('/add-income')),
-      _Action('Add Expense', Icons.remove_rounded, const Color(0xFFDC2626),
-          const Color(0xFFFFF1F2), () => context.push('/add-expense')),
-      _Action('Savings', Icons.flag_outlined, AppColors.gold,
-          const Color(0xFFFFFBEB), () {}),
-      _Action('Budget', Icons.donut_large_outlined, const Color(0xFF4F46E5),
-          const Color(0xFFF0F4FF), () {}),
+      _Action('Add Income', Icons.add_rounded, () => context.push('/add-income')),
+      _Action('Add Expense', Icons.remove_rounded, () => context.push('/add-expense')),
+      _Action('Savings', Icons.flag_outlined, () {}),
+      _Action('Budget', Icons.donut_large_outlined, () {}),
     ];
 
     return Row(
@@ -367,31 +430,33 @@ class _QuickActions extends StatelessWidget {
             child: GestureDetector(
               onTap: a.onTap,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                padding: const EdgeInsets.symmetric(vertical: 18),
                 decoration: BoxDecoration(
-                  color: a.bg,
-                  borderRadius: BorderRadius.circular(14),
+                  color: PennyPalColors.elevated,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: PennyPalColors.border),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      width: 36,
-                      height: 36,
+                      width: 44,
+                      height: 44,
                       decoration: BoxDecoration(
-                        color: a.color.withValues(alpha: 0.12),
+                        color: PennyPalColors.card,
                         shape: BoxShape.circle,
+                        border: Border.all(color: PennyPalColors.border),
                       ),
-                      child: Icon(a.icon, size: 18, color: a.color),
+                      child: Icon(a.icon, size: 24, color: PennyPalColors.white),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Text(
                       a.label,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: a.color,
+                        color: PennyPalColors.white,
                         height: 1.2,
                       ),
                     ),
@@ -407,11 +472,9 @@ class _QuickActions extends StatelessWidget {
 }
 
 class _Action {
-  const _Action(this.label, this.icon, this.color, this.bg, this.onTap);
+  const _Action(this.label, this.icon, this.onTap);
   final String label;
   final IconData icon;
-  final Color color;
-  final Color bg;
   final VoidCallback onTap;
 }
 
@@ -434,7 +497,7 @@ class _SectionTitle extends StatelessWidget {
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w700,
-            color: AppColors.text,
+            color: PennyPalColors.white,
             letterSpacing: -0.2,
           ),
         ),
@@ -447,7 +510,7 @@ class _SectionTitle extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: AppColors.primary,
+                color: PennyPalColors.lightGray,
               ),
             ),
           ),
@@ -457,7 +520,7 @@ class _SectionTitle extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Budget card
+// Budget card (Section 10)
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _BudgetCard extends StatelessWidget {
@@ -472,11 +535,9 @@ class _BudgetCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: PennyPalColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: const Border.fromBorderSide(
-          BorderSide(color: Color(0xFFEDF0F4)),
-        ),
+        border: Border.all(color: PennyPalColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -489,55 +550,56 @@ class _BudgetCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.text,
+                  color: PennyPalColors.white,
                   letterSpacing: -0.4,
                 ),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 6),
               const Padding(
                 padding: EdgeInsets.only(bottom: 2),
                 child: Text(
                   'of ₦100,000',
                   style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.muted,
+                    color: PennyPalColors.gray,
                   ),
                 ),
               ),
               const Spacer(),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0FDF4),
+                  color: PennyPalColors.elevated,
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: PennyPalColors.border),
                 ),
                 child: const Text(
                   '₦27,500 left',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF16A34A),
+                    color: PennyPalColors.white,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: LinearProgressIndicator(
               value: ratio,
               minHeight: 7,
-              backgroundColor: const Color(0xFFEDF0F4),
+              backgroundColor: PennyPalColors.border,
               valueColor:
-                  const AlwaysStoppedAnimation(AppColors.primary),
+                  const AlwaysStoppedAnimation(PennyPalColors.white),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
             '${(ratio * 100).toStringAsFixed(0)}% of monthly budget used',
-            style: const TextStyle(fontSize: 12, color: AppColors.muted),
+            style: const TextStyle(fontSize: 12, color: PennyPalColors.gray),
           ),
         ],
       ),
@@ -546,18 +608,18 @@ class _BudgetCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Spending breakdown — horizontal bars, no pie chart
+// Spending breakdown (Section 12) — monochrome bars
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _SpendingCard extends StatelessWidget {
   const _SpendingCard();
 
   static const _items = [
-    _SpendItem('Food', 25000, 54500, Color(0xFF16A34A)),
-    _SpendItem('Transport', 12500, 54500, Color(0xFF0D9488)),
-    _SpendItem('Education', 8000, 54500, Color(0xFF4F46E5)),
-    _SpendItem('Entertainment', 5000, 54500, Color(0xFFF59E0B)),
-    _SpendItem('Other', 4000, 54500, Color(0xFF94A3B8)),
+    _SpendItem('Food', 25000, 54500, PennyPalColors.white),
+    _SpendItem('Transport', 12500, 54500, PennyPalColors.offWhite),
+    _SpendItem('Education', 8000, 54500, PennyPalColors.lightGray),
+    _SpendItem('Entertainment', 5000, 54500, PennyPalColors.gray),
+    _SpendItem('Other', 4000, 54500, PennyPalColors.darkGray),
   ];
 
   @override
@@ -565,11 +627,9 @@ class _SpendingCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: PennyPalColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: const Border.fromBorderSide(
-          BorderSide(color: Color(0xFFEDF0F4)),
-        ),
+        border: Border.all(color: PennyPalColors.border),
       ),
       child: Column(
         children: _items.asMap().entries.map((e) {
@@ -624,7 +684,7 @@ class _SpendRow extends StatelessWidget {
                 item.category,
                 style: const TextStyle(
                   fontSize: 13,
-                  color: AppColors.text,
+                  color: PennyPalColors.white,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -634,7 +694,7 @@ class _SpendRow extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: AppColors.text,
+                color: PennyPalColors.white,
               ),
             ),
           ],
@@ -645,7 +705,7 @@ class _SpendRow extends StatelessWidget {
           child: LinearProgressIndicator(
             value: ratio,
             minHeight: 5,
-            backgroundColor: const Color(0xFFEDF0F4),
+            backgroundColor: PennyPalColors.border,
             valueColor: AlwaysStoppedAnimation(item.color),
           ),
         ),
@@ -655,7 +715,7 @@ class _SpendRow extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Recent activity — no emojis, icon-based category markers
+// Recent activity (Section 9) — monochrome icons & + / - distinction
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _RecentActivity extends StatelessWidget {
@@ -663,22 +723,20 @@ class _RecentActivity extends StatelessWidget {
 
   static const _items = [
     _TxItem('Lunch', 'Food', 'Today', '₦3,500', false,
-        Icons.restaurant_outlined, Color(0xFF16A34A)),
+        Icons.restaurant_outlined),
     _TxItem('Transport', 'Transport', 'Today', '₦1,200', false,
-        Icons.directions_bus_outlined, Color(0xFF0D9488)),
+        Icons.directions_bus_outlined),
     _TxItem('Freelance payment', 'Income', 'Yesterday', '₦50,000', true,
-        Icons.work_outline_rounded, Color(0xFF4F46E5)),
+        Icons.work_outline_rounded),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: PennyPalColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: const Border.fromBorderSide(
-          BorderSide(color: Color(0xFFEDF0F4)),
-        ),
+        border: Border.all(color: PennyPalColors.border),
       ),
       child: Column(
         children: _items.asMap().entries.map((e) {
@@ -691,7 +749,7 @@ class _RecentActivity extends StatelessWidget {
                 const Divider(
                   height: 1,
                   indent: 66,
-                  color: Color(0xFFF1F5F9),
+                  color: PennyPalColors.mutedBorder,
                 ),
             ],
           );
@@ -703,14 +761,13 @@ class _RecentActivity extends StatelessWidget {
 
 class _TxItem {
   const _TxItem(this.title, this.category, this.date, this.amount,
-      this.isIncome, this.icon, this.iconColor);
+      this.isIncome, this.icon);
   final String title;
   final String category;
   final String date;
   final String amount;
   final bool isIncome;
   final IconData icon;
-  final Color iconColor;
 }
 
 class _TxRow extends StatelessWidget {
@@ -723,15 +780,16 @@ class _TxRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         children: [
-          // Icon circle
+          // Icon container
           Container(
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: item.iconColor.withValues(alpha: 0.08),
+              color: PennyPalColors.elevated,
               borderRadius: BorderRadius.circular(11),
+              border: Border.all(color: PennyPalColors.border),
             ),
-            child: Icon(item.icon, size: 18, color: item.iconColor),
+            child: Icon(item.icon, size: 18, color: PennyPalColors.white),
           ),
           const SizedBox(width: 12),
 
@@ -745,7 +803,7 @@ class _TxRow extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.text,
+                    color: PennyPalColors.white,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -753,7 +811,7 @@ class _TxRow extends StatelessWidget {
                   '${item.category}  ·  ${item.date}',
                   style: const TextStyle(
                     fontSize: 12,
-                    color: AppColors.muted,
+                    color: PennyPalColors.gray,
                   ),
                 ),
               ],
@@ -763,12 +821,10 @@ class _TxRow extends StatelessWidget {
           // Amount
           Text(
             '${item.isIncome ? '+' : '-'}${item.amount}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: item.isIncome
-                  ? const Color(0xFF16A34A)
-                  : const Color(0xFFDC2626),
+              color: PennyPalColors.white,
             ),
           ),
         ],

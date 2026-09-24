@@ -5,10 +5,6 @@ import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_theme.dart';
 
 /// General-purpose scaffold used across the app.
-///
-/// Auth screens (login, register) build their own [Scaffold] directly so they
-/// can control the full layout. This scaffold is used for secondary screens
-/// that need a back-nav AppBar (forgot password, verify email, settings, etc.).
 class AppScaffold extends StatelessWidget {
   const AppScaffold({
     super.key,
@@ -22,8 +18,6 @@ class AppScaffold extends StatelessWidget {
   final String? title;
   final List<Widget>? actions;
 
-  /// When true (default) the body is wrapped in a [SingleChildScrollView].
-  /// Set to false for screens that manage their own scrolling.
   final bool scrollable;
 
   @override
@@ -42,25 +36,25 @@ class AppScaffold extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       appBar: title == null
           ? null
           : AppBar(
-              backgroundColor: AppColors.background,
+              backgroundColor: PennyPalColors.black,
               surfaceTintColor: Colors.transparent,
               elevation: 0,
               scrolledUnderElevation: 0,
-              systemOverlayStyle: SystemUiOverlayStyle.dark,
+              systemOverlayStyle: SystemUiOverlayStyle.light,
               titleSpacing: 4,
               title: Text(
                 title!,
                 style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.text,
+                  color: PennyPalColors.white,
                 ),
               ),
-              iconTheme: const IconThemeData(color: AppColors.text),
+              iconTheme: const IconThemeData(color: PennyPalColors.white),
               actions: actions,
             ),
       body: SafeArea(
@@ -84,17 +78,37 @@ class AppButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool loading;
   final IconData? icon;
+
   @override
   Widget build(BuildContext context) => ElevatedButton.icon(
     onPressed: loading ? null : onPressed,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: PennyPalColors.white,
+      foregroundColor: PennyPalColors.black,
+      disabledBackgroundColor: PennyPalColors.darkGray,
+      disabledForegroundColor: PennyPalColors.gray,
+      elevation: 0,
+      minimumSize: const Size.fromHeight(54),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
+      textStyle: const TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.2,
+      ),
+    ),
     icon: loading
         ? const SizedBox.square(
             dimension: 18,
-            child: CircularProgressIndicator(strokeWidth: 2),
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: PennyPalColors.black,
+            ),
           )
         : icon == null
-        ? const SizedBox.shrink()
-        : Icon(icon),
+            ? const SizedBox.shrink()
+            : Icon(icon, color: PennyPalColors.black),
     label: Text(text),
   );
 }
@@ -113,10 +127,29 @@ class AppTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
   final TextInputAction textInputAction;
+
   @override
   Widget build(BuildContext context) => TextFormField(
     controller: controller,
-    decoration: InputDecoration(labelText: label),
+    style: const TextStyle(color: PennyPalColors.white, fontSize: 15),
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: PennyPalColors.gray),
+      filled: true,
+      fillColor: PennyPalColors.surface,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: PennyPalColors.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: PennyPalColors.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: PennyPalColors.white, width: 1.5),
+      ),
+    ),
     validator: validator,
     keyboardType: keyboardType,
     textInputAction: textInputAction,
@@ -135,23 +168,43 @@ class AppPasswordField extends StatefulWidget {
   final String label;
   final String? Function(String?)? validator;
   final TextInputAction textInputAction;
+
   @override
   State<AppPasswordField> createState() => _AppPasswordFieldState();
 }
 
 class _AppPasswordFieldState extends State<AppPasswordField> {
   bool _obscure = true;
+
   @override
   Widget build(BuildContext context) => TextFormField(
     controller: widget.controller,
     obscureText: _obscure,
     validator: widget.validator,
     textInputAction: widget.textInputAction,
+    style: const TextStyle(color: PennyPalColors.white, fontSize: 15),
     decoration: InputDecoration(
       labelText: widget.label,
+      labelStyle: const TextStyle(color: PennyPalColors.gray),
+      filled: true,
+      fillColor: PennyPalColors.surface,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: PennyPalColors.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: PennyPalColors.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: PennyPalColors.white, width: 1.5),
+      ),
       suffixIcon: IconButton(
         icon: Icon(
           _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+          color: PennyPalColors.gray,
+          size: 20,
         ),
         onPressed: () => setState(() => _obscure = !_obscure),
       ),
@@ -163,33 +216,150 @@ class AppLoadingIndicator extends StatelessWidget {
   const AppLoadingIndicator({super.key});
   @override
   Widget build(BuildContext context) =>
-      const Center(child: CircularProgressIndicator());
+      const Center(child: CircularProgressIndicator(color: PennyPalColors.white));
 }
 
+/// Monochrome toast notifications conforming to Section 20 of design guidelines.
 abstract final class AppSnackbar {
-  static void error(BuildContext context, String message) =>
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
-  static void success(BuildContext context, String message) =>
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
+  static void success(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: PennyPalColors.white,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle_rounded, color: PennyPalColors.black, size: 20),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(
+                  color: PennyPalColors.black,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static void error(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: PennyPalColors.elevated,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: PennyPalColors.border),
+        ),
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline_rounded, color: PennyPalColors.white, size: 20),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(
+                  color: PennyPalColors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static void warning(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: PennyPalColors.border,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        content: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded, color: PennyPalColors.white, size: 20),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(
+                  color: PennyPalColors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static void info(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: PennyPalColors.card,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: PennyPalColors.border),
+        ),
+        content: Row(
+          children: [
+            const Icon(Icons.info_outline_rounded, color: PennyPalColors.white, size: 20),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(
+                  color: PennyPalColors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class AppErrorState extends StatelessWidget {
   const AppErrorState({super.key, required this.message, this.onRetry});
   final String message;
   final VoidCallback? onRetry;
+
   @override
   Widget build(BuildContext context) => Center(
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(message, textAlign: TextAlign.center),
-        if (onRetry != null)
-          TextButton(onPressed: onRetry, child: const Text('Try again')),
-      ],
+    child: Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.error_outline_rounded, size: 48, color: PennyPalColors.gray),
+          const SizedBox(height: 14),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: PennyPalColors.white, fontSize: 15),
+          ),
+          if (onRetry != null) ...[
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: onRetry,
+              child: const Text('Try again', style: TextStyle(color: PennyPalColors.white)),
+            ),
+          ],
+        ],
+      ),
     ),
   );
 }
@@ -202,15 +372,23 @@ class AppEmptyState extends StatelessWidget {
   });
   final String message;
   final IconData icon;
+
   @override
   Widget build(BuildContext context) => Center(
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 42),
-        const SizedBox(height: 12),
-        Text(message),
-      ],
+    child: Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 48, color: PennyPalColors.gray),
+          const SizedBox(height: 14),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: PennyPalColors.gray, fontSize: 14),
+          ),
+        ],
+      ),
     ),
   );
 }

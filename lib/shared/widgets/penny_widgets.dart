@@ -1,6 +1,6 @@
 // Shared UI building blocks used across all PennyPal feature screens.
 // Import this file to get: BalanceCard, SectionHeader, QuickActionButton,
-// TransactionTile, CategoryProgressBar, GoalCard, EmptyState, AppFAB.
+// TransactionTile, CategoryProgressBar, GoalCard, PennyEmptyState, InfoCard, InsightChip.
 
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
@@ -31,19 +31,9 @@ class BalanceCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.primary, AppColors.primaryDark],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.35),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
-          ),
-        ],
+        color: PennyPalColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: PennyPalColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,23 +41,24 @@ class BalanceCard extends StatelessWidget {
           // Label + badge
           Row(
             children: [
-              Text(
+              const Text(
                 'TOTAL BALANCE',
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1.2,
-                  color: Colors.white.withValues(alpha: 0.75),
+                  color: PennyPalColors.gray,
                 ),
               ),
               if (changePercent != null) ...[
                 const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 3),
+                      horizontal: 9, vertical: 3),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.18),
+                    color: PennyPalColors.elevated,
                     borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: PennyPalColors.border),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -77,15 +68,16 @@ class BalanceCard extends StatelessWidget {
                             ? Icons.arrow_upward_rounded
                             : Icons.arrow_downward_rounded,
                         size: 11,
-                        color: Colors.white,
+                        color: PennyPalColors.white,
                       ),
                       const SizedBox(width: 3),
                       Text(
                         changePercent!,
                         style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700),
+                          color: PennyPalColors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ],
                   ),
@@ -93,7 +85,7 @@ class BalanceCard extends StatelessWidget {
               ],
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
 
           // Amount
           Text(
@@ -102,10 +94,14 @@ class BalanceCard extends StatelessWidget {
               fontSize: 36,
               fontWeight: FontWeight.w800,
               letterSpacing: -1,
-              color: Colors.white,
+              color: PennyPalColors.white,
             ),
           ),
           const SizedBox(height: 24),
+
+          // Divider
+          const Divider(color: PennyPalColors.border, height: 1),
+          const SizedBox(height: 18),
 
           // Income / Expenses row
           Row(
@@ -115,20 +111,18 @@ class BalanceCard extends StatelessWidget {
                   icon: Icons.arrow_downward_rounded,
                   label: 'Income',
                   value: income,
-                  iconColor: const Color(0xFF4ADE80),
                 ),
               ),
               Container(
                 width: 1,
                 height: 36,
-                color: Colors.white.withValues(alpha: 0.2),
+                color: PennyPalColors.border,
               ),
               Expanded(
                 child: _BalanceStat(
                   icon: Icons.arrow_upward_rounded,
                   label: 'Expenses',
                   value: expenses,
-                  iconColor: const Color(0xFFFCA5A5),
                   alignRight: true,
                 ),
               ),
@@ -145,14 +139,12 @@ class _BalanceStat extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.value,
-    required this.iconColor,
     this.alignRight = false,
   });
 
   final IconData icon;
   final String label;
   final String value;
-  final Color iconColor;
   final bool alignRight;
 
   @override
@@ -169,20 +161,36 @@ class _BalanceStat extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (!alignRight) ...[
-                Icon(icon, size: 14, color: iconColor),
-                const SizedBox(width: 4),
+                Container(
+                  width: 18,
+                  height: 18,
+                  decoration: const BoxDecoration(
+                    color: PennyPalColors.elevated,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, size: 10, color: PennyPalColors.white),
+                ),
+                const SizedBox(width: 6),
               ],
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.white.withValues(alpha: 0.75),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: PennyPalColors.gray,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               if (alignRight) ...[
-                const SizedBox(width: 4),
-                Icon(icon, size: 14, color: iconColor),
+                const SizedBox(width: 6),
+                Container(
+                  width: 18,
+                  height: 18,
+                  decoration: const BoxDecoration(
+                    color: PennyPalColors.elevated,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, size: 10, color: PennyPalColors.white),
+                ),
               ],
             ],
           ),
@@ -192,7 +200,7 @@ class _BalanceStat extends StatelessWidget {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: Colors.white,
+              color: PennyPalColors.white,
             ),
           ),
         ],
@@ -226,7 +234,7 @@ class SectionHeader extends StatelessWidget {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
-            color: AppColors.text,
+            color: PennyPalColors.white,
             letterSpacing: -0.2,
           ),
         ),
@@ -235,16 +243,17 @@ class SectionHeader extends StatelessWidget {
           TextButton(
             onPressed: onAction,
             style: TextButton.styleFrom(
-              foregroundColor: AppColors.primary,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              foregroundColor: PennyPalColors.lightGray,
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             child: Text(
               actionLabel!,
               style: const TextStyle(
-                  fontSize: 13, fontWeight: FontWeight.w600),
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
       ],
@@ -253,7 +262,7 @@ class SectionHeader extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Quick action button — icon tile on Dashboard
+// Quick action button — large icon tile inside gray container
 // ─────────────────────────────────────────────────────────────────────────────
 
 class QuickActionButton extends StatelessWidget {
@@ -274,24 +283,21 @@ class QuickActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = color ?? AppColors.primary.withValues(alpha: 0.08);
-    final ic = iconColor ?? AppColors.primary;
-
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: bg,
+          color: color ?? PennyPalColors.elevated,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: ic.withValues(alpha: 0.12),
+            color: PennyPalColors.border,
           ),
         ),
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 28, color: ic),
+            Icon(icon, size: 28, color: iconColor ?? PennyPalColors.white),
             const SizedBox(height: 8),
             Text(
               label,
@@ -299,7 +305,7 @@ class QuickActionButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: ic,
+                color: iconColor ?? PennyPalColors.white,
               ),
             ),
           ],
@@ -310,7 +316,7 @@ class QuickActionButton extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Transaction tile
+// Transaction tile — monochrome styling (+ / - distinction)
 // ─────────────────────────────────────────────────────────────────────────────
 
 class TransactionTile extends StatelessWidget {
@@ -344,8 +350,9 @@ class TransactionTile extends StatelessWidget {
               width: 46,
               height: 46,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.07),
+                color: PennyPalColors.card,
                 borderRadius: BorderRadius.circular(13),
+                border: Border.all(color: PennyPalColors.border),
               ),
               child: Center(
                 child: Text(emoji, style: const TextStyle(fontSize: 22)),
@@ -361,26 +368,26 @@ class TransactionTile extends StatelessWidget {
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
-                      color: AppColors.text,
+                      color: PennyPalColors.white,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: const TextStyle(
-                        fontSize: 12, color: AppColors.muted),
+                      fontSize: 12,
+                      color: PennyPalColors.gray,
+                    ),
                   ),
                 ],
               ),
             ),
             Text(
               '${isIncome ? '+' : '-'}$amount',
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 15,
-                color: isIncome
-                    ? const Color(0xFF16A34A)
-                    : const Color(0xFFDC2626),
+                color: PennyPalColors.white,
               ),
             ),
           ],
@@ -391,7 +398,7 @@ class TransactionTile extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Category progress bar — used in Budget screen
+// Category progress bar — monochrome progress
 // ─────────────────────────────────────────────────────────────────────────────
 
 enum BudgetStatus { healthy, warning, exceeded }
@@ -420,11 +427,10 @@ class CategoryProgressBar extends StatelessWidget {
   Color get _color {
     switch (_status) {
       case BudgetStatus.healthy:
-        return AppColors.primary;
+        return PennyPalColors.white;
       case BudgetStatus.warning:
-        return AppColors.gold;
       case BudgetStatus.exceeded:
-        return AppColors.error;
+        return PennyPalColors.lightGray;
     }
   }
 
@@ -450,13 +456,13 @@ class CategoryProgressBar extends StatelessWidget {
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
-                color: AppColors.text,
+                color: PennyPalColors.white,
               ),
             ),
             const Spacer(),
             Text(
               '$spentFmt / $limitFmt',
-              style: const TextStyle(fontSize: 12, color: AppColors.muted),
+              style: const TextStyle(fontSize: 12, color: PennyPalColors.gray),
             ),
           ],
         ),
@@ -466,7 +472,7 @@ class CategoryProgressBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: ratio,
             minHeight: 8,
-            backgroundColor: const Color(0xFFE2E8F0),
+            backgroundColor: PennyPalColors.border,
             valueColor: AlwaysStoppedAnimation(_color),
           ),
         ),
@@ -512,16 +518,9 @@ class GoalCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: PennyPalColors.surface,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          border: Border.all(color: PennyPalColors.border),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -539,13 +538,13 @@ class GoalCard extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.text,
+                          color: PennyPalColors.white,
                         ),
                       ),
                       Text(
                         '$savedFmt / $targetFmt',
                         style: const TextStyle(
-                            fontSize: 12, color: AppColors.muted),
+                            fontSize: 12, color: PennyPalColors.gray),
                       ),
                     ],
                   ),
@@ -554,15 +553,16 @@ class GoalCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
+                    color: PennyPalColors.elevated,
                     borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: PennyPalColors.border),
                   ),
                   child: Text(
                     '$pct%',
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.primary,
+                      color: PennyPalColors.white,
                     ),
                   ),
                 ),
@@ -574,16 +574,15 @@ class GoalCard extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: ratio,
                 minHeight: 8,
-                backgroundColor: const Color(0xFFE2E8F0),
+                backgroundColor: PennyPalColors.border,
                 valueColor:
-                    const AlwaysStoppedAnimation(AppColors.primary),
+                    const AlwaysStoppedAnimation(PennyPalColors.white),
               ),
             ),
             const SizedBox(height: 10),
             Text(
               '$remainFmt remaining',
-              style:
-                  const TextStyle(fontSize: 12, color: AppColors.muted),
+              style: const TextStyle(fontSize: 12, color: PennyPalColors.gray),
             ),
           ],
         ),
@@ -593,7 +592,7 @@ class GoalCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Empty state — used across all list screens
+// Empty state — used across list screens
 // ─────────────────────────────────────────────────────────────────────────────
 
 class PennyEmptyState extends StatelessWidget {
@@ -616,42 +615,50 @@ class PennyEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(emoji, style: const TextStyle(fontSize: 52)),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: AppColors.text,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              style: const TextStyle(fontSize: 14, color: AppColors.muted),
-              textAlign: TextAlign.center,
-            ),
-            if (actionLabel != null) ...[
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: onAction,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.all(32),
+        child: Container(
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: PennyPalColors.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: PennyPalColors.border),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 48)),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: PennyPalColors.white,
                 ),
-                child: Text(actionLabel!),
+                textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 8),
+              Text(
+                message,
+                style: const TextStyle(fontSize: 14, color: PennyPalColors.gray),
+                textAlign: TextAlign.center,
+              ),
+              if (actionLabel != null) ...[
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: onAction,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: PennyPalColors.white,
+                    foregroundColor: PennyPalColors.black,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: Text(actionLabel!),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -659,7 +666,7 @@ class PennyEmptyState extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Info card — light surface tile used in Reports / Learning
+// Info card — dark surface tile used in Reports / Learning / Plan
 // ─────────────────────────────────────────────────────────────────────────────
 
 class InfoCard extends StatelessWidget {
@@ -678,16 +685,9 @@ class InfoCard extends StatelessWidget {
       width: double.infinity,
       padding: padding ?? const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: PennyPalColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(color: PennyPalColors.border),
       ),
       child: child,
     );
@@ -695,7 +695,7 @@ class InfoCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Insight chip — colored tip tile in Reports
+// Insight chip — monochrome tip tile in Reports
 // ─────────────────────────────────────────────────────────────────────────────
 
 class InsightChip extends StatelessWidget {
@@ -712,12 +712,12 @@ class InsightChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = (color ?? AppColors.primary).withValues(alpha: 0.07);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: bg,
+        color: PennyPalColors.card,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: PennyPalColors.border),
       ),
       child: Row(
         children: [
@@ -727,7 +727,10 @@ class InsightChip extends StatelessWidget {
             child: Text(
               text,
               style: const TextStyle(
-                  fontSize: 13, color: AppColors.text, height: 1.4),
+                fontSize: 13,
+                color: PennyPalColors.white,
+                height: 1.4,
+              ),
             ),
           ),
         ],

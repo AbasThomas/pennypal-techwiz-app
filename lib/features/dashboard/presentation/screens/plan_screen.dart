@@ -30,23 +30,23 @@ class _PlanScreenState extends State<PlanScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── Header ──────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
               child: Row(
                 children: [
-                  const Text(
+                  Text(
                     'Plan',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.4,
-                      color: AppColors.text,
+                      color: PennyPalColors.white,
                     ),
                   ),
                 ],
@@ -60,21 +60,21 @@ class _PlanScreenState extends State<PlanScreen>
               child: Container(
                 height: 44,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: PennyPalColors.surface,
                   borderRadius: BorderRadius.circular(12),
-                  border: const Border.fromBorderSide(
-                      BorderSide(color: Color(0xFFE2E8F0))),
+                  border: Border.all(color: PennyPalColors.border),
                 ),
                 child: TabBar(
                   controller: _tab,
                   indicator: BoxDecoration(
-                    color: AppColors.primary,
+                    color: PennyPalColors.elevated,
                     borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: PennyPalColors.border),
                   ),
                   indicatorSize: TabBarIndicatorSize.tab,
                   dividerColor: Colors.transparent,
-                  labelColor: Colors.white,
-                  unselectedLabelColor: AppColors.muted,
+                  labelColor: PennyPalColors.white,
+                  unselectedLabelColor: PennyPalColors.gray,
                   labelStyle: const TextStyle(
                       fontWeight: FontWeight.w600, fontSize: 14),
                   tabs: const [
@@ -104,7 +104,7 @@ class _PlanScreenState extends State<PlanScreen>
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Budget sub-tab
+// Budget sub-tab (Section 10)
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _BudgetTab extends StatelessWidget {
@@ -139,7 +139,7 @@ class _BudgetTab extends StatelessWidget {
                             'September 2026',
                             style: TextStyle(
                               fontSize: 13,
-                              color: AppColors.muted,
+                              color: PennyPalColors.gray,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -149,14 +149,14 @@ class _BudgetTab extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w800,
-                              color: AppColors.text,
+                              color: PennyPalColors.white,
                               letterSpacing: -0.3,
                             ),
                           ),
                           Text(
                             'of ₦100,000',
                             style: TextStyle(
-                                fontSize: 13, color: AppColors.muted),
+                                fontSize: 13, color: PennyPalColors.gray),
                           ),
                         ],
                       ),
@@ -165,9 +165,9 @@ class _BudgetTab extends StatelessWidget {
                       width: 56,
                       height: 56,
                       decoration: BoxDecoration(
-                        color:
-                            AppColors.primary.withValues(alpha: 0.1),
+                        color: PennyPalColors.elevated,
                         shape: BoxShape.circle,
+                        border: Border.all(color: PennyPalColors.border),
                       ),
                       child: const Center(
                         child: Text(
@@ -175,7 +175,7 @@ class _BudgetTab extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w800,
-                            color: AppColors.primary,
+                            color: PennyPalColors.white,
                           ),
                         ),
                       ),
@@ -188,15 +188,15 @@ class _BudgetTab extends StatelessWidget {
                   child: const LinearProgressIndicator(
                     value: 0.725,
                     minHeight: 10,
-                    backgroundColor: Color(0xFFE2E8F0),
+                    backgroundColor: PennyPalColors.border,
                     valueColor:
-                        AlwaysStoppedAnimation(AppColors.primary),
+                        AlwaysStoppedAnimation(PennyPalColors.white),
                   ),
                 ),
                 const SizedBox(height: 10),
                 const Text('₦27,500 remaining',
                     style:
-                        TextStyle(fontSize: 13, color: AppColors.muted)),
+                        TextStyle(fontSize: 13, color: PennyPalColors.gray)),
               ],
             ),
           ),
@@ -231,7 +231,7 @@ class _BudgetCat {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Savings sub-tab
+// Savings sub-tab (Section 11)
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _SavingsTab extends StatelessWidget {
@@ -258,11 +258,12 @@ class _SavingsTab extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
+                    color: PennyPalColors.elevated,
                     borderRadius: BorderRadius.circular(13),
+                    border: Border.all(color: PennyPalColors.border),
                   ),
                   child: const Icon(Icons.flag_rounded,
-                      color: AppColors.primary, size: 24),
+                      color: PennyPalColors.white, size: 24),
                 ),
                 const SizedBox(width: 14),
                 const Column(
@@ -270,13 +271,13 @@ class _SavingsTab extends StatelessWidget {
                   children: [
                     Text('Total Saved',
                         style:
-                            TextStyle(fontSize: 13, color: AppColors.muted)),
+                            TextStyle(fontSize: 13, color: PennyPalColors.gray)),
                     Text(
                       '₦192,000',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.text,
+                        color: PennyPalColors.white,
                         letterSpacing: -0.3,
                       ),
                     ),
@@ -361,8 +362,9 @@ class _CreateGoalSheetState extends State<_CreateGoalSheet> {
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 32),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: PennyPalColors.surface,
           borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: PennyPalColors.border),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -373,7 +375,7 @@ class _CreateGoalSheetState extends State<_CreateGoalSheet> {
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE2E8F0),
+                  color: PennyPalColors.border,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -384,12 +386,12 @@ class _CreateGoalSheetState extends State<_CreateGoalSheet> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: AppColors.text,
+                color: PennyPalColors.white,
               ),
             ),
             const SizedBox(height: 4),
             const Text('What are you saving for?',
-                style: TextStyle(color: AppColors.muted, fontSize: 14)),
+                style: TextStyle(color: PennyPalColors.gray, fontSize: 14)),
             const SizedBox(height: 20),
 
             // ── Emoji picker ─────────────────────────────────
@@ -410,13 +412,13 @@ class _CreateGoalSheetState extends State<_CreateGoalSheet> {
                       margin: const EdgeInsets.only(right: 8),
                       decoration: BoxDecoration(
                         color: selected
-                            ? AppColors.primary.withValues(alpha: 0.12)
-                            : const Color(0xFFF8FAFC),
+                            ? PennyPalColors.elevated
+                            : PennyPalColors.card,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: selected
-                              ? AppColors.primary
-                              : const Color(0xFFE2E8F0),
+                              ? PennyPalColors.white
+                              : PennyPalColors.border,
                           width: selected ? 2 : 1,
                         ),
                       ),
@@ -433,20 +435,48 @@ class _CreateGoalSheetState extends State<_CreateGoalSheet> {
 
             TextField(
               controller: _name,
+              style: const TextStyle(color: PennyPalColors.white),
               decoration: InputDecoration(
                 labelText: 'Goal name',
+                labelStyle: const TextStyle(color: PennyPalColors.gray),
+                filled: true,
+                fillColor: PennyPalColors.card,
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: PennyPalColors.border),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: PennyPalColors.border),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: PennyPalColors.white, width: 1.5),
+                ),
               ),
             ),
             const SizedBox(height: 14),
             TextField(
               controller: _amount,
               keyboardType: TextInputType.number,
+              style: const TextStyle(color: PennyPalColors.white),
               decoration: InputDecoration(
                 labelText: 'Target amount (₦)',
+                labelStyle: const TextStyle(color: PennyPalColors.gray),
+                filled: true,
+                fillColor: PennyPalColors.card,
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: PennyPalColors.border),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: PennyPalColors.border),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: PennyPalColors.white, width: 1.5),
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -456,8 +486,8 @@ class _CreateGoalSheetState extends State<_CreateGoalSheet> {
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  backgroundColor: PennyPalColors.white,
+                  foregroundColor: PennyPalColors.black,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14)),

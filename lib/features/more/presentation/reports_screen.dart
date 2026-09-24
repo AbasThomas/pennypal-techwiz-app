@@ -9,7 +9,7 @@ class ReportsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       appBar: _cleanBar('Financial Insights'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
@@ -24,25 +24,24 @@ class ReportsScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: PennyPalColors.surface,
                     borderRadius: BorderRadius.circular(22),
-                    border: const Border.fromBorderSide(
-                        BorderSide(color: Color(0xFFE2E8F0))),
+                    border: Border.all(color: PennyPalColors.border),
                   ),
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.calendar_month_outlined,
-                          size: 16, color: AppColors.muted),
+                          size: 16, color: PennyPalColors.gray),
                       SizedBox(width: 6),
                       Text('September',
                           style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.text)),
+                              color: PennyPalColors.white)),
                       SizedBox(width: 4),
                       Icon(Icons.keyboard_arrow_down_rounded,
-                          size: 16, color: AppColors.muted),
+                          size: 16, color: PennyPalColors.gray),
                     ],
                   ),
                 ),
@@ -51,31 +50,28 @@ class ReportsScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             // ── Summary row ───────────────────────────────────
-            Row(children: [
+            const Row(children: [
               Expanded(
                   child: _StatCard(
                       label: 'Income',
                       value: '₦180,000',
-                      color: const Color(0xFF16A34A),
                       icon: Icons.arrow_downward_rounded)),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                   child: _StatCard(
                       label: 'Expenses',
                       value: '₦54,500',
-                      color: AppColors.error,
                       icon: Icons.arrow_upward_rounded)),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                   child: _StatCard(
                       label: 'Savings',
                       value: '₦75,500',
-                      color: const Color(0xFF7C3AED),
                       icon: Icons.savings_rounded)),
             ]),
             const SizedBox(height: 28),
 
-            // ── Spending trend ────────────────────────────────
+            // ── Spending trend (Section 12: monochrome line chart) ──
             const SectionHeader(title: 'Spending Trend'),
             const SizedBox(height: 14),
             InfoCard(
@@ -83,11 +79,12 @@ class ReportsScreen extends StatelessWidget {
                 height: 180,
                 child: LineChart(
                   LineChartData(
+                    backgroundColor: Colors.transparent,
                     gridData: FlGridData(
                       show: true,
                       drawVerticalLine: false,
                       getDrawingHorizontalLine: (_) => const FlLine(
-                        color: Color(0xFFF1F5F9),
+                        color: PennyPalColors.mutedBorder,
                         strokeWidth: 1,
                       ),
                     ),
@@ -112,7 +109,7 @@ class ReportsScreen extends StatelessWidget {
                             return Text(months[i],
                                 style: const TextStyle(
                                     fontSize: 11,
-                                    color: AppColors.muted));
+                                    color: PennyPalColors.gray));
                           },
                           reservedSize: 24,
                         ),
@@ -130,21 +127,21 @@ class ReportsScreen extends StatelessWidget {
                           FlSpot(5, 54.5),
                         ],
                         isCurved: true,
-                        color: AppColors.primary,
+                        color: PennyPalColors.white,
                         barWidth: 2.5,
                         dotData: FlDotData(
                           show: true,
                           getDotPainter: (_, __, ___, ____) =>
                               FlDotCirclePainter(
                             radius: 4,
-                            color: AppColors.primary,
+                            color: PennyPalColors.white,
                             strokeWidth: 2,
-                            strokeColor: Colors.white,
+                            strokeColor: PennyPalColors.surface,
                           ),
                         ),
                         belowBarData: BarAreaData(
                           show: true,
-                          color: AppColors.primary.withValues(alpha: 0.08),
+                          color: PennyPalColors.white.withValues(alpha: 0.08),
                         ),
                       ),
                     ],
@@ -154,7 +151,7 @@ class ReportsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 28),
 
-            // ── By category donut ─────────────────────────────
+            // ── By category donut (Section 12: monochrome donut) ──
             const SectionHeader(title: 'Spending by Category'),
             const SizedBox(height: 14),
             InfoCard(
@@ -168,27 +165,27 @@ class ReportsScreen extends StatelessWidget {
                       sections: [
                         PieChartSectionData(
                             value: 25000,
-                            color: const Color(0xFF16A34A),
+                            color: PennyPalColors.white,
                             radius: 32,
                             showTitle: false),
                         PieChartSectionData(
                             value: 12500,
-                            color: const Color(0xFF0D9488),
+                            color: PennyPalColors.offWhite,
                             radius: 32,
                             showTitle: false),
                         PieChartSectionData(
                             value: 8000,
-                            color: const Color(0xFF7C3AED),
+                            color: PennyPalColors.lightGray,
                             radius: 32,
                             showTitle: false),
                         PieChartSectionData(
                             value: 5000,
-                            color: const Color(0xFFF59E0B),
+                            color: PennyPalColors.gray,
                             radius: 32,
                             showTitle: false),
                         PieChartSectionData(
                             value: 4000,
-                            color: const Color(0xFF64748B),
+                            color: PennyPalColors.darkGray,
                             radius: 32,
                             showTitle: false),
                       ],
@@ -196,11 +193,11 @@ class ReportsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   for (final item in <(String, String, String, Color)>[
-                    ('🍔', 'Food', '₦25,000', Color(0xFF16A34A)),
-                    ('🚌', 'Transport', '₦12,500', Color(0xFF0D9488)),
-                    ('📚', 'Education', '₦8,000', Color(0xFF7C3AED)),
-                    ('🎬', 'Entertainment', '₦5,000', Color(0xFFF59E0B)),
-                    ('🛒', 'Other', '₦4,000', Color(0xFF64748B)),
+                    ('🍔', 'Food', '₦25,000', PennyPalColors.white),
+                    ('🚌', 'Transport', '₦12,500', PennyPalColors.offWhite),
+                    ('📚', 'Education', '₦8,000', PennyPalColors.lightGray),
+                    ('🎬', 'Entertainment', '₦5,000', PennyPalColors.gray),
+                    ('🛒', 'Other', '₦4,000', PennyPalColors.darkGray),
                   ])
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -218,12 +215,12 @@ class ReportsScreen extends StatelessWidget {
                             child: Text(item.$2,
                                 style: const TextStyle(
                                     fontSize: 13,
-                                    color: AppColors.text))),
+                                    color: PennyPalColors.white))),
                         Text(item.$3,
                             style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.text)),
+                                color: PennyPalColors.white)),
                       ]),
                     ),
                 ],
@@ -238,8 +235,8 @@ class ReportsScreen extends StatelessWidget {
               child: Column(
                 children: [
                   for (final item in [
-                    ('August', 0.68),
-                    ('September', 0.545),
+                    ('August', 0.68, PennyPalColors.lightGray),
+                    ('September', 0.545, PennyPalColors.white),
                   ])
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -248,7 +245,7 @@ class ReportsScreen extends StatelessWidget {
                           width: 80,
                           child: Text(item.$1,
                               style: const TextStyle(
-                                  fontSize: 13, color: AppColors.muted)),
+                                  fontSize: 13, color: PennyPalColors.gray)),
                         ),
                         Expanded(
                           child: ClipRRect(
@@ -256,9 +253,8 @@ class ReportsScreen extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: item.$2,
                               minHeight: 8,
-                              backgroundColor: const Color(0xFFE2E8F0),
-                              valueColor: AlwaysStoppedAnimation(
-                                  AppColors.primary),
+                              backgroundColor: PennyPalColors.border,
+                              valueColor: AlwaysStoppedAnimation(item.$3),
                             ),
                           ),
                         ),
@@ -268,7 +264,7 @@ class ReportsScreen extends StatelessWidget {
                           style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.text),
+                              color: PennyPalColors.white),
                         ),
                       ]),
                     ),
@@ -283,19 +279,16 @@ class ReportsScreen extends StatelessWidget {
             const InsightChip(
               emoji: '💡',
               text: 'You spent 18% less on food this month.',
-              color: Color(0xFF16A34A),
             ),
             const SizedBox(height: 10),
             const InsightChip(
-              emoji: '⚠️',
+              emoji: '📊',
               text: 'Entertainment spending increased by 12%.',
-              color: Color(0xFFF59E0B),
             ),
             const SizedBox(height: 10),
             const InsightChip(
               emoji: '🎯',
               text: "You're on track to reach your savings goal.",
-              color: Color(0xFF7C3AED),
             ),
           ],
         ),
@@ -308,12 +301,10 @@ class _StatCard extends StatelessWidget {
   const _StatCard({
     required this.label,
     required this.value,
-    required this.color,
     required this.icon,
   });
   final String label;
   final String value;
-  final Color color;
   final IconData icon;
 
   @override
@@ -321,32 +312,33 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: PennyPalColors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: const Border.fromBorderSide(
-            BorderSide(color: Color(0xFFE2E8F0))),
+        border: Border.all(color: PennyPalColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 30,
-            height: 30,
+            width: 32,
+            height: 32,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
+              color: PennyPalColors.elevated,
               borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: PennyPalColors.border),
             ),
-            child: Icon(icon, color: color, size: 16),
+            child: Icon(icon, color: PennyPalColors.white, size: 16),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(value,
               style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.text)),
+                  color: PennyPalColors.white)),
+          const SizedBox(height: 2),
           Text(label,
               style:
-                  const TextStyle(fontSize: 11, color: AppColors.muted)),
+                  const TextStyle(fontSize: 11, color: PennyPalColors.gray)),
         ],
       ),
     );
@@ -354,13 +346,13 @@ class _StatCard extends StatelessWidget {
 }
 
 AppBar _cleanBar(String title) => AppBar(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       title: Text(title,
           style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: AppColors.text)),
-      iconTheme: const IconThemeData(color: AppColors.text),
+              color: PennyPalColors.white)),
+      iconTheme: const IconThemeData(color: PennyPalColors.white),
     );

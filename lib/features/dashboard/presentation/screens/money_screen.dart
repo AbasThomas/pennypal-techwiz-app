@@ -48,7 +48,7 @@ class _MoneyScreenState extends State<MoneyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,49 +64,48 @@ class _MoneyScreenState extends State<MoneyScreen> {
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.4,
-                      color: AppColors.text,
+                      color: PennyPalColors.white,
                     ),
                   ),
                   const Spacer(),
                   IconButton(
                     onPressed: () {},
                     icon: const Icon(Icons.filter_list_rounded,
-                        color: AppColors.text),
+                        color: PennyPalColors.white),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 14),
 
-            // ── Search ───────────────────────────────────────────
+            // ── Search (Section 9) ───────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextField(
                 controller: _search,
                 onChanged: (_) => setState(() {}),
+                style: const TextStyle(color: PennyPalColors.white, fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'Search transactions…',
-                  hintStyle: const TextStyle(color: AppColors.muted),
+                  hintStyle: const TextStyle(color: PennyPalColors.muted),
                   prefixIcon: const Icon(Icons.search_rounded,
-                      color: AppColors.muted, size: 20),
+                      color: PennyPalColors.muted, size: 20),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: PennyPalColors.surface,
                   contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16, vertical: 14),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide:
-                        const BorderSide(color: Color(0xFFE2E8F0)),
+                    borderSide: const BorderSide(color: PennyPalColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide:
-                        const BorderSide(color: Color(0xFFE2E8F0)),
+                    borderSide: const BorderSide(color: PennyPalColors.border),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: const BorderSide(
-                        color: AppColors.primary, width: 2),
+                        color: PennyPalColors.white, width: 1.5),
                   ),
                 ),
               ),
@@ -125,19 +124,19 @@ class _MoneyScreenState extends State<MoneyScreen> {
                         onTap: () =>
                             setState(() => _filterIndex = e.key),
                         child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
+                          duration: const Duration(milliseconds: 180),
                           margin: const EdgeInsets.only(right: 10),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
                             color: _filterIndex == e.key
-                                ? AppColors.primary
-                                : Colors.white,
+                                ? PennyPalColors.white
+                                : PennyPalColors.surface,
                             borderRadius: BorderRadius.circular(22),
                             border: Border.all(
                               color: _filterIndex == e.key
-                                  ? AppColors.primary
-                                  : const Color(0xFFE2E8F0),
+                                  ? PennyPalColors.white
+                                  : PennyPalColors.border,
                             ),
                           ),
                           child: Text(
@@ -146,8 +145,8 @@ class _MoneyScreenState extends State<MoneyScreen> {
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: _filterIndex == e.key
-                                  ? Colors.white
-                                  : AppColors.muted,
+                                  ? PennyPalColors.black
+                                  : PennyPalColors.gray,
                             ),
                           ),
                         ),
@@ -171,7 +170,7 @@ class _MoneyScreenState extends State<MoneyScreen> {
                       padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
                       itemCount: _filtered.length,
                       separatorBuilder: (_, __) => const Divider(
-                          height: 1, color: Color(0xFFF1F5F9)),
+                          height: 1, color: PennyPalColors.mutedBorder),
                       itemBuilder: (_, i) {
                         final t = _filtered[i];
                         return TransactionTile(

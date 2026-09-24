@@ -9,17 +9,17 @@ class ArticleDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: PennyPalColors.black,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: PennyPalColors.black,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         title: const Text('Budgeting',
             style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: AppColors.text)),
-        iconTheme: const IconThemeData(color: AppColors.text),
+                color: PennyPalColors.white)),
+        iconTheme: const IconThemeData(color: PennyPalColors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
@@ -34,21 +34,20 @@ class ArticleDetailScreen extends StatelessWidget {
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.5,
                 height: 1.2,
-                color: AppColors.text,
+                color: PennyPalColors.white,
               ),
             ),
             const SizedBox(height: 8),
-            Row(children: [
-              const Icon(Icons.access_time_rounded,
-                  size: 14, color: AppColors.muted),
-              const SizedBox(width: 5),
-              const Text('5 min read',
-                  style: TextStyle(fontSize: 13, color: AppColors.muted)),
+            const Row(children: [
+              Icon(Icons.access_time_rounded,
+                  size: 14, color: PennyPalColors.gray),
+              SizedBox(width: 5),
+              Text('5 min read',
+                  style: TextStyle(fontSize: 13, color: PennyPalColors.gray)),
             ]),
             const SizedBox(height: 20),
 
             // ── Lottie placeholder ─────────────────────────────
-            // TODO: Lottie.asset('assets/animations/onboarding_2.json', height: 200)
             const LottiePlaceholder(height: 180, label: 'onboarding_2.json'),
             const SizedBox(height: 24),
 
@@ -63,10 +62,9 @@ class ArticleDetailScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.06),
+                color: PennyPalColors.surface,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.15)),
+                border: Border.all(color: PennyPalColors.border),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,13 +73,13 @@ class ArticleDetailScreen extends StatelessWidget {
                       style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.primary)),
+                          color: PennyPalColors.white)),
                   const SizedBox(height: 10),
                   const Text('You receive ₦100,000/month.',
                       style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.text)),
+                          color: PennyPalColors.white)),
                   const SizedBox(height: 10),
                   for (final item in [
                     ('Needs', '₦50,000'),
@@ -94,12 +92,12 @@ class ArticleDetailScreen extends StatelessWidget {
                         Expanded(
                             child: Text(item.$1,
                                 style: const TextStyle(
-                                    fontSize: 14, color: AppColors.muted))),
+                                    fontSize: 14, color: PennyPalColors.gray))),
                         Text(item.$2,
                             style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.text)),
+                                color: PennyPalColors.white)),
                       ]),
                     ),
                 ],
@@ -113,7 +111,6 @@ class ArticleDetailScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             // ── Second illustration ────────────────────────────
-            // TODO: swap with a second lottie here
             const LottiePlaceholder(height: 140, label: 'onboarding_3.json'),
             const SizedBox(height: 24),
 
@@ -121,10 +118,9 @@ class ArticleDetailScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.gold.withValues(alpha: 0.08),
+                color: PennyPalColors.surface,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                    color: AppColors.gold.withValues(alpha: 0.25)),
+                border: Border.all(color: PennyPalColors.border),
               ),
               child: const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,13 +135,13 @@ class ArticleDetailScreen extends StatelessWidget {
                             style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.text)),
+                                color: PennyPalColors.white)),
                         SizedBox(height: 4),
                         Text(
                           'Always give your money a job. A budget is just a spending plan — it puts you in control.',
                           style: TextStyle(
                               fontSize: 13,
-                              color: AppColors.muted,
+                              color: PennyPalColors.gray,
                               height: 1.5),
                         ),
                       ],
@@ -164,7 +160,7 @@ class ArticleDetailScreen extends StatelessWidget {
         text,
         style: const TextStyle(
           fontSize: 15,
-          color: AppColors.text,
+          color: PennyPalColors.lightGray,
           height: 1.7,
         ),
       );
