@@ -4,18 +4,66 @@ import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/app_widgets.dart';
 import '../../../../shared/widgets/lottie_placeholder.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../data/finance_providers.dart';
+import '../../../../data/models/financial_models.dart';
+import '../../../auth/providers/auth_providers.dart';
 
-class AddExpenseScreen extends StatefulWidget {
+class AddExpenseScreen extends ConsumerStatefulWidget {
   const AddExpenseScreen({super.key});
   @override
-  State<AddExpenseScreen> createState() => _AddExpenseScreenState();
+  ConsumerState<AddExpenseScreen> createState() => _AddExpenseScreenState();
 }
 
-class _AddExpenseScreenState extends State<AddExpenseScreen> {
+class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   final _amount = TextEditingController();
   final _description = TextEditingController();
   String _selectedCategory = 'Food';
   String _aiHint = '';
+  bool _saving = false;
+  Future<void> _save() async {
+    final value = double.tryParse(_amount.text.replaceAll(',', '').trim());
+    if (value == null || value <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter a valid expense amount.')),
+      );
+      return;
+    }
+    final uid = ref.read(currentUserProvider)?.id;
+    if (uid == null) return;
+    setState(() => _saving = true);
+    try {
+      await ref
+          .read(financeRepositoryProvider)
+          .saveTransaction(
+            FinanceTransaction(
+              id: '',
+              userId: uid,
+              type: TransactionType.expense,
+              amount: value,
+              categoryId: _selectedCategory,
+              description: _description.text.trim().isEmpty
+                  ? _selectedCategory
+                  : _description.text.trim(),
+              date: DateTime.now(),
+              paymentMode: 'Cash',
+            ),
+          );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Expense saved.')));
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Could not save expense: $e')));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
 
   static const _categories = [
     (AppIcons.food, 'Food'),
@@ -71,46 +119,55 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           children: [
             // Lottie placeholder
             const LottiePlaceholder(
-                height: 120,
-                label: 'add_expense.json',
-                tint: PennyPalColors.white),
+              height: 120,
+              label: 'add_expense.json',
+              tint: PennyPalColors.white,
+            ),
             const SizedBox(height: 28),
 
             // Amount
-            const Text('Amount',
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: PennyPalColors.gray)),
+            const Text(
+              'Amount',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: PennyPalColors.gray,
+              ),
+            ),
             const SizedBox(height: 8),
             TextField(
               controller: _amount,
               keyboardType: TextInputType.number,
               onChanged: _onAmountChanged,
               style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  color: PennyPalColors.white),
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                color: PennyPalColors.white,
+              ),
               decoration: InputDecoration(
                 hintText: '0.00',
                 hintStyle: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                    color: PennyPalColors.muted.withValues(alpha: 0.3)),
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: PennyPalColors.muted.withValues(alpha: 0.3),
+                ),
                 filled: true,
                 fillColor: PennyPalColors.surface,
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide:
-                        const BorderSide(color: PennyPalColors.border)),
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: PennyPalColors.border),
+                ),
                 enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide:
-                        const BorderSide(color: PennyPalColors.border)),
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: PennyPalColors.border),
+                ),
                 focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                        color: PennyPalColors.white, width: 2)),
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(
+                    color: PennyPalColors.white,
+                    width: 2,
+                  ),
+                ),
               ),
             ),
 
@@ -119,31 +176,39 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 8),
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: PennyPalColors.card,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: PennyPalColors.border),
                 ),
-                child: Text(_aiHint,
-                    style: const TextStyle(
-                        fontSize: 13, color: PennyPalColors.white)),
+                child: Text(
+                  _aiHint,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: PennyPalColors.white,
+                  ),
+                ),
               ),
             ],
             const SizedBox(height: 24),
 
             // Category
-            const Text('Category',
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: PennyPalColors.gray)),
+            const Text(
+              'Category',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: PennyPalColors.gray,
+              ),
+            ),
             const SizedBox(height: 10),
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
@@ -203,16 +268,18 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             const SizedBox(height: 24),
 
             // Date
-            const Text('Date',
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: PennyPalColors.gray)),
+            const Text(
+              'Date',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: PennyPalColors.gray,
+              ),
+            ),
             const SizedBox(height: 8),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
                 color: PennyPalColors.surface,
                 borderRadius: BorderRadius.circular(14),
@@ -220,26 +287,32 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               ),
               child: const Row(
                 children: [
-                  AppIcon(AppIcons.calendar,
-                      size: 18, color: PennyPalColors.muted),
+                  AppIcon(
+                    AppIcons.calendar,
+                    size: 18,
+                    color: PennyPalColors.muted,
+                  ),
                   SizedBox(width: 10),
-                  Text('Today',
-                      style: TextStyle(
-                          fontSize: 15, color: PennyPalColors.white)),
+                  Text(
+                    'Today',
+                    style: TextStyle(fontSize: 15, color: PennyPalColors.white),
+                  ),
                   Spacer(),
-                  AppIcon(AppIcons.chevronRight,
-                      color: PennyPalColors.muted),
+                  AppIcon(AppIcons.chevronRight, color: PennyPalColors.muted),
                 ],
               ),
             ),
             const SizedBox(height: 24),
 
             // Description
-            const Text('Description',
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: PennyPalColors.gray)),
+            const Text(
+              'Description',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: PennyPalColors.gray,
+              ),
+            ),
             const SizedBox(height: 8),
             TextField(
               controller: _description,
@@ -250,17 +323,20 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 filled: true,
                 fillColor: PennyPalColors.surface,
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide:
-                        const BorderSide(color: PennyPalColors.border)),
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: PennyPalColors.border),
+                ),
                 enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide:
-                        const BorderSide(color: PennyPalColors.border)),
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: PennyPalColors.border),
+                ),
                 focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide:
-                        const BorderSide(color: PennyPalColors.white, width: 1.5)),
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(
+                    color: PennyPalColors.white,
+                    width: 1.5,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -276,21 +352,24 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 decoration: BoxDecoration(
                   color: PennyPalColors.surface,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: PennyPalColors.border,
-                    width: 1.5,
-                  ),
+                  border: Border.all(color: PennyPalColors.border, width: 1.5),
                 ),
                 child: const Column(
                   children: [
-                    AppIcon(AppIcons.image,
-                        color: PennyPalColors.white, size: 28),
+                    AppIcon(
+                      AppIcons.image,
+                      color: PennyPalColors.white,
+                      size: 28,
+                    ),
                     SizedBox(height: 6),
-                    Text('Add receipt',
-                        style: TextStyle(
-                            color: PennyPalColors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13)),
+                    Text(
+                      'Add receipt',
+                      style: TextStyle(
+                        color: PennyPalColors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -298,13 +377,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             const SizedBox(height: 32),
 
             // Save
-            AppButton(
-              text: 'Save Expense',
-              onPressed: () {
-                HapticFeedback.lightImpact();
-                Navigator.pop(context);
-              },
-            ),
+            AppButton(text: 'Save Expense', onPressed: _saving ? null : _save),
           ],
         ),
       ),

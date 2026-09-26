@@ -2,19 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../shared/widgets/lottie_placeholder.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../auth/providers/auth_providers.dart';
+import '../../../../data/finance_providers.dart';
 
-class FeedbackScreen extends StatefulWidget {
+class FeedbackScreen extends ConsumerStatefulWidget {
   const FeedbackScreen({super.key});
   @override
-  State<FeedbackScreen> createState() => _FeedbackScreenState();
+  ConsumerState<FeedbackScreen> createState() => _FeedbackScreenState();
 }
 
-class _FeedbackScreenState extends State<FeedbackScreen> {
+class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
   final _name = TextEditingController();
   final _email = TextEditingController();
   final _comments = TextEditingController();
   int _rating = 0;
   bool _submitted = false;
+  bool _sending = false;
 
   @override
   void dispose() {
@@ -24,9 +28,37 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     super.dispose();
   }
 
-  void _submit() {
-    if (_rating == 0) return;
-    setState(() => _submitted = true);
+  Future<void> _submit() async {
+    if (_name.text.trim().isEmpty ||
+        !_email.text.contains('@') ||
+        _comments.text.trim().isEmpty ||
+        _rating == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Complete your name, email, rating and comments.'),
+        ),
+      );
+      return;
+    }
+    final uid = ref.read(currentUserProvider)?.id;
+    if (uid == null) return;
+    setState(() => _sending = true);
+    try {
+      await ref.read(financeRepositoryProvider).submitFeedback(uid, {
+        'name': _name.text.trim(),
+        'email': _email.text.trim(),
+        'rating': _rating,
+        'comments': _comments.text.trim(),
+      });
+      if (mounted) setState(() => _submitted = true);
+    } catch (e) {
+      if (mounted)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Submission failed: $e')));
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
   }
 
   @override
@@ -37,21 +69,26 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         backgroundColor: PennyPalColors.black,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Give Feedback',
-            style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: PennyPalColors.white)),
+        title: const Text(
+          'Give Feedback',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: PennyPalColors.white,
+          ),
+        ),
         iconTheme: const IconThemeData(color: PennyPalColors.white),
       ),
-      body: _submitted ? _SuccessView() : _FormView(
-        name: _name,
-        email: _email,
-        comments: _comments,
-        rating: _rating,
-        onRating: (r) => setState(() => _rating = r),
-        onSubmit: _submit,
-      ),
+      body: _submitted
+          ? _SuccessView()
+          : _FormView(
+              name: _name,
+              email: _email,
+              comments: _comments,
+              rating: _rating,
+              onRating: (r) => setState(() => _rating = r),
+              onSubmit: _sending ? null : _submit,
+            ),
     );
   }
 }
@@ -71,11 +108,14 @@ class _SuccessView extends StatelessWidget {
               tint: PennyPalColors.white,
             ),
             SizedBox(height: 24),
-            Text('Thank you!',
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    color: PennyPalColors.white)),
+            Text(
+              'Thank you!',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: PennyPalColors.white,
+              ),
+            ),
             SizedBox(height: 10),
             Text(
               'Thanks for helping us improve PennyPal!',
@@ -104,7 +144,7 @@ class _FormView extends StatelessWidget {
   final TextEditingController comments;
   final int rating;
   final ValueChanged<int> onRating;
-  final VoidCallback onSubmit;
+  final VoidCallback? onSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +174,9 @@ class _FormView extends StatelessWidget {
                   child: AppIcon(
                     filled ? AppIcons.star : AppIcons.starOff,
                     size: 38,
-                    color: filled ? PennyPalColors.white : PennyPalColors.border,
+                    color: filled
+                        ? PennyPalColors.white
+                        : PennyPalColors.border,
                   ),
                 ),
               );
@@ -150,9 +192,10 @@ class _FormView extends StatelessWidget {
           _label('Email'),
           const SizedBox(height: 8),
           _field(
-              controller: email,
-              hint: 'your@email.com',
-              type: TextInputType.emailAddress),
+            controller: email,
+            hint: 'your@email.com',
+            type: TextInputType.emailAddress,
+          ),
           const SizedBox(height: 16),
 
           _label('Comments'),
@@ -167,17 +210,20 @@ class _FormView extends StatelessWidget {
               filled: true,
               fillColor: PennyPalColors.surface,
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide:
-                      const BorderSide(color: PennyPalColors.border)),
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(color: PennyPalColors.border),
+              ),
               enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide:
-                      const BorderSide(color: PennyPalColors.border)),
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(color: PennyPalColors.border),
+              ),
               focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(
-                      color: PennyPalColors.white, width: 1.5)),
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(
+                  color: PennyPalColors.white,
+                  width: 1.5,
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 28),
@@ -192,13 +238,17 @@ class _FormView extends StatelessWidget {
                 foregroundColor: PennyPalColors.black,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
-              child: const Text('Submit Feedback',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: PennyPalColors.black)),
+              child: const Text(
+                'Submit Feedback',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: PennyPalColors.black,
+                ),
+              ),
             ),
           ),
         ],
@@ -206,36 +256,40 @@ class _FormView extends StatelessWidget {
     );
   }
 
-  Widget _label(String text) => Text(text,
-      style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: PennyPalColors.gray));
+  Widget _label(String text) => Text(
+    text,
+    style: const TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+      color: PennyPalColors.gray,
+    ),
+  );
 
   Widget _field({
     required TextEditingController controller,
     required String hint,
     TextInputType? type,
-  }) =>
-      TextField(
-        controller: controller,
-        keyboardType: type,
-        style: const TextStyle(color: PennyPalColors.white),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: const TextStyle(color: PennyPalColors.muted),
-          filled: true,
-          fillColor: PennyPalColors.surface,
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: PennyPalColors.border)),
-          enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: PennyPalColors.border)),
-          focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide:
-                  const BorderSide(color: PennyPalColors.white, width: 1.5)),
-        ),
-      );
+  }) => TextField(
+    controller: controller,
+    keyboardType: type,
+    style: const TextStyle(color: PennyPalColors.white),
+    decoration: InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: PennyPalColors.muted),
+      filled: true,
+      fillColor: PennyPalColors.surface,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: PennyPalColors.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: PennyPalColors.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: PennyPalColors.white, width: 1.5),
+      ),
+    ),
+  );
 }

@@ -17,6 +17,8 @@ import '../../features/dashboard/presentation/penny_pal_shell.dart';
 import '../../features/dashboard/presentation/screens/add_expense_screen.dart';
 import '../../features/dashboard/presentation/screens/add_income_screen.dart';
 import '../../features/dashboard/presentation/screens/article_detail_screen.dart';
+import '../../features/dashboard/presentation/screens/learn_screen.dart';
+import '../../features/dashboard/presentation/screens/plan_screen.dart';
 import '../../features/more/presentation/about_screen.dart';
 import '../../features/more/presentation/ai_assistant_screen.dart';
 import '../../features/more/presentation/feedback_screen.dart';
@@ -79,7 +81,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           loc.startsWith('/feedback') ||
           loc.startsWith('/support') ||
           loc.startsWith('/about') ||
-          loc.startsWith('/learn/') ||
+          loc.startsWith('/learn') ||
+          loc.startsWith('/goals') ||
           loc == '/admin' ||
           loc == '/verify-email';
 
@@ -136,12 +139,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           path: '/support', builder: (_, _) => const SupportScreen()),
       GoRoute(path: '/about', builder: (_, _) => const AboutScreen()),
 
-      // ── Learning ─────────────────────────────────────────────────
+      // ── Learning & Goals ─────────────────────────────────────────
+      GoRoute(
+        path: '/learn',
+        builder: (_, _) => const LearnScreen(),
+      ),
       GoRoute(
         path: '/learn/:slug',
         builder: (_, state) =>
             ArticleDetailScreen(slug: state.pathParameters['slug']),
       ),
+      GoRoute(
+        path: '/goals',
+        builder: (_, _) => const PlanScreen(),
+      ),
+      GoRoute(path: '/budget', builder: (_, _) => const PlanScreen()),
+      GoRoute(path: '/savings', builder: (_, _) => const PlanScreen()),
 
       // ── Admin ────────────────────────────────────────────────────
       GoRoute(

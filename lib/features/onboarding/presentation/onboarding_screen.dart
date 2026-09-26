@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../shared/widgets/lottie_placeholder.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Onboarding — 3 slides
@@ -21,17 +21,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   static const _slides = [
     _Slide(
-      lottie: 'onboarding_1.json',
+      lottie: 'assets/animations/onboarding1.json',
       title: 'Understand\nYour Money',
       body: 'Track your income and expenses\nin one simple place.',
     ),
     _Slide(
-      lottie: 'onboarding_2.json',
+      lottie: 'assets/animations/onboarding2.json',
       title: 'Build Better\nMoney Habits',
       body: 'Create budgets, track spending\nand stay in control.',
     ),
     _Slide(
-      lottie: 'onboarding_3.json',
+      lottie: 'assets/animations/onboarding3.json',
       title: 'Turn Goals\nInto Progress',
       body: 'Set savings goals and make\nevery naira count.',
     ),
@@ -175,11 +175,11 @@ class _SlideView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          LottiePlaceholder(
+          Lottie.asset(
+            slide.lottie,
             width: 280,
             height: 260,
-            label: slide.lottie,
-            tint: PennyPalColors.white,
+            fit: BoxFit.contain,
           ),
           const SizedBox(height: 44),
           Text(

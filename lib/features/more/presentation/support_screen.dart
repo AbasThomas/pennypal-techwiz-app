@@ -1,17 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../auth/providers/auth_providers.dart';
+import '../../../../data/finance_providers.dart';
 
-class SupportScreen extends StatefulWidget {
+class SupportScreen extends ConsumerStatefulWidget {
   const SupportScreen({super.key});
   @override
-  State<SupportScreen> createState() => _SupportScreenState();
+  ConsumerState<SupportScreen> createState() => _SupportScreenState();
 }
 
-class _SupportScreenState extends State<SupportScreen> {
+class _SupportScreenState extends ConsumerState<SupportScreen> {
   final _subject = TextEditingController();
   final _message = TextEditingController();
   bool _sent = false;
+  bool _sending = false;
+  Future<void> _send() async {
+    if (_subject.text.trim().isEmpty || _message.text.trim().length < 5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Enter a subject and a detailed message.'),
+        ),
+      );
+      return;
+    }
+    final uid = ref.read(currentUserProvider)?.id;
+    if (uid == null) return;
+    setState(() => _sending = true);
+    try {
+      await ref.read(financeRepositoryProvider).submitSupport(uid, {
+        'subject': _subject.text.trim(),
+        'message': _message.text.trim(),
+      });
+      if (mounted) setState(() => _sent = true);
+    } catch (e) {
+      if (mounted)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Message failed: $e')));
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -28,18 +59,23 @@ class _SupportScreenState extends State<SupportScreen> {
         backgroundColor: PennyPalColors.black,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Contact Support',
-            style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: PennyPalColors.white)),
+        title: const Text(
+          'Contact Support',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: PennyPalColors.white,
+          ),
+        ),
         iconTheme: const IconThemeData(color: PennyPalColors.white),
       ),
-      body: _sent ? _SentView() : _FormView(
-        subject: _subject,
-        message: _message,
-        onSend: () => setState(() => _sent = true),
-      ),
+      body: _sent
+          ? _SentView()
+          : _FormView(
+              subject: _subject,
+              message: _message,
+              onSend: _sending ? null : _send,
+            ),
     );
   }
 }
@@ -61,21 +97,30 @@ class _SentView extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: PennyPalColors.border),
               ),
-              child: const AppIcon(AppIcons.check,
-                  color: PennyPalColors.white, size: 40),
+              child: const AppIcon(
+                AppIcons.check,
+                color: PennyPalColors.white,
+                size: 40,
+              ),
             ),
             const SizedBox(height: 20),
-            const Text('Message Sent',
-                style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    color: PennyPalColors.white)),
+            const Text(
+              'Message Sent',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: PennyPalColors.white,
+              ),
+            ),
             const SizedBox(height: 10),
             const Text(
               'Our support team will review your\nrequest and get back to you.',
               textAlign: TextAlign.center,
-              style:
-                  TextStyle(fontSize: 14, color: PennyPalColors.gray, height: 1.5),
+              style: TextStyle(
+                fontSize: 14,
+                color: PennyPalColors.gray,
+                height: 1.5,
+              ),
             ),
           ],
         ),
@@ -92,7 +137,7 @@ class _FormView extends StatelessWidget {
   });
   final TextEditingController subject;
   final TextEditingController message;
-  final VoidCallback onSend;
+  final VoidCallback? onSend;
 
   @override
   Widget build(BuildContext context) {
@@ -108,20 +153,26 @@ class _FormView extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: PennyPalColors.border),
             ),
-            child: const Row(children: [
-              AppIcon(AppIcons.support,
-                  color: PennyPalColors.white, size: 22),
-              SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  "Need help? We're here.",
-                  style: TextStyle(
+            child: const Row(
+              children: [
+                AppIcon(
+                  AppIcons.support,
+                  color: PennyPalColors.white,
+                  size: 22,
+                ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    "Need help? We're here.",
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: PennyPalColors.white),
+                      color: PennyPalColors.white,
+                    ),
+                  ),
                 ),
-              ),
-            ]),
+              ],
+            ),
           ),
           const SizedBox(height: 24),
 
@@ -142,17 +193,20 @@ class _FormView extends StatelessWidget {
               filled: true,
               fillColor: PennyPalColors.surface,
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide:
-                      const BorderSide(color: PennyPalColors.border)),
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(color: PennyPalColors.border),
+              ),
               enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide:
-                      const BorderSide(color: PennyPalColors.border)),
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(color: PennyPalColors.border),
+              ),
               focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(
-                      color: PennyPalColors.white, width: 1.5)),
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(
+                  color: PennyPalColors.white,
+                  width: 1.5,
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 28),
@@ -167,13 +221,17 @@ class _FormView extends StatelessWidget {
                 foregroundColor: PennyPalColors.black,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
-              child: const Text('Send Message',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: PennyPalColors.black)),
+              child: const Text(
+                'Send Message',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: PennyPalColors.black,
+                ),
+              ),
             ),
           ),
         ],
@@ -181,33 +239,38 @@ class _FormView extends StatelessWidget {
     );
   }
 
-  Widget _label(String text) => Text(text,
-      style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: PennyPalColors.gray));
+  Widget _label(String text) => Text(
+    text,
+    style: const TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+      color: PennyPalColors.gray,
+    ),
+  );
 
-  Widget _field(
-          {required TextEditingController controller,
-          required String hint}) =>
-      TextField(
-        controller: controller,
-        style: const TextStyle(color: PennyPalColors.white),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: const TextStyle(color: PennyPalColors.muted),
-          filled: true,
-          fillColor: PennyPalColors.surface,
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: PennyPalColors.border)),
-          enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: PennyPalColors.border)),
-          focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide:
-                  const BorderSide(color: PennyPalColors.white, width: 1.5)),
-        ),
-      );
+  Widget _field({
+    required TextEditingController controller,
+    required String hint,
+  }) => TextField(
+    controller: controller,
+    style: const TextStyle(color: PennyPalColors.white),
+    decoration: InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: PennyPalColors.muted),
+      filled: true,
+      fillColor: PennyPalColors.surface,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: PennyPalColors.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: PennyPalColors.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: PennyPalColors.white, width: 1.5),
+      ),
+    ),
+  );
 }

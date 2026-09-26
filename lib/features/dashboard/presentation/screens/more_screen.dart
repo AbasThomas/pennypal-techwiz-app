@@ -111,6 +111,11 @@ class MoreScreen extends ConsumerWidget {
                   onTap: () => context.push('/reports'),
                 ),
                 _MenuItem(
+                  icon: AppIcons.book,
+                  label: 'Financial Learning',
+                  onTap: () => context.push('/learn'),
+                ),
+                _MenuItem(
                   icon: AppIcons.robot,
                   label: 'AI Assistant',
                   onTap: () => context.push('/ai-assistant'),

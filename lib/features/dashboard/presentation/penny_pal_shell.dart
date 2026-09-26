@@ -10,7 +10,7 @@ import '../../../features/auth/providers/auth_providers.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/money_screen.dart';
 import 'screens/plan_screen.dart';
-import 'screens/learn_screen.dart';
+import '../../more/presentation/ai_assistant_screen.dart';
 import 'screens/more_screen.dart';
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -45,9 +45,9 @@ const _navItems = [
     activeIcon: AppIcons.chart,
   ),
   _NavItem(
-    label: 'Learn',
-    icon: AppIcons.book,
-    activeIcon: AppIcons.book,
+    label: 'Assistant',
+    icon: AppIcons.robot,
+    activeIcon: AppIcons.robot,
   ),
   _NavItem(
     label: 'More',
@@ -110,7 +110,7 @@ class _PennyPalShellState extends ConsumerState<PennyPalShell> {
       DashboardScreen(firstName: firstName),
       const MoneyScreen(),
       const PlanScreen(),
-      const LearnScreen(),
+      const AiAssistantScreen(),
       const MoreScreen(),
     ];
 

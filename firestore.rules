@@ -10,10 +10,9 @@ service cloud.firestore {
 
     // Financial records are always private to their owning student.
     match /{collection}/{document} {
-      allow read, create, update, delete: if collection in [
-        'transactions', 'budgets', 'savingsGoals', 'reports', 'notifications',
-        'supportQueries', 'feedback'
-      ] && (ownsUser(resource.data.userId) || ownsUser(request.resource.data.userId) || admin());
+      allow read: if collection in ['transactions', 'budgets', 'savingsGoals', 'reports', 'notifications', 'supportQueries', 'feedback'] && (ownsUser(resource.data.userId) || admin());
+      allow create: if collection in ['transactions', 'budgets', 'savingsGoals', 'reports', 'notifications', 'supportQueries', 'feedback'] && (ownsUser(request.resource.data.userId) || admin());
+      allow update, delete: if collection in ['transactions', 'budgets', 'savingsGoals', 'reports', 'notifications', 'supportQueries', 'feedback'] && (ownsUser(resource.data.userId) || admin());
     }
     match /users/{userId} { allow read, update: if ownsUser(userId) || admin(); allow create: if ownsUser(userId); }
     match /userProfiles/{userId} { allow read, update: if ownsUser(userId) || admin(); allow create: if ownsUser(userId); }

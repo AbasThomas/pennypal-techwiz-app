@@ -26,6 +26,13 @@ class PennyPalColors {
   static const gray = Color(0xFFA3A3A3);
   static const muted = Color(0xFF737373);
   static const darkGray = Color(0xFF525252);
+
+  // Financial states — deliberately muted enough to sit comfortably in the
+  // otherwise monochrome interface, while still making movement scannable.
+  static const success = Color(0xFF4ADE80);
+  static const successSurface = Color(0xFF123524);
+  static const danger = Color(0xFFFB7185);
+  static const dangerSurface = Color(0xFF421C26);
 }
 
 /// Backwards compatibility alias mapping legacy [AppColors] to [PennyPalColors].
@@ -130,21 +137,16 @@ abstract final class AppTheme {
         side: const BorderSide(color: PennyPalColors.border),
         minimumSize: const Size.fromHeight(54),
         shape: const RoundedRectangleBorder(borderRadius: AppRadii.medium),
-        textStyle: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-        ),
+        textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: PennyPalColors.white,
-        textStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
+        textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
       ),
-    ), dialogTheme: const DialogThemeData(backgroundColor: PennyPalColors.surface),
+    ),
+    dialogTheme: const DialogThemeData(backgroundColor: PennyPalColors.surface),
   );
 
   static ThemeData get lightTheme => theme;

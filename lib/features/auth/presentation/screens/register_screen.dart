@@ -207,7 +207,7 @@ class _RegisterHeader extends StatelessWidget {
                 child: LottiePlaceholder(
                   key: ValueKey(step),
                   height: 130,
-                  label: step == 0 ? 'register.json' : 'onboarding_3.json',
+                  label: step == 0 ? 'register.json' : 'onboarding3.json',
                   tint: PennyPalColors.white,
                 ),
               ),
