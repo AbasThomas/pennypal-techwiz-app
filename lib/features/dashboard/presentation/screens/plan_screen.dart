@@ -66,8 +66,11 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
                         borderRadius: BorderRadius.circular(11),
                       ),
                       child: const Center(
-                        child: Icon(Icons.add_rounded,
-                            color: PennyPalColors.black, size: 20),
+                        child: Icon(
+                          Icons.add_rounded,
+                          color: PennyPalColors.black,
+                          size: 20,
+                        ),
                       ),
                     ),
                   ),
@@ -93,10 +96,8 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
                 duration: const Duration(milliseconds: 260),
                 switchInCurve: Curves.easeOut,
                 switchOutCurve: Curves.easeIn,
-                transitionBuilder: (child, anim) => FadeTransition(
-                  opacity: anim,
-                  child: child,
-                ),
+                transitionBuilder: (child, anim) =>
+                    FadeTransition(opacity: anim, child: child),
                 child: _tab == 0
                     ? _BudgetTab(
                         key: const ValueKey('budget'),
@@ -105,10 +106,8 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
                       )
                     : _SavingsTab(
                         key: const ValueKey('savings'),
-                        onGoalTap: (g) =>
-                            _showGoalDetail(context, g),
-                        onCreateGoal: () =>
-                            _showCreateGoalSheet(context),
+                        onGoalTap: (g) => _showGoalDetail(context, g),
+                        onCreateGoal: () => _showCreateGoalSheet(context),
                       ),
               ),
             ),
@@ -206,11 +205,7 @@ class _PillTabBar extends StatelessWidget {
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0x1FFFFFFF),
-                Color(0x59181818),
-                Color(0xA60A0A0A),
-              ],
+              colors: [Color(0x1FFFFFFF), Color(0x59181818), Color(0xA60A0A0A)],
               stops: [0.0, 0.45, 1.0],
             ),
             borderRadius: BorderRadius.circular(16),
@@ -279,8 +274,9 @@ class _PillTabBar extends StatelessWidget {
                               curve: Curves.easeOut,
                               style: TextStyle(
                                 fontSize: 14,
-                                fontWeight:
-                                    active ? FontWeight.w800 : FontWeight.w600,
+                                fontWeight: active
+                                    ? FontWeight.w800
+                                    : FontWeight.w600,
                                 color: active
                                     ? PennyPalColors.white
                                     : PennyPalColors.muted,
@@ -318,7 +314,8 @@ class _BudgetTab extends ConsumerWidget {
 
     return budgetSnap.when(
       loading: () => const Center(
-          child: CircularProgressIndicator(color: PennyPalColors.white)),
+        child: CircularProgressIndicator(color: PennyPalColors.white),
+      ),
       error: (e, _) => _PlanError(message: e.toString()),
       data: (budgets) {
         final transactions = txSnap.value ?? [];
@@ -340,16 +337,20 @@ class _BudgetTab extends ConsumerWidget {
 
         // Total spent this month across all expenses
         final totalSpent = transactions
-            .where((t) =>
-                t.type == TransactionType.expense &&
-                DateFormat('yyyy-MM').format(t.date) == current.month)
+            .where(
+              (t) =>
+                  t.type == TransactionType.expense &&
+                  DateFormat('yyyy-MM').format(t.date) == current.month,
+            )
             .fold(0.0, (a, t) => a + t.amount);
 
         // Per-category spending
         final catSpending = <String, double>{};
-        for (final t in transactions.where((t) =>
-            t.type == TransactionType.expense &&
-            DateFormat('yyyy-MM').format(t.date) == current.month)) {
+        for (final t in transactions.where(
+          (t) =>
+              t.type == TransactionType.expense &&
+              DateFormat('yyyy-MM').format(t.date) == current.month,
+        )) {
           catSpending[t.categoryId] =
               (catSpending[t.categoryId] ?? 0) + t.amount;
         }
@@ -370,8 +371,11 @@ class _BudgetTab extends ConsumerWidget {
                 ),
                 const SizedBox(width: 4),
                 if (budgets.length > 1)
-                  const Icon(Icons.keyboard_arrow_down_rounded,
-                      size: 16, color: PennyPalColors.gray),
+                  const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 16,
+                    color: PennyPalColors.gray,
+                  ),
               ],
             ),
             const SizedBox(height: 14),
@@ -446,8 +450,11 @@ class _BudgetTab extends ConsumerWidget {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.add_rounded,
-                        size: 18, color: PennyPalColors.white),
+                    Icon(
+                      Icons.add_rounded,
+                      size: 18,
+                      color: PennyPalColors.white,
+                    ),
                     SizedBox(width: 6),
                     Text(
                       'Add Category Limit',
@@ -511,10 +518,7 @@ class _MonthlyCard extends StatelessWidget {
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF242424),
-              PennyPalColors.surface,
-            ],
+            colors: [Color(0xFF242424), PennyPalColors.surface],
           ),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
@@ -578,22 +582,27 @@ class _MonthlyCard extends StatelessWidget {
                 Text(
                   '$pct% used',
                   style: const TextStyle(
-                      fontSize: 12, color: PennyPalColors.gray),
+                    fontSize: 12,
+                    color: PennyPalColors.gray,
+                  ),
                 ),
                 const Spacer(),
                 if (over > 0)
                   Text(
                     '${_c(over)} over budget',
                     style: const TextStyle(
-                        fontSize: 12,
-                        color: PennyPalColors.danger,
-                        fontWeight: FontWeight.w600),
+                      fontSize: 12,
+                      color: PennyPalColors.danger,
+                      fontWeight: FontWeight.w600,
+                    ),
                   )
                 else
                   Text(
                     '${_c(remaining)} remaining',
                     style: const TextStyle(
-                        fontSize: 12, color: PennyPalColors.gray),
+                      fontSize: 12,
+                      color: PennyPalColors.gray,
+                    ),
                   ),
               ],
             ),
@@ -605,8 +614,7 @@ class _MonthlyCard extends StatelessWidget {
 }
 
 class _MiniStat extends StatelessWidget {
-  const _MiniStat(
-      {required this.label, required this.value, this.valueColor});
+  const _MiniStat({required this.label, required this.value, this.valueColor});
   final String label;
   final String value;
   final Color? valueColor;
@@ -617,11 +625,14 @@ class _MiniStat extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(label,
-              style: const TextStyle(
-                  fontSize: 11,
-                  color: PennyPalColors.gray,
-                  fontWeight: FontWeight.w500)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              color: PennyPalColors.gray,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           const SizedBox(height: 4),
           Text(
             value,
@@ -642,7 +653,10 @@ class _VertDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: 1, height: 28, color: Colors.white.withValues(alpha: 0.10));
+      width: 1,
+      height: 28,
+      color: Colors.white.withValues(alpha: 0.10),
+    );
   }
 }
 
@@ -700,7 +714,9 @@ class _CategoryLimitRow extends StatelessWidget {
               Text(
                 '${_c(spent)} / ${_c(limit)}  ·  $pct%',
                 style: const TextStyle(
-                    fontSize: 12, color: PennyPalColors.gray),
+                  fontSize: 12,
+                  color: PennyPalColors.gray,
+                ),
               ),
             ],
           ),
@@ -727,7 +743,9 @@ class _CategoryLimitRow extends StatelessWidget {
               : Text(
                   '${_c(remaining)} remaining',
                   style: const TextStyle(
-                      fontSize: 12, color: PennyPalColors.gray),
+                    fontSize: 12,
+                    color: PennyPalColors.gray,
+                  ),
                 ),
         ],
       ),
@@ -754,7 +772,8 @@ class _SavingsTab extends ConsumerWidget {
 
     return snap.when(
       loading: () => const Center(
-          child: CircularProgressIndicator(color: PennyPalColors.white)),
+        child: CircularProgressIndicator(color: PennyPalColors.white),
+      ),
       error: (e, _) => _PlanError(message: e.toString()),
       data: (goals) {
         if (goals.isEmpty) {
@@ -768,10 +787,8 @@ class _SavingsTab extends ConsumerWidget {
           );
         }
 
-        final totalSaved =
-            goals.fold(0.0, (a, g) => a + g.currentAmount);
-        final totalTarget =
-            goals.fold(0.0, (a, g) => a + g.targetAmount);
+        final totalSaved = goals.fold(0.0, (a, g) => a + g.currentAmount);
+        final totalTarget = goals.fold(0.0, (a, g) => a + g.targetAmount);
         final overallRatio = totalTarget == 0
             ? 0.0
             : (totalSaved / totalTarget).clamp(0.0, 1.0);
@@ -799,13 +816,12 @@ class _SavingsTab extends ConsumerWidget {
             const SizedBox(height: 14),
 
             // ── Goal cards ───────────────────────────────────────
-            ...goals.map((g) => Padding(
-                  padding: const EdgeInsets.only(bottom: 14),
-                  child: _GoalCard(
-                    goal: g,
-                    onTap: () => onGoalTap(g),
-                  ),
-                )),
+            ...goals.map(
+              (g) => Padding(
+                padding: const EdgeInsets.only(bottom: 14),
+                child: _GoalCard(goal: g, onTap: () => onGoalTap(g)),
+              ),
+            ),
 
             // ── Create goal CTA ──────────────────────────────────
             GestureDetector(
@@ -824,8 +840,11 @@ class _SavingsTab extends ConsumerWidget {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.add_rounded,
-                        size: 18, color: PennyPalColors.white),
+                    Icon(
+                      Icons.add_rounded,
+                      size: 18,
+                      color: PennyPalColors.white,
+                    ),
                     SizedBox(width: 6),
                     Text(
                       'Create Goal',
@@ -954,8 +973,10 @@ class _GoalCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ratio = goal.progress;
     final pct = (ratio * 100).toStringAsFixed(0);
-    final remaining =
-        (goal.targetAmount - goal.currentAmount).clamp(0.0, double.infinity);
+    final remaining = (goal.targetAmount - goal.currentAmount).clamp(
+      0.0,
+      double.infinity,
+    );
     final isComplete = goal.currentAmount >= goal.targetAmount;
 
     return GestureDetector(
@@ -983,7 +1004,9 @@ class _GoalCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: PennyPalColors.card,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.08),
+                    ),
                   ),
                   child: Center(
                     child: AppIcon(
@@ -1012,7 +1035,9 @@ class _GoalCard extends StatelessWidget {
                       Text(
                         '${_c(goal.currentAmount)} / ${_c(goal.targetAmount)}',
                         style: const TextStyle(
-                            fontSize: 12, color: PennyPalColors.gray),
+                          fontSize: 12,
+                          color: PennyPalColors.gray,
+                        ),
                       ),
                     ],
                   ),
@@ -1020,7 +1045,9 @@ class _GoalCard extends StatelessWidget {
                 // Percent badge
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 4),
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: isComplete
                         ? PennyPalColors.white.withValues(alpha: 0.12)
@@ -1052,32 +1079,29 @@ class _GoalCard extends StatelessWidget {
                 value: ratio,
                 minHeight: 8,
                 backgroundColor: Colors.white.withValues(alpha: 0.10),
-                valueColor:
-                    const AlwaysStoppedAnimation(PennyPalColors.white),
+                valueColor: const AlwaysStoppedAnimation(PennyPalColors.white),
               ),
             ),
             const SizedBox(height: 10),
             Row(
               children: [
                 Text(
-                  isComplete
-                      ? 'Goal reached!'
-                      : '${_c(remaining)} remaining',
+                  isComplete ? 'Goal reached!' : '${_c(remaining)} remaining',
                   style: TextStyle(
                     fontSize: 12,
                     color: isComplete
                         ? PennyPalColors.success
                         : PennyPalColors.gray,
-                    fontWeight: isComplete
-                        ? FontWeight.w600
-                        : FontWeight.w400,
+                    fontWeight: isComplete ? FontWeight.w600 : FontWeight.w400,
                   ),
                 ),
                 const Spacer(),
                 Text(
                   'Target: ${DateFormat('MMM yyyy').format(goal.targetDate)}',
                   style: const TextStyle(
-                      fontSize: 12, color: PennyPalColors.gray),
+                    fontSize: 12,
+                    color: PennyPalColors.gray,
+                  ),
                 ),
               ],
             ),
@@ -1105,8 +1129,10 @@ class _GoalDetailSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ratio = goal.progress;
-    final remaining =
-        (goal.targetAmount - goal.currentAmount).clamp(0.0, double.infinity);
+    final remaining = (goal.targetAmount - goal.currentAmount).clamp(
+      0.0,
+      double.infinity,
+    );
     final isComplete = goal.currentAmount >= goal.targetAmount;
 
     return Container(
@@ -1163,8 +1189,7 @@ class _GoalDetailSheet extends ConsumerWidget {
             const SizedBox(height: 4),
             Text(
               '${_c(goal.currentAmount)} of ${_c(goal.targetAmount)}',
-              style: const TextStyle(
-                  fontSize: 14, color: PennyPalColors.gray),
+              style: const TextStyle(fontSize: 14, color: PennyPalColors.gray),
             ),
             const SizedBox(height: 20),
 
@@ -1175,8 +1200,7 @@ class _GoalDetailSheet extends ConsumerWidget {
                 value: ratio,
                 minHeight: 12,
                 backgroundColor: Colors.white.withValues(alpha: 0.10),
-                valueColor:
-                    const AlwaysStoppedAnimation(PennyPalColors.white),
+                valueColor: const AlwaysStoppedAnimation(PennyPalColors.white),
               ),
             ),
             const SizedBox(height: 8),
@@ -1186,12 +1210,12 @@ class _GoalDetailSheet extends ConsumerWidget {
                 Text(
                   '${(ratio * 100).toStringAsFixed(0)}% complete',
                   style: const TextStyle(
-                      fontSize: 12, color: PennyPalColors.gray),
+                    fontSize: 12,
+                    color: PennyPalColors.gray,
+                  ),
                 ),
                 Text(
-                  isComplete
-                      ? 'Goal reached!'
-                      : '${_c(remaining)} remaining',
+                  isComplete ? 'Goal reached!' : '${_c(remaining)} remaining',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -1217,8 +1241,7 @@ class _GoalDetailSheet extends ConsumerWidget {
             ),
             _DetailRow(
               label: 'Status',
-              value: goal.status[0].toUpperCase() +
-                  goal.status.substring(1),
+              value: goal.status[0].toUpperCase() + goal.status.substring(1),
             ),
             const SizedBox(height: 8),
             Divider(height: 1, color: Colors.white.withValues(alpha: 0.08)),
@@ -1237,7 +1260,8 @@ class _GoalDetailSheet extends ConsumerWidget {
                   foregroundColor: PennyPalColors.black,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
@@ -1247,15 +1271,20 @@ class _GoalDetailSheet extends ConsumerWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: onEdit,
-                    icon: AppIcon(AppIcons.edit,
-                        size: 15, color: PennyPalColors.white),
+                    icon: AppIcon(
+                      AppIcons.edit,
+                      size: 15,
+                      color: PennyPalColors.white,
+                    ),
                     label: const Text('Edit Goal'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: PennyPalColors.white,
                       side: BorderSide(
-                          color: Colors.white.withValues(alpha: 0.25)),
+                        color: Colors.white.withValues(alpha: 0.25),
+                      ),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
@@ -1269,15 +1298,20 @@ class _GoalDetailSheet extends ConsumerWidget {
                           .read(financeRepositoryProvider)
                           .deleteGoal(goal.id);
                     },
-                    icon: AppIcon(AppIcons.delete,
-                        size: 15, color: PennyPalColors.danger),
+                    icon: AppIcon(
+                      AppIcons.delete,
+                      size: 15,
+                      color: PennyPalColors.danger,
+                    ),
                     label: const Text('Delete'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: PennyPalColors.danger,
                       side: BorderSide(
-                          color: PennyPalColors.danger.withValues(alpha: 0.5)),
+                        color: PennyPalColors.danger.withValues(alpha: 0.5),
+                      ),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
@@ -1302,15 +1336,19 @@ class _DetailRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
-          Text(label,
-              style: const TextStyle(
-                  fontSize: 14, color: PennyPalColors.gray)),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 14, color: PennyPalColors.gray),
+          ),
           const Spacer(),
-          Text(value,
-              style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: PennyPalColors.white)),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: PennyPalColors.white,
+            ),
+          ),
         ],
       ),
     );
@@ -1327,8 +1365,7 @@ class _CreateGoalSheet extends ConsumerStatefulWidget {
   final ValueChanged<SavingsGoal>? onCreated;
 
   @override
-  ConsumerState<_CreateGoalSheet> createState() =>
-      _CreateGoalSheetState();
+  ConsumerState<_CreateGoalSheet> createState() => _CreateGoalSheetState();
 }
 
 class _CreateGoalSheetState extends ConsumerState<_CreateGoalSheet> {
@@ -1336,8 +1373,11 @@ class _CreateGoalSheetState extends ConsumerState<_CreateGoalSheet> {
   final _target = TextEditingController();
   final _current = TextEditingController();
   final _monthly = TextEditingController();
-  DateTime _targetDate =
-      DateTime(DateTime.now().year, DateTime.now().month + 3, 1);
+  DateTime _targetDate = DateTime(
+    DateTime.now().year,
+    DateTime.now().month + 3,
+    1,
+  );
   bool _saving = false;
 
   @override
@@ -1373,7 +1413,8 @@ class _CreateGoalSheetState extends ConsumerState<_CreateGoalSheet> {
     if (_name.text.trim().isEmpty || targetAmt == null || uid == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Please fill in goal name and target amount.')),
+          content: Text('Please fill in goal name and target amount.'),
+        ),
       );
       return;
     }
@@ -1395,9 +1436,9 @@ class _CreateGoalSheetState extends ConsumerState<_CreateGoalSheet> {
       widget.onCreated?.call(goal);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -1409,7 +1450,8 @@ class _CreateGoalSheetState extends ConsumerState<_CreateGoalSheet> {
     final isEdit = widget.existing != null;
     return Padding(
       padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom),
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 32),
         padding: const EdgeInsets.all(24),
@@ -1443,11 +1485,8 @@ class _CreateGoalSheetState extends ConsumerState<_CreateGoalSheet> {
             ),
             const SizedBox(height: 4),
             Text(
-              isEdit
-                  ? 'Update your goal details.'
-                  : 'What are you saving for?',
-              style: const TextStyle(
-                  fontSize: 14, color: PennyPalColors.gray),
+              isEdit ? 'Update your goal details.' : 'What are you saving for?',
+              style: const TextStyle(fontSize: 14, color: PennyPalColors.gray),
             ),
             const SizedBox(height: 22),
             _SheetField(
@@ -1486,11 +1525,14 @@ class _CreateGoalSheetState extends ConsumerState<_CreateGoalSheet> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Target date',
-                    style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: PennyPalColors.white)),
+                const Text(
+                  'Target date',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: PennyPalColors.white,
+                  ),
+                ),
                 const SizedBox(height: 8),
                 GestureDetector(
                   onTap: () async {
@@ -1502,10 +1544,11 @@ class _CreateGoalSheetState extends ConsumerState<_CreateGoalSheet> {
                       builder: (c, child) => Theme(
                         data: Theme.of(c).copyWith(
                           colorScheme: const ColorScheme.dark(
-                              primary: PennyPalColors.white,
-                              onPrimary: PennyPalColors.black,
-                              surface: PennyPalColors.surface,
-                              onSurface: PennyPalColors.white),
+                            primary: PennyPalColors.white,
+                            onPrimary: PennyPalColors.black,
+                            surface: PennyPalColors.surface,
+                            onSurface: PennyPalColors.white,
+                          ),
                         ),
                         child: child!,
                       ),
@@ -1517,22 +1560,30 @@ class _CreateGoalSheetState extends ConsumerState<_CreateGoalSheet> {
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 14),
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                     decoration: BoxDecoration(
                       color: PennyPalColors.card,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.10)),
+                        color: Colors.white.withValues(alpha: 0.10),
+                      ),
                     ),
                     child: Row(
                       children: [
-                        AppIcon(AppIcons.calendar,
-                            size: 16, color: PennyPalColors.gray),
+                        AppIcon(
+                          AppIcons.calendar,
+                          size: 16,
+                          color: PennyPalColors.gray,
+                        ),
                         const SizedBox(width: 10),
                         Text(
                           DateFormat('dd MMM yyyy').format(_targetDate),
                           style: const TextStyle(
-                              fontSize: 14, color: PennyPalColors.white),
+                            fontSize: 14,
+                            color: PennyPalColors.white,
+                          ),
                         ),
                       ],
                     ),
@@ -1552,19 +1603,24 @@ class _CreateGoalSheetState extends ConsumerState<_CreateGoalSheet> {
                   foregroundColor: PennyPalColors.black,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
                 child: _saving
                     ? const SizedBox(
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2.5, color: PennyPalColors.black),
+                          strokeWidth: 2.5,
+                          color: PennyPalColors.black,
+                        ),
                       )
                     : Text(
                         isEdit ? 'Save Changes' : 'Create Goal',
                         style: const TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w700),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
               ),
             ),
@@ -1632,7 +1688,8 @@ class _GoalCreatedDialog extends StatelessWidget {
                   foregroundColor: PennyPalColors.black,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
                 child: const Text(
                   'Done',
@@ -1656,8 +1713,7 @@ class _ContributeSheet extends ConsumerStatefulWidget {
   final SavingsGoal goal;
 
   @override
-  ConsumerState<_ContributeSheet> createState() =>
-      _ContributeSheetState();
+  ConsumerState<_ContributeSheet> createState() => _ContributeSheetState();
 }
 
 class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
@@ -1673,15 +1729,17 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
   Future<void> _save() async {
     final value = double.tryParse(_amount.text.replaceAll(',', ''));
     if (value == null || value <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a valid amount.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Enter a valid amount.')));
       return;
     }
     setState(() => _saving = true);
     try {
       final newTotal = widget.goal.currentAmount + value;
-      await ref.read(financeRepositoryProvider).saveGoal(
+      await ref
+          .read(financeRepositoryProvider)
+          .saveGoal(
             SavingsGoal(
               id: widget.goal.id,
               userId: widget.goal.userId,
@@ -1698,8 +1756,9 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -1710,7 +1769,8 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom),
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 32),
         padding: const EdgeInsets.all(24),
@@ -1737,15 +1797,15 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
             const Text(
               'Add Savings',
               style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: PennyPalColors.white),
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: PennyPalColors.white,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               widget.goal.goalName,
-              style: const TextStyle(
-                  fontSize: 14, color: PennyPalColors.gray),
+              style: const TextStyle(fontSize: 14, color: PennyPalColors.gray),
             ),
             const SizedBox(height: 20),
             _SheetField(
@@ -1766,18 +1826,25 @@ class _ContributeSheetState extends ConsumerState<_ContributeSheet> {
                   foregroundColor: PennyPalColors.black,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
                 child: _saving
                     ? const SizedBox(
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2.5, color: PennyPalColors.black),
+                          strokeWidth: 2.5,
+                          color: PennyPalColors.black,
+                        ),
                       )
-                    : const Text('Save',
+                    : const Text(
+                        'Save',
                         style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w700)),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
               ),
             ),
           ],
@@ -1826,8 +1893,9 @@ class _BudgetSheetState extends ConsumerState<_BudgetSheet> {
       _amount.text = b.limitAmount.toStringAsFixed(0);
       _month = b.month;
       for (final entry in b.categoryLimits.entries) {
-        _catControllers[entry.key] =
-            TextEditingController(text: entry.value.toStringAsFixed(0));
+        _catControllers[entry.key] = TextEditingController(
+          text: entry.value.toStringAsFixed(0),
+        );
       }
     }
     // Ensure default categories have controllers
@@ -1862,7 +1930,9 @@ class _BudgetSheetState extends ConsumerState<_BudgetSheet> {
 
     setState(() => _saving = true);
     try {
-      await ref.read(financeRepositoryProvider).saveBudget(
+      await ref
+          .read(financeRepositoryProvider)
+          .saveBudget(
             Budget(
               id: widget.existing?.id ?? '',
               userId: uid,
@@ -1874,8 +1944,9 @@ class _BudgetSheetState extends ConsumerState<_BudgetSheet> {
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -1887,7 +1958,8 @@ class _BudgetSheetState extends ConsumerState<_BudgetSheet> {
     final isEdit = widget.existing != null;
     return Padding(
       padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom),
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 32),
         padding: const EdgeInsets.all(24),
@@ -1915,9 +1987,10 @@ class _BudgetSheetState extends ConsumerState<_BudgetSheet> {
               Text(
                 isEdit ? 'Edit Budget' : 'Create Budget',
                 style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: PennyPalColors.white),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: PennyPalColors.white,
+                ),
               ),
               const SizedBox(height: 4),
               const Text(
@@ -1930,11 +2003,14 @@ class _BudgetSheetState extends ConsumerState<_BudgetSheet> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Month',
-                      style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: PennyPalColors.white)),
+                  const Text(
+                    'Month',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: PennyPalColors.white,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   GestureDetector(
                     onTap: () async {
@@ -1946,38 +2022,48 @@ class _BudgetSheetState extends ConsumerState<_BudgetSheet> {
                         builder: (c, child) => Theme(
                           data: Theme.of(c).copyWith(
                             colorScheme: const ColorScheme.dark(
-                                primary: PennyPalColors.white,
-                                onPrimary: PennyPalColors.black,
-                                surface: PennyPalColors.surface,
-                                onSurface: PennyPalColors.white),
+                              primary: PennyPalColors.white,
+                              onPrimary: PennyPalColors.black,
+                              surface: PennyPalColors.surface,
+                              onSurface: PennyPalColors.white,
+                            ),
                           ),
                           child: child!,
                         ),
                       );
                       if (picked != null) {
-                        setState(() =>
-                            _month = DateFormat('yyyy-MM').format(picked));
+                        setState(
+                          () => _month = DateFormat('yyyy-MM').format(picked),
+                        );
                       }
                     },
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 14),
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
                       decoration: BoxDecoration(
                         color: PennyPalColors.card,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.10)),
+                          color: Colors.white.withValues(alpha: 0.10),
+                        ),
                       ),
                       child: Row(
                         children: [
-                          AppIcon(AppIcons.calendar,
-                              size: 16, color: PennyPalColors.gray),
+                          AppIcon(
+                            AppIcons.calendar,
+                            size: 16,
+                            color: PennyPalColors.gray,
+                          ),
                           const SizedBox(width: 10),
                           Text(
                             _monthLabel(_month),
                             style: const TextStyle(
-                                fontSize: 14, color: PennyPalColors.white),
+                              fontSize: 14,
+                              color: PennyPalColors.white,
+                            ),
                           ),
                         ],
                       ),
@@ -1999,9 +2085,10 @@ class _BudgetSheetState extends ConsumerState<_BudgetSheet> {
               const Text(
                 'Category Limits (optional)',
                 style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: PennyPalColors.white),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: PennyPalColors.white,
+                ),
               ),
               const SizedBox(height: 4),
               const Text(
@@ -2010,16 +2097,18 @@ class _BudgetSheetState extends ConsumerState<_BudgetSheet> {
               ),
               const SizedBox(height: 14),
 
-              ...(_catControllers.entries.map((e) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _SheetField(
-                      controller: e.value,
-                      label: e.key,
-                      hint: 'Leave blank to skip',
-                      icon: AppIcons.forCategory(e.key),
-                      keyboardType: TextInputType.number,
-                    ),
-                  ))),
+              ...(_catControllers.entries.map(
+                (e) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _SheetField(
+                    controller: e.value,
+                    label: e.key,
+                    hint: 'Leave blank to skip',
+                    icon: AppIcons.forCategory(e.key),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              )),
 
               const SizedBox(height: 24),
               SizedBox(
@@ -2032,20 +2121,24 @@ class _BudgetSheetState extends ConsumerState<_BudgetSheet> {
                     foregroundColor: PennyPalColors.black,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   child: _saving
                       ? const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2.5, color: PennyPalColors.black),
+                            strokeWidth: 2.5,
+                            color: PennyPalColors.black,
+                          ),
                         )
                       : Text(
                           isEdit ? 'Save Changes' : 'Create Budget',
                           style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                 ),
               ),
@@ -2058,7 +2151,9 @@ class _BudgetSheetState extends ConsumerState<_BudgetSheet> {
 
   String _monthLabel(String yyyyMM) {
     try {
-      return DateFormat('MMMM yyyy').format(DateFormat('yyyy-MM').parse(yyyyMM));
+      return DateFormat(
+        'MMMM yyyy',
+      ).format(DateFormat('yyyy-MM').parse(yyyyMM));
     } catch (_) {
       return yyyyMM;
     }
@@ -2088,11 +2183,14 @@ class _SheetField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: PennyPalColors.white)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: PennyPalColors.white,
+          ),
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
@@ -2101,30 +2199,35 @@ class _SheetField extends StatelessWidget {
           cursorColor: PennyPalColors.white,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(
-              color: PennyPalColors.muted,
-              fontSize: 14,
-            ),
+            hintStyle: TextStyle(color: PennyPalColors.muted, fontSize: 14),
             prefixIcon: Padding(
               padding: const EdgeInsets.all(12),
               child: AppIcon(icon, size: 16, color: PennyPalColors.gray),
             ),
             filled: true,
             fillColor: PennyPalColors.card,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.10)),
+              borderSide: BorderSide(
+                color: Colors.white.withValues(alpha: 0.10),
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.10)),
+              borderSide: BorderSide(
+                color: Colors.white.withValues(alpha: 0.10),
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: PennyPalColors.white, width: 1.5),
+              borderSide: const BorderSide(
+                color: PennyPalColors.white,
+                width: 1.5,
+              ),
             ),
           ),
         ),
@@ -2168,23 +2271,25 @@ class _PlanEmpty extends StatelessWidget {
                 border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
               ),
               child: Center(
-                child: AppIcon(icon,
-                    size: 28,
-                    color: PennyPalColors.gray),
+                child: AppIcon(icon, size: 28, color: PennyPalColors.gray),
               ),
             ),
             const SizedBox(height: 16),
-            Text(title,
-                style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: PennyPalColors.white),
-                textAlign: TextAlign.center),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: PennyPalColors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 8),
-            Text(message,
-                style: const TextStyle(
-                    fontSize: 13, color: PennyPalColors.gray),
-                textAlign: TextAlign.center),
+            Text(
+              message,
+              style: const TextStyle(fontSize: 13, color: PennyPalColors.gray),
+              textAlign: TextAlign.center,
+            ),
             if (actionLabel != null && onAction != null) ...[
               const SizedBox(height: 22),
               ElevatedButton(
@@ -2194,13 +2299,20 @@ class _PlanEmpty extends StatelessWidget {
                   foregroundColor: PennyPalColors.black,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 24, vertical: 12),
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
                 ),
-                child: Text(actionLabel!,
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w700)),
+                child: Text(
+                  actionLabel!,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
             ],
           ],
@@ -2222,20 +2334,22 @@ class _PlanError extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AppIcon(AppIcons.warning,
-                size: 40,
-                color: PennyPalColors.gray),
+            AppIcon(AppIcons.warning, size: 40, color: PennyPalColors.gray),
             const SizedBox(height: 14),
-            const Text('Something went wrong',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: PennyPalColors.white)),
+            const Text(
+              'Something went wrong',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: PennyPalColors.white,
+              ),
+            ),
             const SizedBox(height: 6),
-            Text(message,
-                style: const TextStyle(
-                    fontSize: 13, color: PennyPalColors.gray),
-                textAlign: TextAlign.center),
+            Text(
+              message,
+              style: const TextStyle(fontSize: 13, color: PennyPalColors.gray),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),

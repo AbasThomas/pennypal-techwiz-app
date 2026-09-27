@@ -31,8 +31,11 @@ class GroqChatService {
 
   final Dio _dio;
 
-  /// Groq's fastest model — full replies typically arrive in 1–3 seconds.
-  static const model = 'llama-3.1-8b-instant';
+  static const _models = [
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b',
+    'qwen/qwen3.8-27b',
+  ];
 
   Future<String> send(List<GroqChatMessage> messages) async {
     final key = ApiConfig.groqApiKey;
@@ -41,34 +44,50 @@ class GroqChatService {
         'PennyPal AI is not configured yet. Add GROQ_API_KEY to your .env file.',
       );
     }
-    try {
-      final response = await _dio.post<Map<String, dynamic>>(
-        '/chat/completions',
-        options: Options(headers: {'Authorization': 'Bearer $key'}),
-        data: {
-          'model': model,
-          'messages': messages.map((m) => m.toJson()).toList(),
-          'temperature': 0.6,
-          'max_tokens': 512,
-        },
-      );
-      final choices = response.data?['choices'];
-      if (choices is List && choices.isNotEmpty) {
-        final first = choices.first;
-        if (first is Map) {
-          final message = first['message'];
-          if (message is Map) {
-            final content = message['content'];
-            if (content is String && content.trim().isNotEmpty) {
-              return content.trim();
+
+    DioException? lastError;
+    for (final model in _models) {
+      try {
+        final response = await _dio.post<Map<String, dynamic>>(
+          '/chat/completions',
+          options: Options(headers: {'Authorization': 'Bearer $key'}),
+          data: {
+            'model': model,
+            'messages': messages.map((m) => m.toJson()).toList(),
+            'temperature': 0.6,
+            'max_tokens': 512,
+          },
+        );
+        final choices = response.data?['choices'];
+        if (choices is List && choices.isNotEmpty) {
+          final first = choices.first;
+          if (first is Map) {
+            final message = first['message'];
+            if (message is Map) {
+              final content = message['content'];
+              if (content is String && content.trim().isNotEmpty) {
+                return content.trim();
+              }
             }
           }
         }
+        throw const AppException('The AI returned an unexpected response.');
+      } on DioException catch (error) {
+        lastError = error;
+        if (!_shouldTryFallback(error)) {
+          throw AppException(_dioErrorMessage(error));
+        }
       }
-      throw const AppException('The AI returned an unexpected response.');
-    } on DioException catch (e) {
-      throw AppException(_dioErrorMessage(e));
     }
+
+    throw AppException(_dioErrorMessage(lastError!));
+  }
+
+  static bool _shouldTryFallback(DioException error) {
+    return switch (error.response?.statusCode) {
+      400 || 404 || 429 || 500 || 502 || 503 => true,
+      _ => false,
+    };
   }
 
   String _dioErrorMessage(DioException e) {
