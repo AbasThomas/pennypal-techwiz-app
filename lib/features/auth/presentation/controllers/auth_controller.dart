@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/errors/api_error_handler.dart';
@@ -48,6 +50,95 @@ class AuthController extends StateNotifier<AuthState> {
 
   Future<bool> register(Map<String, dynamic> data) =>
       _authenticate(() => _repository.register(data));
+
+  Future<bool> updateProfile({
+    String? firstName,
+    String? lastName,
+    String? phoneNumber,
+    String? institution,
+    String? bio,
+    String? photoUrl,
+  }) async {
+    try {
+      final updatedUser = await _repository.updateProfile(
+        firstName: firstName,
+        lastName: lastName,
+        phoneNumber: phoneNumber,
+        institution: institution,
+        bio: bio,
+        photoUrl: photoUrl,
+      );
+      state = state.copyWith(user: updatedUser);
+      return true;
+    } catch (error) {
+      state = state.copyWith(
+        errorMessage: ApiErrorHandler.from(error).message,
+      );
+      return false;
+    }
+  }
+
+  Future<bool> uploadProfilePictureFile(File file) async {
+    try {
+      final updatedUser = await _repository.uploadProfilePictureFile(file);
+      state = state.copyWith(user: updatedUser);
+      return true;
+    } catch (error) {
+      state = state.copyWith(
+        errorMessage: ApiErrorHandler.from(error).message,
+      );
+      return false;
+    }
+  }
+
+  Future<bool> uploadProfilePictureBytes(
+    Uint8List bytes, {
+    String contentType = 'image/jpeg',
+  }) async {
+    try {
+      final updatedUser = await _repository.uploadProfilePictureBytes(
+        bytes,
+        contentType: contentType,
+      );
+      state = state.copyWith(user: updatedUser);
+      return true;
+    } catch (error) {
+      state = state.copyWith(
+        errorMessage: ApiErrorHandler.from(error).message,
+      );
+      return false;
+    }
+  }
+
+  Future<bool> deactivateAccount() async {
+    state = const AuthState(status: AuthStatus.loading);
+    try {
+      await _repository.deactivateAccount();
+      state = const AuthState(status: AuthStatus.unauthenticated);
+      return true;
+    } catch (error) {
+      state = state.copyWith(
+        status: AuthStatus.authenticated,
+        errorMessage: ApiErrorHandler.from(error).message,
+      );
+      return false;
+    }
+  }
+
+  Future<bool> deleteAccount() async {
+    state = const AuthState(status: AuthStatus.loading);
+    try {
+      await _repository.deleteAccount();
+      state = const AuthState(status: AuthStatus.unauthenticated);
+      return true;
+    } catch (error) {
+      state = state.copyWith(
+        status: AuthStatus.authenticated,
+        errorMessage: ApiErrorHandler.from(error).message,
+      );
+      return false;
+    }
+  }
 
   Future<bool> _authenticate(Future<AuthUser> Function() action) async {
     state = const AuthState(status: AuthStatus.loading);

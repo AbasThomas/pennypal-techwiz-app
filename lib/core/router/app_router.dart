@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../data/models/financial_models.dart';
 import '../../features/admin/presentation/admin_dashboard_screen.dart';
 import '../../features/auth/presentation/controllers/auth_controller.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
@@ -18,6 +19,7 @@ import '../../features/dashboard/presentation/screens/add_expense_screen.dart';
 import '../../features/dashboard/presentation/screens/add_income_screen.dart';
 import '../../features/dashboard/presentation/screens/article_detail_screen.dart';
 import '../../features/dashboard/presentation/screens/learn_screen.dart';
+import '../../features/dashboard/presentation/screens/transaction_detail_screen.dart';
 import '../../features/dashboard/presentation/screens/plan_screen.dart';
 import '../../features/more/presentation/about_screen.dart';
 import '../../features/more/presentation/ai_assistant_screen.dart';
@@ -119,8 +121,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           path: '/add-income',
           builder: (_, _) => const AddIncomeScreen()),
       GoRoute(
-          path: '/transaction-detail',
-          builder: (_, _) => const _TransactionDetailPlaceholder()),
+        path: '/transaction-detail',
+        builder: (_, state) {
+          final tx = state.extra as FinanceTransaction?;
+          if (tx != null) {
+            return TransactionDetailScreen(transaction: tx);
+          }
+          return const _TransactionDetailFallback();
+        },
+      ),
 
       // ── More screens ─────────────────────────────────────────────
       GoRoute(
@@ -164,24 +173,67 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-/// Placeholder until a full transaction detail screen is built.
-class _TransactionDetailPlaceholder extends StatelessWidget {
-  const _TransactionDetailPlaceholder();
+/// Fallback shown when navigating to /transaction-detail without a transaction.
+class _TransactionDetailFallback extends StatelessWidget {
+  const _TransactionDetailFallback();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: PennyPalColors.black,
       appBar: AppBar(
-        title: const Text('Transaction Detail',
-            style: TextStyle(color: PennyPalColors.white, fontWeight: FontWeight.w700)),
+        title: const Text(
+          'Transaction Detail',
+          style: TextStyle(
+            color: PennyPalColors.white,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         backgroundColor: PennyPalColors.black,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: PennyPalColors.white),
       ),
-      body: const Center(
-        child: Text('Transaction detail coming soon.',
-            style: TextStyle(color: PennyPalColors.gray)),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: PennyPalColors.surface,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: PennyPalColors.border),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.receipt_long,
+                    size: 30,
+                    color: PennyPalColors.gray,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+              const Text(
+                'No transaction selected',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: PennyPalColors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Go back and select a transaction from the list to view its details.',
+                style: TextStyle(fontSize: 14, color: PennyPalColors.gray),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

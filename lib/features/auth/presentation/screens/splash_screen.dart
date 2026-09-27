@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
@@ -48,43 +47,25 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               children: [
                 const Spacer(),
 
-                // â”€â”€ Brand mark â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: PennyPalColors.elevated,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: PennyPalColors.border),
-                  ),
-                  child: const AppIcon(
-                    AppIcons.wallet,
-                    color: PennyPalColors.white,
-                    size: 34,
-                  ),
+                // ── Brand animation (splash.json as logo) ────────────────────
+                Lottie.asset(
+                  'assets/animations/splash.json',
+                  width: 340,
+                  height: 340,
+                  fit: BoxFit.contain,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 const Text(
                   'PennyPal',
                   style: TextStyle(
-                    fontSize: 30,
+                    fontSize: 34,
                     fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
+                    letterSpacing: -0.6,
                     color: PennyPalColors.white,
                   ),
                 ),
 
-                const SizedBox(height: 48),
-
-                // â”€â”€ Lottie animation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                Lottie.asset(
-                  'assets/animations/splash.json',
-                  width: 260,
-                  height: 260,
-                  fit: BoxFit.contain,
-                ),
-
-                const SizedBox(height: 40),
+                const SizedBox(height: 52),
 
                 const Text(
                   'Your money. Your progress.',
@@ -106,10 +87,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
                 const Spacer(),
 
-                // â”€â”€ Loading indicator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                // ── Loading indicator ───────────────────────────────────────
                 const SizedBox(
-                  width: 20,
-                  height: 20,
+                  width: 22,
+                  height: 22,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
                     color: PennyPalColors.white,

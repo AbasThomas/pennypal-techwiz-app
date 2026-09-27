@@ -297,8 +297,10 @@ class _MoneyScreenState extends ConsumerState<MoneyScreen> {
                                       '${t.categoryId} · ${_relativeDate(t.date)}',
                                   amount: _money.format(t.amount),
                                   isIncome: isIncome,
-                                  onTap: () =>
-                                      context.push('/transaction-detail'),
+                                  onTap: () => context.push(
+                                      '/transaction-detail',
+                                      extra: t,
+                                    ),
                                 );
                               },
                             ),

@@ -27,9 +27,39 @@ class DashboardScreen extends ConsumerWidget {
     final goalState = ref.watch(savingsGoalsProvider);
 
     if (txState.isLoading || budgetState.isLoading || goalState.isLoading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: PennyPalColors.black,
-        body: Center(child: CircularProgressIndicator()),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Lottie.asset(
+                'assets/animations/splash.json',
+                width: 220,
+                height: 220,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 18),
+              const Text(
+                'Loading your finances…',
+                style: TextStyle(
+                  color: PennyPalColors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 18),
+              const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: PennyPalColors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
       );
     }
 

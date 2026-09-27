@@ -1,4 +1,4 @@
-﻿// Shared UI building blocks used across all PennyPal feature screens.
+// Shared UI building blocks used across all PennyPal feature screens.
 // Import this file to get: BalanceCard, SectionHeader, QuickActionButton,
 // TransactionTile, CategoryProgressBar, GoalCard, PennyEmptyState, InfoCard, InsightChip.
 
@@ -462,10 +462,12 @@ class _TransactionTileState extends State<TransactionTile> {
               ),
               Text(
                 '${widget.isIncome ? '+ ' : '- '}$cleanAmount',
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 15,
-                  color: PennyPalColors.white,
+                  color: widget.isIncome
+                      ? PennyPalColors.success
+                      : PennyPalColors.danger,
                 ),
               ),
             ],

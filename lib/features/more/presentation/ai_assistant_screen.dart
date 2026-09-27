@@ -561,58 +561,67 @@ class _EmptyChatState extends State<_EmptyChat> {
       ),
       child: Column(
         children: [
+          const SizedBox(height: 8),
           Lottie.asset(
             'assets/animations/ai.json',
-            height: 140,
+            height: 280,
+            width: 280,
             fit: BoxFit.contain,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 4),
           const Text(
             'How can I help you today?',
             style: TextStyle(
-              fontSize: 19,
+              fontSize: 22,
               fontWeight: FontWeight.w800,
-              letterSpacing: -0.3,
+              letterSpacing: -0.4,
               color: PennyPalColors.white,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           const Text(
-            'Ask me anything about your money, budgets,\nor savings goals in Nigeria.',
+            'PennyPal AI gives you clear, student-friendly\nadvice on budgets, savings, and spending.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13, color: PennyPalColors.gray, height: 1.4),
+            style: TextStyle(
+              fontSize: 13.5,
+              color: PennyPalColors.gray,
+              height: 1.5,
+            ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 24),
 
           // Single Interactive Input Tab / Typing Box on the AI page
           Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  PennyPalColors.surface,
-                  PennyPalColors.card,
-                ],
-              ),
+              color: PennyPalColors.surface,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: PennyPalColors.border),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(
+                Row(
                   children: [
-                    AppIcon(
-                      AppIcons.bulb,
-                      size: 15,
-                      color: PennyPalColors.white,
+                    Container(
+                      width: 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        color: PennyPalColors.elevated,
+                        borderRadius: BorderRadius.circular(9),
+                      ),
+                      child: const Center(
+                        child: AppIcon(
+                          AppIcons.bulb,
+                          size: 15,
+                          color: PennyPalColors.white,
+                        ),
+                      ),
                     ),
-                    SizedBox(width: 6),
-                    Text(
-                      'Ask PennyPal AI',
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Start a conversation',
                       style: TextStyle(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w700,
@@ -622,12 +631,12 @@ class _EmptyChatState extends State<_EmptyChat> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                   decoration: BoxDecoration(
                     color: PennyPalColors.nearBlack,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(18),
                     border: Border.all(color: PennyPalColors.mutedBorder),
                   ),
                   child: Row(
@@ -637,7 +646,7 @@ class _EmptyChatState extends State<_EmptyChat> {
                         size: 18,
                         color: PennyPalColors.muted,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: TextField(
                           controller: widget.controller,
@@ -647,13 +656,13 @@ class _EmptyChatState extends State<_EmptyChat> {
                           onChanged: (_) => setState(() {}),
                           style: const TextStyle(
                             color: PennyPalColors.white,
-                            fontSize: 14,
+                            fontSize: 14.5,
                           ),
                           decoration: const InputDecoration(
                             hintText: 'Type your question here…',
                             hintStyle: TextStyle(
                               color: PennyPalColors.muted,
-                              fontSize: 13.5,
+                              fontSize: 14,
                             ),
                             filled: false,
                             border: InputBorder.none,
@@ -661,7 +670,7 @@ class _EmptyChatState extends State<_EmptyChat> {
                             focusedBorder: InputBorder.none,
                             contentPadding: EdgeInsets.symmetric(
                               horizontal: 4,
-                              vertical: 12,
+                              vertical: 14,
                             ),
                           ),
                         ),
@@ -684,8 +693,8 @@ class _EmptyChatState extends State<_EmptyChat> {
                       GestureDetector(
                         onTap: () => widget.onInputSubmitted(widget.controller.text),
                         child: Container(
-                          width: 36,
-                          height: 36,
+                          width: 38,
+                          height: 38,
                           decoration: BoxDecoration(
                             color: widget.controller.text.trim().isNotEmpty
                                 ? PennyPalColors.white
@@ -695,7 +704,7 @@ class _EmptyChatState extends State<_EmptyChat> {
                           child: Center(
                             child: AppIcon(
                               AppIcons.arrowForward,
-                              size: 16,
+                              size: 17,
                               color: widget.controller.text.trim().isNotEmpty
                                   ? PennyPalColors.black
                                   : PennyPalColors.gray,
@@ -709,7 +718,7 @@ class _EmptyChatState extends State<_EmptyChat> {
               ],
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 22),
 
           // Category Filter Tabs
           SizedBox(

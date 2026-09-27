@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../shared/widgets/lottie_placeholder.dart';
+import 'package:lottie/lottie.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../data/finance_providers.dart';
 import '../../../../data/models/financial_models.dart';
@@ -112,10 +112,13 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const LottiePlaceholder(
-              height: 120,
-              label: 'add_income.json',
-              tint: PennyPalColors.white,
+            SizedBox(
+              width: double.infinity,
+              height: 200,
+              child: Lottie.asset(
+                'assets/animations/income.json',
+                fit: BoxFit.contain,
+              ),
             ),
             const SizedBox(height: 28),
 
