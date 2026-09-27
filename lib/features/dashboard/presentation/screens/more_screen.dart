@@ -12,13 +12,10 @@ class MoreScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
-    final name = [user?.firstName, user?.lastName]
-        .whereType<String>()
-        .join(' ')
-        .trim()
-        .isNotEmpty
-        ? '${user?.firstName ?? ''} ${user?.lastName ?? ''}'.trim()
-        : user?.email.split('@').first ?? 'Student';
+    final name = user?.fullName ??
+        (user?.email != null
+            ? user!.email.split('@').first
+            : 'Student');
 
     return Scaffold(
       backgroundColor: PennyPalColors.black,
@@ -140,12 +137,24 @@ class MoreScreen extends ConsumerWidget {
                 _MenuItem(
                   icon: AppIcons.lockCheck,
                   label: 'Security & PIN',
-                  onTap: () {},
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Security & PIN coming soon'),
+                        backgroundColor: PennyPalColors.surface,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
                 ),
                 _MenuItem(
                   icon: AppIcons.settings,
                   label: 'App Settings',
-                  onTap: () {},
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    context.push('/settings');
+                  },
                 ),
               ]),
               const SizedBox(height: 20),

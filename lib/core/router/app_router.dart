@@ -27,6 +27,7 @@ import '../../features/more/presentation/feedback_screen.dart';
 import '../../features/more/presentation/notifications_screen.dart';
 import '../../features/more/presentation/profile_screen.dart';
 import '../../features/more/presentation/reports_screen.dart';
+import '../../features/more/presentation/settings_screen.dart';
 import '../../features/more/presentation/support_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 
@@ -80,6 +81,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           loc.startsWith('/ai-assistant') ||
           loc.startsWith('/notifications') ||
           loc.startsWith('/profile') ||
+          loc.startsWith('/settings') ||
           loc.startsWith('/feedback') ||
           loc.startsWith('/support') ||
           loc.startsWith('/about') ||
@@ -142,6 +144,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           builder: (_, _) => const NotificationsScreen()),
       GoRoute(
           path: '/profile', builder: (_, _) => const ProfileScreen()),
+      GoRoute(
+          path: '/settings', builder: (_, _) => const SettingsScreen()),
       GoRoute(
           path: '/feedback', builder: (_, _) => const FeedbackScreen()),
       GoRoute(

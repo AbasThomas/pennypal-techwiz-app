@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,6 +36,31 @@ class _FakeGateway implements AuthGateway {
 
   @override
   Future<void> logout() async {}
+
+  @override
+  Future<AuthUser> updateProfile({
+    String? firstName,
+    String? lastName,
+    String? phoneNumber,
+    String? institution,
+    String? bio,
+    String? photoUrl,
+  }) async => throw UnimplementedError();
+
+  @override
+  Future<AuthUser> uploadProfilePictureFile(File file) async => throw UnimplementedError();
+
+  @override
+  Future<AuthUser> uploadProfilePictureBytes(
+    Uint8List bytes, {
+    String contentType = 'image/jpeg',
+  }) async => throw UnimplementedError();
+
+  @override
+  Future<void> deactivateAccount() async {}
+
+  @override
+  Future<void> deleteAccount() async {}
 }
 
 void main() {
