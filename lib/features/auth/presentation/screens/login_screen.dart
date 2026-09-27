@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
+
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../core/widgets/app_icon.dart';
 import '../../../../shared/widgets/app_widgets.dart';
-import '../../../../shared/widgets/lottie_placeholder.dart';
-import '../controllers/auth_controller.dart';
 import '../../providers/auth_providers.dart';
+import '../controllers/auth_controller.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
+
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
@@ -34,7 +36,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
-    if (!_form.currentState!.validate()) return;
+    if (!(_form.currentState?.validate() ?? false)) return;
     final ok = await ref
         .read(authControllerProvider.notifier)
         .login(email: _email.text.trim(), password: _password.text);
@@ -57,193 +59,199 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       backgroundColor: PennyPalColors.black,
       body: Column(
         children: [
-          // Top panel â€” brand header with lottie
-          _TopPanel(),
+          const _BrandBar(),
+          Expanded(child: _formSheet(loading)),
+        ],
+      ),
+    );
+  }
 
-          // Form panel
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(28, 32, 28, 24),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 460),
-                  child: Form(
-                    key: _form,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Sign in',
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.6,
-                            color: PennyPalColors.white,
-                          ),
+  Widget _formSheet(bool loading) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      child: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          color: PennyPalColors.surface,
+          border: Border(top: BorderSide(color: PennyPalColors.border)),
+        ),
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: EdgeInsets.fromLTRB(
+            24,
+            12,
+            24,
+            16 + MediaQuery.viewPaddingOf(context).bottom,
+          ),
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 440),
+              child: AutofillGroup(
+                child: Form(
+                  key: _form,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _HeroAnimation(),
+                      const Text(
+                        'Welcome back',
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.8,
+                          height: 1.1,
+                          color: PennyPalColors.white,
                         ),
-                        const SizedBox(height: 6),
-                        const Text(
-                          'Enter your credentials to continue.',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: PennyPalColors.gray,
-                            height: 1.4,
-                          ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Sign in to keep your budget, goals and spending in sync.',
+                        style: TextStyle(
+                          fontSize: 14.5,
+                          color: PennyPalColors.gray,
+                          height: 1.5,
                         ),
-                        const SizedBox(height: 28),
+                      ),
+                      const SizedBox(height: 24),
 
-                        // Email
-                        _AuthField(
-                          controller: _email,
-                          focusNode: _emailFocus,
-                          label: 'Email address',
-                          hint: 'you@example.com',
-                          keyboardType: TextInputType.emailAddress,
-                          prefixIcon: AppIcons.mail,
-                          validator: Validators.email,
-                          onFieldSubmitted: (_) => FocusScope.of(context)
-                              .requestFocus(_passwordFocus),
-                        ),
-                        const SizedBox(height: 16),
+                      _AuthInput(
+                        controller: _email,
+                        focusNode: _emailFocus,
+                        label: 'Email address',
+                        hint: 'you@example.com',
+                        prefixIcon: AppIcons.mail,
+                        keyboardType: TextInputType.emailAddress,
+                        autofillHints: const [AutofillHints.email],
+                        validator: Validators.email,
+                        enabled: !loading,
+                        onFieldSubmitted: (_) => FocusScope.of(context)
+                            .requestFocus(_passwordFocus),
+                      ),
+                      const SizedBox(height: 16),
 
-                        // Password
-                        _AuthPasswordField(
-                          controller: _password,
-                          focusNode: _passwordFocus,
-                          label: 'Password',
-                          hint: 'Your password',
-                          validator: Validators.password,
-                          textInputAction: TextInputAction.done,
-                          onFieldSubmitted: (_) => _submit(),
-                        ),
-
-                        // Forgot password
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () => context.go('/forgot-password'),
-                            style: TextButton.styleFrom(
-                              foregroundColor: PennyPalColors.white,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 0, vertical: 10),
-                              minimumSize: Size.zero,
-                              tapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
+                      _AuthInput(
+                        controller: _password,
+                        focusNode: _passwordFocus,
+                        label: 'Password',
+                        hint: 'Enter your password',
+                        prefixIcon: AppIcons.lock,
+                        obscure: true,
+                        autofillHints: const [AutofillHints.password],
+                        validator: Validators.password,
+                        textInputAction: TextInputAction.done,
+                        enabled: !loading,
+                        onFieldSubmitted: (_) => _submit(),
+                        labelTrailing: TextButton(
+                          onPressed: loading
+                              ? null
+                              : () => context.go('/forgot-password'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: PennyPalColors.lightGray,
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            textStyle: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.1,
                             ),
-                            child: const Text(
-                              'Forgot password?',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: PennyPalColors.white,
-                              ),
-                            ),
                           ),
+                          child: const Text('Forgot password?'),
                         ),
-                        const SizedBox(height: 20),
+                      ),
+                      const SizedBox(height: 24),
 
-                        // Sign in button
-                        _PrimaryButton(
-                          label: 'Sign In',
-                          loading: loading,
-                          onPressed: _submit,
-                        ),
-                        const SizedBox(height: 32),
+                      _PrimaryButton(
+                        label: 'Sign In',
+                        loading: loading,
+                        onPressed: _submit,
+                      ),
+                      const SizedBox(height: 22),
 
-                        // Divider
-                        const _OrDivider(),
-                        const SizedBox(height: 24),
+                      const _OrDivider(),
+                      const SizedBox(height: 18),
 
-                        // Create account
-                        _SecondaryButton(
-                          label: 'Create an account',
-                          onPressed: () => context.go('/register'),
-                        ),
-                        const SizedBox(height: 28),
+                      _SecondaryButton(
+                        label: 'Create an account',
+                        onPressed: () => context.go('/register'),
+                      ),
+                      const SizedBox(height: 18),
 
-                        // Trust note
-                        const Center(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              AppIcon(
-                                AppIcons.lock,
-                                size: 13,
-                                color: PennyPalColors.muted,
-                              ),
-                              SizedBox(width: 6),
-                              Text(
-                                'Secured with end-to-end encryption.',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: PennyPalColors.muted,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                      const _TrustNote(),
+                    ],
                   ),
                 ),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class _TopPanel extends StatelessWidget {
+class _BrandBar extends StatelessWidget {
+  const _BrandBar();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      color: PennyPalColors.nearBlack,
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(28, 20, 28, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Brand
-              Row(
-                children: [
-                  Container(
-                    width: 34,
-                    height: 34,
-                    decoration: BoxDecoration(
-                      color: PennyPalColors.elevated,
-                      borderRadius: BorderRadius.circular(9),
-                      border: Border.all(color: PennyPalColors.border),
-                    ),
-                    child: const AppIcon(
-                      AppIcons.wallet,
-                      color: PennyPalColors.white,
-                      size: 19,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    'PennyPal',
-                    style: TextStyle(
-                      color: PennyPalColors.white,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.2,
-                    ),
-                  ),
-                ],
+    return SafeArea(
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: PennyPalColors.elevated,
+                borderRadius: BorderRadius.circular(11),
+                border: Border.all(color: PennyPalColors.border),
               ),
-              const SizedBox(height: 24),
+              child: const AppIcon(
+                AppIcons.wallet,
+                color: PennyPalColors.white,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 11),
+            const Text(
+              'PennyPal',
+              style: TextStyle(
+                color: PennyPalColors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.3,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-              // Lottie zone
-              const LottiePlaceholder(
-                height: 160,
-                label: 'login.json',
-                tint: PennyPalColors.white,
+class _HeroAnimation extends StatelessWidget {
+  const _HeroAnimation();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, bottom: 18),
+      child: SizedBox(
+        height: 250,
+        child: Center(
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              const _HeroGlow(),
+              Lottie.asset(
+                'assets/animations/login.json',
+                width: 240,
+                height: 240,
+                fit: BoxFit.contain,
               ),
             ],
           ),
@@ -253,8 +261,29 @@ class _TopPanel extends StatelessWidget {
   }
 }
 
-class _AuthField extends StatelessWidget {
-  const _AuthField({
+class _HeroGlow extends StatelessWidget {
+  const _HeroGlow();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 250,
+      height: 250,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [
+            PennyPalColors.elevated.withValues(alpha: 0.75),
+            PennyPalColors.black.withValues(alpha: 0),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AuthInput extends StatefulWidget {
+  const _AuthInput({
     required this.controller,
     required this.label,
     required this.hint,
@@ -263,7 +292,12 @@ class _AuthField extends StatelessWidget {
     this.keyboardType,
     this.validator,
     this.onFieldSubmitted,
-  }) : textInputAction = TextInputAction.next;
+    this.textInputAction = TextInputAction.next,
+    this.autofillHints,
+    this.obscure = false,
+    this.labelTrailing,
+    this.enabled = true,
+  });
 
   final TextEditingController controller;
   final FocusNode? focusNode;
@@ -272,166 +306,119 @@ class _AuthField extends StatelessWidget {
   final List<List<dynamic>> prefixIcon;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
-  final TextInputAction textInputAction;
   final ValueChanged<String>? onFieldSubmitted;
+  final TextInputAction textInputAction;
+  final Iterable<String>? autofillHints;
+  final bool obscure;
+  final Widget? labelTrailing;
+  final bool enabled;
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: PennyPalColors.gray,
-            letterSpacing: 0.1,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          focusNode: focusNode,
-          keyboardType: keyboardType,
-          textInputAction: textInputAction,
-          onFieldSubmitted: onFieldSubmitted,
-          validator: validator,
-          style: const TextStyle(fontSize: 15, color: PennyPalColors.white),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: const TextStyle(
-              color: PennyPalColors.muted,
-              fontSize: 14,
-            ),
-            prefixIcon: AppIcon(prefixIcon, size: 18, color: PennyPalColors.muted),
-            filled: true,
-            fillColor: PennyPalColors.surface,
-            contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 15),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: PennyPalColors.border),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: PennyPalColors.border),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: PennyPalColors.white, width: 1.5),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: PennyPalColors.lightGray, width: 1.5),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: PennyPalColors.white, width: 2),
-            ),
-          ),
-        ),
-      ],
-    );
+  State<_AuthInput> createState() => _AuthInputState();
+}
+
+class _AuthInputState extends State<_AuthInput> {
+  late final FocusNode _node = widget.focusNode ?? FocusNode();
+  late bool _obscure = widget.obscure;
+  bool _focused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _node.addListener(_onFocusChanged);
   }
-}
 
-class _AuthPasswordField extends StatefulWidget {
-  const _AuthPasswordField({
-    required this.controller,
-    required this.label,
-    required this.hint,
-    this.focusNode,
-    this.validator,
-    this.textInputAction = TextInputAction.next,
-    this.onFieldSubmitted,
-  });
-
-  final TextEditingController controller;
-  final FocusNode? focusNode;
-  final String label;
-  final String hint;
-  final String? Function(String?)? validator;
-  final TextInputAction textInputAction;
-  final ValueChanged<String>? onFieldSubmitted;
+  void _onFocusChanged() => setState(() => _focused = _node.hasFocus);
 
   @override
-  State<_AuthPasswordField> createState() => _AuthPasswordFieldState();
-}
-
-class _AuthPasswordFieldState extends State<_AuthPasswordField> {
-  bool _obscure = true;
+  void dispose() {
+    _node.removeListener(_onFocusChanged);
+    if (widget.focusNode == null) _node.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final accent = _focused ? PennyPalColors.white : PennyPalColors.muted;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.label,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: PennyPalColors.gray,
-            letterSpacing: 0.1,
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                widget.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
+                  color:
+                      _focused ? PennyPalColors.lightGray : PennyPalColors.gray,
+                ),
+              ),
+            ),
+            if (widget.labelTrailing != null) widget.labelTrailing!,
+          ],
         ),
         const SizedBox(height: 8),
         TextFormField(
           controller: widget.controller,
-          focusNode: widget.focusNode,
+          focusNode: _node,
+          enabled: widget.enabled,
           obscureText: _obscure,
-          validator: widget.validator,
+          keyboardType: widget.keyboardType,
           textInputAction: widget.textInputAction,
+          autofillHints: widget.autofillHints,
+          autocorrect: false,
+          enableSuggestions: false,
           onFieldSubmitted: widget.onFieldSubmitted,
-          style: const TextStyle(fontSize: 15, color: PennyPalColors.white),
+          validator: widget.validator,
+          cursorColor: PennyPalColors.white,
+          cursorWidth: 1.6,
+          style: const TextStyle(
+            fontSize: 15.5,
+            fontWeight: FontWeight.w500,
+            color: PennyPalColors.white,
+          ),
           decoration: InputDecoration(
             hintText: widget.hint,
             hintStyle: const TextStyle(
+              fontSize: 14.5,
               color: PennyPalColors.muted,
-              fontSize: 14,
             ),
-            prefixIcon: const AppIcon(AppIcons.lock,
-                size: 18, color: PennyPalColors.muted),
-            suffixIcon: IconButton(
-              onPressed: () => setState(() => _obscure = !_obscure),
-              icon: AppIcon(
-                _obscure
-                    ? AppIcons.view
-                    : AppIcons.viewOff,
-                size: 18,
-                color: PennyPalColors.muted,
-              ),
-            ),
+            prefixIcon: AppIcon(widget.prefixIcon, size: 19, color: accent),
+            suffixIcon: widget.obscure
+                ? IconButton(
+                    onPressed: () => setState(() => _obscure = !_obscure),
+                    tooltip: _obscure ? 'Show password' : 'Hide password',
+                    icon: AppIcon(
+                      _obscure ? AppIcons.view : AppIcons.viewOff,
+                      size: 19,
+                      color: accent,
+                    ),
+                  )
+                : null,
             filled: true,
-            fillColor: PennyPalColors.surface,
+            fillColor: PennyPalColors.card,
             contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 15),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: PennyPalColors.border),
+              horizontal: 16,
+              vertical: 18,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: PennyPalColors.border),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: PennyPalColors.white, width: 1.5),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: PennyPalColors.lightGray, width: 1.5),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: PennyPalColors.white, width: 2),
+            border: _fieldBorder(PennyPalColors.border),
+            enabledBorder: _fieldBorder(PennyPalColors.border),
+            disabledBorder: _fieldBorder(PennyPalColors.mutedBorder),
+            focusedBorder: _fieldBorder(PennyPalColors.white, width: 1.5),
+            errorBorder: _fieldBorder(PennyPalColors.danger),
+            focusedErrorBorder: _fieldBorder(PennyPalColors.danger, width: 1.5),
+            errorStyle: const TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w500,
+              height: 1.3,
+              letterSpacing: 0.1,
+              color: PennyPalColors.danger,
             ),
           ),
         ),
@@ -439,6 +426,12 @@ class _AuthPasswordFieldState extends State<_AuthPasswordField> {
     );
   }
 }
+
+OutlineInputBorder _fieldBorder(Color color, {double width = 1}) =>
+    OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: BorderSide(color: color, width: width),
+    );
 
 class _PrimaryButton extends StatelessWidget {
   const _PrimaryButton({
@@ -455,32 +448,32 @@ class _PrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 52,
+      height: 54,
       child: ElevatedButton(
         onPressed: loading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: PennyPalColors.white,
           foregroundColor: PennyPalColors.black,
-          disabledBackgroundColor: PennyPalColors.lightGray,
+          disabledBackgroundColor: PennyPalColors.darkGray,
+          disabledForegroundColor: PennyPalColors.gray,
           elevation: 0,
-          shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
         ),
         child: loading
-            ? const SizedBox(
-                width: 20,
-                height: 20,
+            ? const SizedBox.square(
+                dimension: 20,
                 child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
+                  strokeWidth: 2.4,
+                  strokeCap: StrokeCap.round,
                   color: PennyPalColors.black,
                 ),
               )
             : Text(
                 label,
                 style: const TextStyle(
-                  fontSize: 15,
+                  fontSize: 15.5,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.2,
                   color: PennyPalColors.black,
@@ -504,15 +497,15 @@ class _SecondaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 52,
+      height: 54,
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
-          backgroundColor: PennyPalColors.card,
+          backgroundColor: Colors.transparent,
           foregroundColor: PennyPalColors.white,
           side: const BorderSide(color: PennyPalColors.border, width: 1.5),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
         ),
         child: Text(
@@ -520,6 +513,7 @@ class _SecondaryButton extends StatelessWidget {
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
+            letterSpacing: 0.1,
             color: PennyPalColors.white,
           ),
         ),
@@ -536,23 +530,60 @@ class _OrDivider extends StatelessWidget {
     return const Row(
       children: [
         Expanded(
-          child: Divider(color: PennyPalColors.mutedBorder, thickness: 1),
+          child: Divider(
+            color: PennyPalColors.mutedBorder,
+            thickness: 1,
+            height: 1,
+          ),
         ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 14),
           child: Text(
             'or',
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 12.5,
               color: PennyPalColors.muted,
               fontWeight: FontWeight.w500,
+              letterSpacing: 0.4,
             ),
           ),
         ),
         Expanded(
-          child: Divider(color: PennyPalColors.mutedBorder, thickness: 1),
+          child: Divider(
+            color: PennyPalColors.mutedBorder,
+            thickness: 1,
+            height: 1,
+          ),
         ),
       ],
+    );
+  }
+}
+
+class _TrustNote extends StatelessWidget {
+  const _TrustNote();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AppIcon(AppIcons.lock, size: 13, color: PennyPalColors.muted),
+          SizedBox(width: 7),
+          Flexible(
+            child: Text(
+              'Your data is encrypted and stored securely.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12.5,
+                color: PennyPalColors.muted,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

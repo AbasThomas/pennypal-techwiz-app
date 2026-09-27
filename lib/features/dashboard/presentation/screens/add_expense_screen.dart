@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../shared/widgets/app_widgets.dart';
 import '../../../../shared/widgets/lottie_placeholder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../data/finance_providers.dart';
@@ -56,10 +55,11 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         Navigator.pop(context);
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Could not save expense: $e')));
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -376,8 +376,48 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
             ),
             const SizedBox(height: 32),
 
-            // Save
-            AppButton(text: 'Save Expense', onPressed: _saving ? null : _save),
+            SizedBox(
+              width: double.infinity,
+              height: 58,
+              child: FilledButton(
+                onPressed: _saving ? null : _save,
+                style: FilledButton.styleFrom(
+                  backgroundColor: PennyPalColors.danger,
+                  foregroundColor: PennyPalColors.white,
+                  disabledBackgroundColor: PennyPalColors.dangerSurface,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: _saving
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: PennyPalColors.white,
+                        ),
+                      )
+                    : const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AppIcon(
+                            AppIcons.arrowDown,
+                            size: 19,
+                            color: PennyPalColors.white,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            'Save expense',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+            ),
           ],
         ),
       ),

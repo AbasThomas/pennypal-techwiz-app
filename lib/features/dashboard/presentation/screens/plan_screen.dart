@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../data/finance_providers.dart';
@@ -133,7 +134,19 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _CreateGoalSheet(existing: existing),
+      builder: (_) => _CreateGoalSheet(
+        existing: existing,
+        onCreated: existing == null
+            ? (goal) => _showGoalCreatedDialog(context, goal)
+            : null,
+      ),
+    );
+  }
+
+  void _showGoalCreatedDialog(BuildContext context, SavingsGoal goal) {
+    showDialog(
+      context: context,
+      builder: (_) => _GoalCreatedDialog(goal: goal),
     );
   }
 
@@ -1309,8 +1322,9 @@ class _DetailRow extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _CreateGoalSheet extends ConsumerStatefulWidget {
-  const _CreateGoalSheet({this.existing});
+  const _CreateGoalSheet({this.existing, this.onCreated});
   final SavingsGoal? existing;
+  final ValueChanged<SavingsGoal>? onCreated;
 
   @override
   ConsumerState<_CreateGoalSheet> createState() =>
@@ -1366,19 +1380,19 @@ class _CreateGoalSheetState extends ConsumerState<_CreateGoalSheet> {
 
     setState(() => _saving = true);
     try {
-      await ref.read(financeRepositoryProvider).saveGoal(
-            SavingsGoal(
-              id: widget.existing?.id ?? '',
-              userId: uid,
-              goalName: _name.text.trim(),
-              targetAmount: targetAmt,
-              currentAmount: currentAmt,
-              targetDate: _targetDate,
-              monthlyContribution: monthlyAmt,
-              status: currentAmt >= targetAmt ? 'completed' : 'active',
-            ),
-          );
+      final goal = SavingsGoal(
+        id: widget.existing?.id ?? '',
+        userId: uid,
+        goalName: _name.text.trim(),
+        targetAmount: targetAmt,
+        currentAmount: currentAmt,
+        targetDate: _targetDate,
+        monthlyContribution: monthlyAmt,
+        status: currentAmt >= targetAmt ? 'completed' : 'active',
+      );
+      await ref.read(financeRepositoryProvider).saveGoal(goal);
       if (mounted) Navigator.pop(context);
+      widget.onCreated?.call(goal);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1552,6 +1566,78 @@ class _CreateGoalSheetState extends ConsumerState<_CreateGoalSheet> {
                         style: const TextStyle(
                             fontSize: 15, fontWeight: FontWeight.w700),
                       ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Goal created celebration dialog
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _GoalCreatedDialog extends StatelessWidget {
+  const _GoalCreatedDialog({required this.goal});
+  final SavingsGoal goal;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: PennyPalColors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.10)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Lottie.asset(
+              'assets/animations/savedsuccessful.json',
+              height: 180,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Goal created!',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.4,
+                color: PennyPalColors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'You\u2019re on your way to ${goal.goalName}. Keep contributing to reach ${_c(goal.targetAmount)}.',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                color: PennyPalColors.gray,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: PennyPalColors.white,
+                  foregroundColor: PennyPalColors.black,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                ),
+                child: const Text(
+                  'Done',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                ),
               ),
             ),
           ],

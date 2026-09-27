@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
@@ -23,7 +25,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _Slide(
       lottie: 'assets/animations/onboarding1.json',
       title: 'Understand\nYour Money',
-      body: 'Track your income and expenses\nin one simple place.',
+      body: 'Track your inco,me and expenses\nin one simple place.',
     ),
     _Slide(
       lottie: 'assets/animations/onboarding2.json',
@@ -171,39 +173,49 @@ class _SlideView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Lottie.asset(
-            slide.lottie,
-            width: 280,
-            height: 260,
-            fit: BoxFit.contain,
-          ),
-          const SizedBox(height: 44),
-          Text(
-            slide.title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.6,
-              height: 1.15,
-              color: PennyPalColors.white,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            slide.body,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 16,
-              color: PennyPalColors.gray,
-              height: 1.6,
-            ),
-          ),
-        ],
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Square box sized to the slide; the 200px reserve keeps room for
+          // the title and body so short screens never overflow.
+          final animSize = math
+              .min(constraints.maxWidth, constraints.maxHeight - 200)
+              .clamp(160.0, 400.0)
+              .toDouble();
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Lottie.asset(
+                slide.lottie,
+                width: animSize,
+                height: animSize,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 44),
+              Text(
+                slide.title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.6,
+                  height: 1.15,
+                  color: PennyPalColors.white,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                slide.body,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: PennyPalColors.gray,
+                  height: 1.6,
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

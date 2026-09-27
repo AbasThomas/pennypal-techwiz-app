@@ -29,31 +29,15 @@ class _NavItem {
 }
 
 const _navItems = [
-  _NavItem(
-    label: 'Home',
-    icon: AppIcons.home,
-    activeIcon: AppIcons.home,
-  ),
-  _NavItem(
-    label: 'Money',
-    icon: AppIcons.wallet,
-    activeIcon: AppIcons.wallet,
-  ),
-  _NavItem(
-    label: 'Plan',
-    icon: AppIcons.chart,
-    activeIcon: AppIcons.chart,
-  ),
+  _NavItem(label: 'Home', icon: AppIcons.home, activeIcon: AppIcons.home),
+  _NavItem(label: 'Money', icon: AppIcons.wallet, activeIcon: AppIcons.wallet),
+  _NavItem(label: 'Plan', icon: AppIcons.chart, activeIcon: AppIcons.chart),
   _NavItem(
     label: 'Assistant',
     icon: AppIcons.robot,
     activeIcon: AppIcons.robot,
   ),
-  _NavItem(
-    label: 'More',
-    icon: AppIcons.menu,
-    activeIcon: AppIcons.menu,
-  ),
+  _NavItem(label: 'More', icon: AppIcons.menu, activeIcon: AppIcons.menu),
 ];
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -94,20 +78,33 @@ class _PennyPalShellState extends ConsumerState<PennyPalShell> {
     );
   }
 
+  void _selectTab(int index) {
+    if (_index == index) return;
+    HapticFeedback.selectionClick();
+    setState(() => _index = index);
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
-    final rawName = user?.firstName ??
-        (user?.email.split('@').first ?? 'there');
+    final rawName =
+        user?.firstName ?? (user?.email.split('@').first ?? 'there');
     final firstName = rawName
         .split(' ')
-        .map((w) => w.isEmpty
-            ? ''
-            : '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}')
+        .map(
+          (w) => w.isEmpty
+              ? ''
+              : '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}',
+        )
         .join(' ');
+    final safeBottom = MediaQuery.paddingOf(context).bottom;
+    final navBottomInset = safeBottom > 0 ? safeBottom : 16.0;
 
     final screens = [
-      DashboardScreen(firstName: firstName),
+      DashboardScreen(
+        firstName: firstName,
+        onViewTransactions: () => _selectTab(1),
+      ),
       const MoneyScreen(),
       const PlanScreen(),
       const AiAssistantScreen(),
@@ -121,30 +118,20 @@ class _PennyPalShellState extends ConsumerState<PennyPalShell> {
         duration: const Duration(milliseconds: 250),
         switchInCurve: Curves.easeOutCubic,
         switchOutCurve: Curves.easeInCubic,
-        transitionBuilder: (child, animation) => FadeTransition(
-          opacity: animation,
-          child: child,
-        ),
-        child: KeyedSubtree(
-          key: ValueKey(_index),
-          child: screens[_index],
-        ),
+        transitionBuilder: (child, animation) =>
+            FadeTransition(opacity: animation, child: child),
+        child: KeyedSubtree(key: ValueKey(_index), child: screens[_index]),
       ),
       floatingActionButton: _index <= 1
           ? Padding(
-              padding: const EdgeInsets.only(bottom: 88),
+              padding: EdgeInsets.only(bottom: navBottomInset + 70),
               child: _InteractiveFab(onPressed: _onFab),
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: _GlassNavBar(
         currentIndex: _index,
-        onTap: (i) {
-          if (_index != i) {
-            HapticFeedback.selectionClick();
-            setState(() => _index = i);
-          }
-        },
+        onTap: _selectTab,
         items: _navItems,
       ),
     );
@@ -168,41 +155,48 @@ class _InteractiveFabState extends State<_InteractiveFab> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) {
-        setState(() => _pressed = false);
-        widget.onPressed();
-      },
-      onTapCancel: () => setState(() => _pressed = false),
-      child: AnimatedScale(
-        scale: _pressed ? 0.88 : 1.0,
-        duration: const Duration(milliseconds: 140),
-        curve: Curves.easeOutCubic,
-        child: Container(
-          width: 58,
-          height: 58,
-          decoration: BoxDecoration(
-            color: PennyPalColors.white,
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.white.withValues(alpha: 0.22),
-                blurRadius: 18,
-                spreadRadius: 1,
-                offset: const Offset(0, 4),
+    return Semantics(
+      button: true,
+      label: 'Add transaction',
+      child: GestureDetector(
+        onTapDown: (_) => setState(() => _pressed = true),
+        onTapUp: (_) {
+          setState(() => _pressed = false);
+          widget.onPressed();
+        },
+        onTapCancel: () => setState(() => _pressed = false),
+        child: AnimatedScale(
+          scale: _pressed ? 0.9 : 1.0,
+          duration: const Duration(milliseconds: 140),
+          curve: Curves.easeOutCubic,
+          child: Container(
+            width: 54,
+            height: 54,
+            decoration: BoxDecoration(
+              color: PennyPalColors.white,
+              shape: BoxShape.circle,
+              border: Border.all(color: PennyPalColors.lightGray, width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: 0.18),
+                  blurRadius: 16,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 3),
+                ),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.6),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: const Center(
+              child: AppIcon(
+                AppIcons.add,
+                color: PennyPalColors.black,
+                size: 27,
               ),
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.5),
-                blurRadius: 14,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: const AppIcon(
-            AppIcons.add,
-            color: PennyPalColors.black,
-            size: 30,
+            ),
           ),
         ),
       ),
@@ -378,15 +372,15 @@ class _NavTileState extends State<_NavTile> {
               duration: const Duration(milliseconds: 220),
               switchInCurve: Curves.easeOutBack,
               switchOutCurve: Curves.easeIn,
-              transitionBuilder: (child, anim) => ScaleTransition(
-                scale: anim,
-                child: child,
-              ),
+              transitionBuilder: (child, anim) =>
+                  ScaleTransition(scale: anim, child: child),
               child: AppIcon(
                 widget.active ? widget.item.activeIcon : widget.item.icon,
                 key: ValueKey(widget.active),
                 size: widget.active ? 24 : 22,
-                color: widget.active ? PennyPalColors.white : PennyPalColors.muted,
+                color: widget.active
+                    ? PennyPalColors.white
+                    : PennyPalColors.muted,
               ),
             ),
             const SizedBox(height: 3),
@@ -398,7 +392,9 @@ class _NavTileState extends State<_NavTile> {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: widget.active ? FontWeight.w800 : FontWeight.w500,
-                color: widget.active ? PennyPalColors.white : PennyPalColors.muted,
+                color: widget.active
+                    ? PennyPalColors.white
+                    : PennyPalColors.muted,
                 letterSpacing: widget.active ? 0.3 : 0.1,
               ),
               child: Text(widget.item.label),
@@ -415,10 +411,7 @@ class _NavTileState extends State<_NavTile> {
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _FabSheet extends StatelessWidget {
-  const _FabSheet({
-    required this.onAddIncome,
-    required this.onAddExpense,
-  });
+  const _FabSheet({required this.onAddIncome, required this.onAddExpense});
 
   final VoidCallback onAddIncome;
   final VoidCallback onAddExpense;
@@ -573,7 +566,11 @@ class _SheetOptionState extends State<_SheetOption> {
                     width: 1.0,
                   ),
                 ),
-                child: AppIcon(widget.icon, color: PennyPalColors.white, size: 24),
+                child: AppIcon(
+                  widget.icon,
+                  color: PennyPalColors.white,
+                  size: 24,
+                ),
               ),
               const SizedBox(height: 12),
               Text(

@@ -3,10 +3,10 @@ import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../shared/widgets/app_widgets.dart';
-import '../../../../shared/widgets/lottie_placeholder.dart';
 import '../controllers/auth_controller.dart';
 import '../../providers/auth_providers.dart';
 
@@ -184,9 +184,9 @@ class _RegisterHeader extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: PennyPalColors.border),
                     ),
-                    child: const Text(
-                      'Step  of 2',
-                      style: TextStyle(
+                    child: Text(
+                      'Step ${step + 1} of 2',
+                      style: const TextStyle(
                         color: PennyPalColors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -202,13 +202,17 @@ class _RegisterHeader extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Lottie zone
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: LottiePlaceholder(
-                  key: ValueKey(step),
-                  height: 130,
-                  label: step == 0 ? 'register.json' : 'onboarding3.json',
-                  tint: PennyPalColors.white,
+              Center(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: Lottie.asset(
+                    step == 0
+                        ? 'assets/animations/register.json'
+                        : 'assets/animations/onboarding3.json',
+                    key: ValueKey(step),
+                    height: 130,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ],
@@ -661,10 +665,16 @@ InputDecoration _fieldDecoration({
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: PennyPalColors.lightGray, width: 1.5),
+        borderSide: const BorderSide(color: PennyPalColors.danger, width: 1.5),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: PennyPalColors.white, width: 2),
+        borderSide: const BorderSide(color: PennyPalColors.danger, width: 1.5),
+      ),
+      errorStyle: const TextStyle(
+        fontSize: 12.5,
+        fontWeight: FontWeight.w500,
+        height: 1.3,
+        color: PennyPalColors.danger,
       ),
     );

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 import '../../providers/auth_providers.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../../shared/widgets/lottie_placeholder.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -77,11 +77,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 const SizedBox(height: 48),
 
                 // â”€â”€ Lottie animation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                const LottiePlaceholder(
+                Lottie.asset(
+                  'assets/animations/splash.json',
                   width: 260,
                   height: 260,
-                  label: 'splash.json',
-                  tint: PennyPalColors.white,
+                  fit: BoxFit.contain,
                 ),
 
                 const SizedBox(height: 40),

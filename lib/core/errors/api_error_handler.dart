@@ -1,10 +1,17 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'app_exception.dart';
 
 abstract final class ApiErrorHandler {
   static AppException from(Object error) {
     if (error is AppException) return error;
+    if (error is FirebaseAuthException) {
+      return AppException(_authMessage(error.code));
+    }
+    if (error is FirebaseException) {
+      return AppException(_firebaseMessage(error.code));
+    }
     if (error is DioException) {
       final status = error.response?.statusCode;
       final data = error.response?.data;
@@ -58,6 +65,42 @@ abstract final class ApiErrorHandler {
     501 ||
     502 ||
     503 => 'The server is unavailable. Please try again later.',
+    _ => 'Something went wrong. Please try again.',
+  };
+
+  static String _authMessage(String code) => switch (code) {
+    'invalid-email' =>
+      'That email address doesn\u2019t look right. Please check it and try again.',
+    'user-not-found' ||
+    'wrong-password' ||
+    'invalid-credential' ||
+    'invalid-login-credentials' ||
+    'account-exists-with-different-credential' =>
+      'Incorrect email or password. Please try again.',
+    'email-already-in-use' =>
+      'An account already exists with this email. Sign in instead.',
+    'weak-password' =>
+      'That password is too weak. Use at least 8 characters with a mix of letters and numbers.',
+    'user-disabled' =>
+      'This account has been disabled. Please contact support.',
+    'network-request-failed' =>
+      'No internet connection. Check your network and try again.',
+    'too-many-requests' =>
+      'Too many attempts. Please wait a moment and try again.',
+    'user-token-expired' ||
+    'requires-recent-login' ||
+    'credential-expired' =>
+      'Your session has expired. Please sign in again.',
+    'operation-not-allowed' =>
+      'This sign-in method is not enabled. Please contact support.',
+    _ => 'Something went wrong. Please try again.',
+  };
+
+  static String _firebaseMessage(String code) => switch (code) {
+    'network-request-failed' || 'unavailable' || 'deadline-exceeded' =>
+      'No internet connection. Check your network and try again.',
+    'permission-denied' => 'You do not have permission to do that.',
+    'not-found' => 'The requested information was not found.',
     _ => 'Something went wrong. Please try again.',
   };
 }

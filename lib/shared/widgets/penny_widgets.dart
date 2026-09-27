@@ -31,100 +31,123 @@ class BalanceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: PennyPalColors.surface,
-        borderRadius: BorderRadius.circular(18),
+        gradient: const LinearGradient(
+          colors: [PennyPalColors.surface, PennyPalColors.nearBlack],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: PennyPalColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Label + badge
           Row(
             children: [
-              const Text(
-                'TOTAL BALANCE',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
-                  color: PennyPalColors.gray,
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: PennyPalColors.elevated,
+                  borderRadius: BorderRadius.circular(11),
+                  border: Border.all(color: PennyPalColors.border),
+                ),
+                child: const Center(
+                  child: AppIcon(
+                    AppIcons.wallet,
+                    size: 19,
+                    color: PennyPalColors.white,
+                  ),
                 ),
               ),
-              if (changePercent != null) ...[
-                const Spacer(),
+              const SizedBox(width: 11),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'AVAILABLE BALANCE',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.1,
+                        color: PennyPalColors.gray,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Income minus expenses',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: PennyPalColors.muted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (changePercent != null)
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 9, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: PennyPalColors.elevated,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: PennyPalColors.border),
+                    horizontal: 9,
+                    vertical: 5,
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      AppIcon(
-                        changePositive
-                            ? AppIcons.arrowUp
-                            : AppIcons.arrowDown,
-                        size: 11,
-                        color: PennyPalColors.white,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        changePercent!,
-                        style: const TextStyle(
-                          color: PennyPalColors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
+                  decoration: BoxDecoration(
+                    color: changePositive
+                        ? PennyPalColors.successSurface
+                        : PennyPalColors.dangerSurface,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    changePercent!,
+                    style: TextStyle(
+                      color: changePositive
+                          ? PennyPalColors.success
+                          : PennyPalColors.danger,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
-              ],
             ],
           ),
-          const SizedBox(height: 12),
-
-          // Amount
+          const SizedBox(height: 22),
           Text(
             balance,
             style: const TextStyle(
-              fontSize: 36,
+              fontSize: 35,
               fontWeight: FontWeight.w800,
-              letterSpacing: -1,
+              letterSpacing: -1.2,
               color: PennyPalColors.white,
             ),
           ),
-          const SizedBox(height: 24),
-
-          // Divider
+          const SizedBox(height: 22),
           const Divider(color: PennyPalColors.border, height: 1),
-          const SizedBox(height: 18),
-
-          // Income / Expenses row
+          const SizedBox(height: 16),
           Row(
             children: [
               Expanded(
                 child: _BalanceStat(
-                  icon: AppIcons.arrowDown,
+                  icon: AppIcons.arrowUp,
                   label: 'Income',
                   value: income,
+                  color: PennyPalColors.success,
+                  surfaceColor: PennyPalColors.successSurface,
                 ),
               ),
               Container(
                 width: 1,
-                height: 36,
+                height: 42,
                 color: PennyPalColors.border,
               ),
               Expanded(
                 child: _BalanceStat(
-                  icon: AppIcons.arrowUp,
+                  icon: AppIcons.arrowDown,
                   label: 'Expenses',
                   value: expenses,
+                  color: PennyPalColors.danger,
+                  surfaceColor: PennyPalColors.dangerSurface,
                   alignRight: true,
                 ),
               ),
@@ -141,21 +164,34 @@ class _BalanceStat extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.value,
+    required this.color,
+    required this.surfaceColor,
     this.alignRight = false,
   });
 
   final List<List<dynamic>> icon;
   final String label;
   final String value;
+  final Color color;
+  final Color surfaceColor;
   final bool alignRight;
 
   @override
   Widget build(BuildContext context) {
     final align =
         alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+    final iconWidget = Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(color: surfaceColor, shape: BoxShape.circle),
+      child: Center(child: AppIcon(icon, size: 13, color: color)),
+    );
+
     return Padding(
       padding: EdgeInsets.only(
-          left: alignRight ? 16 : 0, right: alignRight ? 0 : 16),
+        left: alignRight ? 16 : 0,
+        right: alignRight ? 0 : 16,
+      ),
       child: Column(
         crossAxisAlignment: align,
         children: [
@@ -163,17 +199,7 @@ class _BalanceStat extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (!alignRight) ...[
-                Container(
-                  width: 22,
-                  height: 22,
-                  decoration: const BoxDecoration(
-                    color: PennyPalColors.elevated,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: AppIcon(icon, size: 12, color: PennyPalColors.white),
-                  ),
-                ),
+                iconWidget,
                 const SizedBox(width: 8),
               ],
               Text(
@@ -181,26 +207,16 @@ class _BalanceStat extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 12,
                   color: PennyPalColors.gray,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               if (alignRight) ...[
                 const SizedBox(width: 8),
-                Container(
-                  width: 22,
-                  height: 22,
-                  decoration: const BoxDecoration(
-                    color: PennyPalColors.elevated,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: AppIcon(icon, size: 12, color: PennyPalColors.white),
-                  ),
-                ),
+                iconWidget,
               ],
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
             value,
             style: const TextStyle(

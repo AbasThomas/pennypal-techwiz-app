@@ -68,10 +68,11 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
         Navigator.pop(context);
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Could not save income: $e')));
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -310,28 +311,47 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
             ),
             const SizedBox(height: 32),
 
-            // Save
             SizedBox(
               width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
+              height: 58,
+              child: FilledButton(
                 onPressed: _saving ? null : _save,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: PennyPalColors.white,
+                style: FilledButton.styleFrom(
+                  backgroundColor: PennyPalColors.success,
                   foregroundColor: PennyPalColors.black,
+                  disabledBackgroundColor: PennyPalColors.successSurface,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: Text(
-                  _saving ? 'Saving…' : 'Save Income',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: PennyPalColors.black,
-                  ),
-                ),
+                child: _saving
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: PennyPalColors.black,
+                        ),
+                      )
+                    : const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AppIcon(
+                            AppIcons.arrowUp,
+                            size: 19,
+                            color: PennyPalColors.black,
+                          ),
+                          SizedBox(width: 9),
+                          Text(
+                            'Save income',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ],
+                      ),
               ),
             ),
           ],
