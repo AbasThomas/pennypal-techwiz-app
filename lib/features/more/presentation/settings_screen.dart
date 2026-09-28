@@ -9,93 +9,47 @@ import '../../auth/providers/auth_providers.dart';
 
 // ── Persistent settings state ────────────────────────────────────────────────
 
-final _prefsProvider = Provider<SharedPreferences?>((_) => null);
 
 class AppSettings {
   AppSettings({
     required this.currencySymbol,
     required this.currencyCode,
-    required this.dateFormat,
     required this.themeMode,
-    required this.hapticEnabled,
     required this.notifTransactions,
     required this.notifBudgets,
     required this.notifGoals,
-    required this.notifTips,
     required this.reminderDaily,
     required this.reminderTime,
-    required this.secureApp,
-    required this.biometricEnabled,
-    required this.autoBackup,
-    required this.analyticsEnabled,
-    required this.decimalPlaces,
-    required this.firstDayOfWeek,
-    required this.groupByCategory,
-    required this.includePendingInReports,
   });
 
   final String currencySymbol;
   final String currencyCode;
-  final String dateFormat;
   final String themeMode;
-  final bool hapticEnabled;
   final bool notifTransactions;
   final bool notifBudgets;
   final bool notifGoals;
-  final bool notifTips;
   final bool reminderDaily;
   final String reminderTime;
-  final bool secureApp;
-  final bool biometricEnabled;
-  final bool autoBackup;
-  final bool analyticsEnabled;
-  final int decimalPlaces;
-  final int firstDayOfWeek;
-  final bool groupByCategory;
-  final bool includePendingInReports;
 
   AppSettings copyWith({
     String? currencySymbol,
     String? currencyCode,
-    String? dateFormat,
     String? themeMode,
-    bool? hapticEnabled,
     bool? notifTransactions,
     bool? notifBudgets,
     bool? notifGoals,
-    bool? notifTips,
     bool? reminderDaily,
     String? reminderTime,
-    bool? secureApp,
-    bool? biometricEnabled,
-    bool? autoBackup,
-    bool? analyticsEnabled,
-    int? decimalPlaces,
-    int? firstDayOfWeek,
-    bool? groupByCategory,
-    bool? includePendingInReports,
   }) {
     return AppSettings(
       currencySymbol: currencySymbol ?? this.currencySymbol,
       currencyCode: currencyCode ?? this.currencyCode,
-      dateFormat: dateFormat ?? this.dateFormat,
       themeMode: themeMode ?? this.themeMode,
-      hapticEnabled: hapticEnabled ?? this.hapticEnabled,
       notifTransactions: notifTransactions ?? this.notifTransactions,
       notifBudgets: notifBudgets ?? this.notifBudgets,
       notifGoals: notifGoals ?? this.notifGoals,
-      notifTips: notifTips ?? this.notifTips,
       reminderDaily: reminderDaily ?? this.reminderDaily,
       reminderTime: reminderTime ?? this.reminderTime,
-      secureApp: secureApp ?? this.secureApp,
-      biometricEnabled: biometricEnabled ?? this.biometricEnabled,
-      autoBackup: autoBackup ?? this.autoBackup,
-      analyticsEnabled: analyticsEnabled ?? this.analyticsEnabled,
-      decimalPlaces: decimalPlaces ?? this.decimalPlaces,
-      firstDayOfWeek: firstDayOfWeek ?? this.firstDayOfWeek,
-      groupByCategory: groupByCategory ?? this.groupByCategory,
-      includePendingInReports:
-          includePendingInReports ?? this.includePendingInReports,
     );
   }
 }
@@ -108,38 +62,17 @@ class _SettingsNotifier extends StateNotifier<AppSettings> {
                 _prefs?.getString('prefs_currency_symbol') ?? '\u20A6',
             currencyCode:
                 _prefs?.getString('prefs_currency_code') ?? 'NGN',
-            dateFormat:
-                _prefs?.getString('prefs_date_format') ?? 'dd MMM yyyy',
             themeMode: _prefs?.getString('prefs_theme') ?? 'dark',
-            hapticEnabled:
-                _prefs?.getBool('prefs_haptic') ?? true,
             notifTransactions:
                 _prefs?.getBool('prefs_notif_tx') ?? true,
             notifBudgets:
                 _prefs?.getBool('prefs_notif_budget') ?? true,
             notifGoals:
                 _prefs?.getBool('prefs_notif_goals') ?? true,
-            notifTips:
-                _prefs?.getBool('prefs_notif_tips') ?? false,
             reminderDaily:
                 _prefs?.getBool('prefs_reminder') ?? false,
             reminderTime:
                 _prefs?.getString('prefs_reminder_time') ?? '20:00',
-            secureApp: _prefs?.getBool('prefs_secure') ?? false,
-            biometricEnabled:
-                _prefs?.getBool('prefs_biometric') ?? false,
-            autoBackup:
-                _prefs?.getBool('prefs_auto_backup') ?? true,
-            analyticsEnabled:
-                _prefs?.getBool('prefs_analytics') ?? true,
-            decimalPlaces:
-                _prefs?.getInt('prefs_decimals') ?? 0,
-            firstDayOfWeek:
-                _prefs?.getInt('prefs_first_day') ?? 1,
-            groupByCategory:
-                _prefs?.getBool('prefs_group_cat') ?? true,
-            includePendingInReports:
-                _prefs?.getBool('prefs_pending_reports') ?? false,
           ),
         );
 
@@ -152,46 +85,26 @@ class _SettingsNotifier extends StateNotifier<AppSettings> {
     await Future.wait([
       p.setString('prefs_currency_symbol', s.currencySymbol),
       p.setString('prefs_currency_code', s.currencyCode),
-      p.setString('prefs_date_format', s.dateFormat),
       p.setString('prefs_theme', s.themeMode),
-      p.setBool('prefs_haptic', s.hapticEnabled),
       p.setBool('prefs_notif_tx', s.notifTransactions),
       p.setBool('prefs_notif_budget', s.notifBudgets),
       p.setBool('prefs_notif_goals', s.notifGoals),
-      p.setBool('prefs_notif_tips', s.notifTips),
       p.setBool('prefs_reminder', s.reminderDaily),
       p.setString('prefs_reminder_time', s.reminderTime),
-      p.setBool('prefs_secure', s.secureApp),
-      p.setBool('prefs_biometric', s.biometricEnabled),
-      p.setBool('prefs_auto_backup', s.autoBackup),
-      p.setBool('prefs_analytics', s.analyticsEnabled),
-      p.setInt('prefs_decimals', s.decimalPlaces),
-      p.setInt('prefs_first_day', s.firstDayOfWeek),
-      p.setBool('prefs_group_cat', s.groupByCategory),
-      p.setBool('prefs_pending_reports', s.includePendingInReports),
     ]);
   }
 
-  void tap(bool haptic) {
-    if (haptic && state.hapticEnabled) HapticFeedback.selectionClick();
-  }
-
-  void impact(bool heavy) {
-    if (state.hapticEnabled) {
-      heavy
-          ? HapticFeedback.mediumImpact()
-          : HapticFeedback.lightImpact();
-    }
-  }
+  void tap() => HapticFeedback.selectionClick();
+  void impact(bool heavy) => heavy
+      ? HapticFeedback.mediumImpact()
+      : HapticFeedback.lightImpact();
 }
 
 final _settingsProvider =
     StateNotifierProvider<_SettingsNotifier, AppSettings>(
-  (ref) {
-    final prefs = ref.watch(_prefsProvider);
-    return _SettingsNotifier(prefs);
-  },
-  dependencies: [_prefsProvider],
+  (ref) => throw UnimplementedError(
+    '_settingsProvider must be overridden with a _SettingsNotifier instance.',
+  ),
 );
 
 // ── Settings screen ──────────────────────────────────────────────────────────
@@ -204,18 +117,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  SharedPreferences? _prefs;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadPrefs();
-  }
-
-  Future<void> _loadPrefs() async {
-    final p = await SharedPreferences.getInstance();
-    if (mounted) setState(() => _prefs = p);
-  }
+  Future<SharedPreferences>? _prefsFuture;
 
   void _snack(String msg, {bool error = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -240,44 +142,58 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_prefs == null) {
-      return Scaffold(
-        backgroundColor: PennyPalColors.black,
-        appBar: AppBar(
-          backgroundColor: PennyPalColors.black,
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          iconTheme: const IconThemeData(color: PennyPalColors.white),
-          title: const Text(
-            'App Settings',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: PennyPalColors.white,
+    _prefsFuture ??= SharedPreferences.getInstance();
+    return FutureBuilder<SharedPreferences>(
+      future: _prefsFuture,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Scaffold(
+            backgroundColor: PennyPalColors.black,
+            appBar: AppBar(
+              backgroundColor: PennyPalColors.black,
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+              iconTheme: const IconThemeData(color: PennyPalColors.white),
+              title: const Text(
+                'App Settings',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: PennyPalColors.white,
+                ),
+              ),
             ),
+            body: const Center(
+              child: CircularProgressIndicator(
+                color: PennyPalColors.white,
+              ),
+            ),
+          );
+        }
+        final prefs = snapshot.data!;
+        return ProviderScope(
+          overrides: [
+            _settingsProvider.overrideWith(
+              (ref) => _SettingsNotifier(prefs),
+            ),
+          ],
+          child: _SettingsView(
+            onSnack: _snack,
+            onLogout: () {
+              ref.read(authControllerProvider.notifier).logout();
+            },
           ),
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(
-            color: PennyPalColors.white,
-          ),
-        ),
-      );
-    }
-    return ProviderScope(
-      overrides: [_prefsProvider.overrideWithValue(_prefs)],
-      child: _SettingsView(
-        onSnack: _snack,
-        onLogout: () {
-          ref.read(authControllerProvider.notifier).logout();
-        },
-      ),
+        );
+      },
     );
   }
 }
 
 class _SettingsView extends ConsumerWidget {
-  const _SettingsView({required this.onSnack, required this.onLogout});
+  const _SettingsView({
+    required this.onSnack,
+    required this.onLogout,
+  });
   final void Function(String, {bool error}) onSnack;
   final VoidCallback onLogout;
 
@@ -309,7 +225,7 @@ class _SettingsView extends ConsumerWidget {
         actions: [
           IconButton(
             tooltip: 'Reset to defaults',
-            onPressed: () => _confirmReset(context, notifier, update),
+            onPressed: () => _confirmReset(context, notifier),
             icon: const AppIcon(
               AppIcons.refresh,
               size: 19,
@@ -328,7 +244,7 @@ class _SettingsView extends ConsumerWidget {
             email: user?.email ?? '',
             role: user?.role ?? 'student',
             onTap: () {
-              notifier.tap(true);
+              notifier.tap();
               context.push('/profile');
             },
           ),
@@ -349,7 +265,7 @@ class _SettingsView extends ConsumerWidget {
                         ? 'Dark'
                         : 'System',
                 onTap: () async {
-                  notifier.tap(true);
+                  notifier.tap();
                   final r = await _SingleOptionPicker.show(
                     context,
                     title: 'Theme Mode',
@@ -380,7 +296,7 @@ class _SettingsView extends ConsumerWidget {
                 subtitle: 'Symbol and code for amounts',
                 value: '${s.currencySymbol}  ${s.currencyCode}',
                 onTap: () async {
-                  notifier.tap(true);
+                  notifier.tap();
                   final r = await _CurrencyPicker.show(
                     context,
                     currentSymbol: s.currencySymbol,
@@ -392,81 +308,6 @@ class _SettingsView extends ConsumerWidget {
                     );
                     onSnack('Currency updated to ${r.$2}');
                   }
-                },
-              ),
-              _SettingRow(
-                icon: AppIcons.calendar,
-                label: 'Date Format',
-                subtitle: 'How dates appear everywhere',
-                value: s.dateFormat,
-                onTap: () async {
-                  notifier.tap(true);
-                  final r = await _SingleOptionPicker.show(
-                    context,
-                    title: 'Date Format',
-                    options: const [
-                      'dd MMM yyyy',
-                      'MMM dd, yyyy',
-                      'dd/MM/yyyy',
-                      'MM/dd/yyyy',
-                      'yyyy-MM-dd',
-                    ],
-                    current: s.dateFormat,
-                  );
-                  if (r != null) {
-                    update(s.copyWith(dateFormat: r));
-                    onSnack('Date format updated');
-                  }
-                },
-              ),
-              _SettingRow(
-                icon: AppIcons.money,
-                label: 'Decimal Places',
-                subtitle: 'Precision for money values',
-                value: '${s.decimalPlaces}',
-                onTap: () async {
-                  notifier.tap(true);
-                  final r = await _SingleOptionPicker.show(
-                    context,
-                    title: 'Decimal Places',
-                    options: const ['0', '1', '2'],
-                    current: '${s.decimalPlaces}',
-                  );
-                  if (r != null) {
-                    update(s.copyWith(decimalPlaces: int.parse(r)));
-                  }
-                },
-              ),
-              _SettingRow(
-                icon: AppIcons.calendar,
-                label: 'First Day of Week',
-                subtitle: 'For calendars and reports',
-                value: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][
-                    (s.firstDayOfWeek - 1).clamp(0, 6)],
-                onTap: () async {
-                  notifier.tap(true);
-                  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',
-                      'Friday', 'Saturday', 'Sunday'];
-                  final r = await _SingleOptionPicker.show(
-                    context,
-                    title: 'First Day of Week',
-                    options: days,
-                    current: days[(s.firstDayOfWeek - 1).clamp(0, 6)],
-                  );
-                  if (r != null) {
-                    final idx = days.indexOf(r) + 1;
-                    update(s.copyWith(firstDayOfWeek: idx));
-                  }
-                },
-              ),
-              _SwitchRow(
-                icon: AppIcons.coins,
-                label: 'Group by Category',
-                subtitle: 'Group transactions in list views',
-                value: s.groupByCategory,
-                onChanged: (v) {
-                  update(s.copyWith(groupByCategory: v));
-                  notifier.tap(v);
                 },
               ),
             ],
@@ -483,50 +324,28 @@ class _SettingsView extends ConsumerWidget {
                 label: 'Transaction Alerts',
                 subtitle: 'When income or expense is recorded',
                 value: s.notifTransactions,
-                onChanged: (v) {
-                  update(s.copyWith(notifTransactions: v));
-                  notifier.tap(v);
-                },
+                onChanged: (v) => update(s.copyWith(notifTransactions: v)),
               ),
               _SwitchRow(
                 icon: AppIcons.target,
                 label: 'Budget Alerts',
                 subtitle: 'When spending nears or exceeds limits',
                 value: s.notifBudgets,
-                onChanged: (v) {
-                  update(s.copyWith(notifBudgets: v));
-                  notifier.tap(v);
-                },
+                onChanged: (v) => update(s.copyWith(notifBudgets: v)),
               ),
               _SwitchRow(
                 icon: AppIcons.piggyBank,
                 label: 'Savings Goal Updates',
                 subtitle: 'Progress milestones and completions',
                 value: s.notifGoals,
-                onChanged: (v) {
-                  update(s.copyWith(notifGoals: v));
-                  notifier.tap(v);
-                },
-              ),
-              _SwitchRow(
-                icon: AppIcons.bulb,
-                label: 'Daily Financial Tips',
-                subtitle: 'Short tips every morning',
-                value: s.notifTips,
-                onChanged: (v) {
-                  update(s.copyWith(notifTips: v));
-                  notifier.tap(v);
-                },
+                onChanged: (v) => update(s.copyWith(notifGoals: v)),
               ),
               _SwitchRow(
                 icon: AppIcons.calendar,
                 label: 'Daily Entry Reminder',
                 subtitle: 'Remind me to log my expenses',
                 value: s.reminderDaily,
-                onChanged: (v) {
-                  update(s.copyWith(reminderDaily: v));
-                  notifier.tap(v);
-                },
+                onChanged: (v) => update(s.copyWith(reminderDaily: v)),
               ),
               if (s.reminderDaily)
                 _SettingRow(
@@ -534,7 +353,7 @@ class _SettingsView extends ConsumerWidget {
                   label: '  Reminder Time',
                   value: s.reminderTime,
                   onTap: () async {
-                    notifier.tap(true);
+                    notifier.tap();
                     final parts = s.reminderTime.split(':');
                     final now = TimeOfDay(
                       hour: int.tryParse(parts.first) ?? 20,
@@ -576,42 +395,13 @@ class _SettingsView extends ConsumerWidget {
           const SizedBox(height: 8),
           _Group(
             items: [
-              _SwitchRow(
-                icon: AppIcons.lock,
-                label: 'App Lock',
-                subtitle: 'Require authentication to open the app',
-                value: s.secureApp,
-                onChanged: (v) {
-                  update(s.copyWith(secureApp: v));
-                  notifier.impact(v);
-                },
-              ),
-              _SwitchRow(
-                icon: AppIcons.security,
-                label: 'Biometric Unlock',
-                subtitle: 'Use fingerprint or face ID',
-                value: s.biometricEnabled,
-                onChanged: (v) {
-                  update(s.copyWith(biometricEnabled: v));
-                  notifier.tap(v);
-                },
-              ),
               _SettingRow(
                 icon: AppIcons.lockCheck,
                 label: 'Change Password',
                 value: '',
                 onTap: () {
-                  notifier.tap(true);
+                  notifier.tap();
                   onSnack('Change password coming soon');
-                },
-              ),
-              _SettingRow(
-                icon: AppIcons.creditCard,
-                label: 'Connected Devices',
-                value: '1 active',
-                onTap: () {
-                  notifier.tap(true);
-                  onSnack('Session manager coming soon');
                 },
               ),
               _SettingRow(
@@ -619,123 +409,8 @@ class _SettingsView extends ConsumerWidget {
                 label: 'Privacy & Permissions',
                 value: '',
                 onTap: () {
-                  notifier.tap(true);
+                  notifier.tap();
                   onSnack('Privacy center coming soon');
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          // DATA & BACKUP
-          const _SectionLabel('Data & Backup'),
-          const SizedBox(height: 8),
-          _Group(
-            items: [
-              _SwitchRow(
-                icon: AppIcons.refresh,
-                label: 'Auto Cloud Backup',
-                subtitle: 'Backup transactions to cloud daily',
-                value: s.autoBackup,
-                onChanged: (v) {
-                  update(s.copyWith(autoBackup: v));
-                  notifier.tap(v);
-                },
-              ),
-              _SettingRow(
-                icon: AppIcons.upload,
-                label: 'Manual Backup Now',
-                value: '',
-                onTap: () {
-                  notifier.impact(false);
-                  onSnack('Backup started — this may take a moment');
-                },
-              ),
-              _SettingRow(
-                icon: AppIcons.download,
-                label: 'Restore from Backup',
-                value: '',
-                onTap: () {
-                  notifier.tap(true);
-                  _confirmRestore(context, () => onSnack('Restore not yet available'));
-                },
-              ),
-              _SettingRow(
-                icon: AppIcons.coins,
-                label: 'Export Transactions (CSV)',
-                value: '',
-                onTap: () {
-                  notifier.impact(false);
-                  onSnack('Exporting CSV… coming soon');
-                },
-              ),
-              _SettingRow(
-                icon: AppIcons.download,
-                label: 'Export Reports (PDF)',
-                value: '',
-                onTap: () {
-                  notifier.tap(true);
-                  onSnack('PDF export coming soon');
-                },
-              ),
-              _SettingRow(
-                icon: AppIcons.delete,
-                label: 'Clear Local Cache',
-                value: '',
-                destructive: true,
-                onTap: () => _confirmClear(context, () {
-                  onSnack('Local cache cleared');
-                }),
-              ),
-              _SettingRow(
-                icon: AppIcons.delete,
-                label: 'Delete All My Data',
-                value: '',
-                destructive: true,
-                onTap: () => _confirmDeleteAll(context, () {
-                  onSnack(
-                    'Please contact support to delete your account data',
-                    error: true,
-                  );
-                }),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
-          // PREFERENCES
-          const _SectionLabel('Preferences'),
-          const SizedBox(height: 8),
-          _Group(
-            items: [
-              _SwitchRow(
-                icon: AppIcons.coins,
-                label: 'Haptic Feedback',
-                subtitle: 'Vibrate on taps and actions',
-                value: s.hapticEnabled,
-                onChanged: (v) {
-                  update(s.copyWith(hapticEnabled: v));
-                  if (v) HapticFeedback.lightImpact();
-                },
-              ),
-              _SwitchRow(
-                icon: AppIcons.chartBar,
-                label: 'Include Pending in Reports',
-                subtitle: 'Include pending/uncleared entries',
-                value: s.includePendingInReports,
-                onChanged: (v) {
-                  update(s.copyWith(includePendingInReports: v));
-                  notifier.tap(v);
-                },
-              ),
-              _SwitchRow(
-                icon: AppIcons.chartBar,
-                label: 'Share Usage Analytics',
-                subtitle: 'Anonymous data to improve the app',
-                value: s.analyticsEnabled,
-                onChanged: (v) {
-                  update(s.copyWith(analyticsEnabled: v));
-                  notifier.tap(v);
                 },
               ),
             ],
@@ -752,7 +427,7 @@ class _SettingsView extends ConsumerWidget {
                 label: 'About PennyPal',
                 value: 'v1.0.0',
                 onTap: () {
-                  notifier.tap(true);
+                  notifier.tap();
                   context.push('/about');
                 },
               ),
@@ -761,7 +436,7 @@ class _SettingsView extends ConsumerWidget {
                 label: 'Contact Support',
                 value: '',
                 onTap: () {
-                  notifier.tap(true);
+                  notifier.tap();
                   context.push('/support');
                 },
               ),
@@ -770,7 +445,7 @@ class _SettingsView extends ConsumerWidget {
                 label: 'Rate the App',
                 value: '',
                 onTap: () {
-                  notifier.tap(true);
+                  notifier.tap();
                   onSnack('Thanks! Rate dialog coming soon');
                 },
               ),
@@ -779,7 +454,7 @@ class _SettingsView extends ConsumerWidget {
                 label: 'Send Feedback',
                 value: '',
                 onTap: () {
-                  notifier.tap(true);
+                  notifier.tap();
                   context.push('/feedback');
                 },
               ),
@@ -788,7 +463,7 @@ class _SettingsView extends ConsumerWidget {
                 label: 'Help & FAQs',
                 value: '',
                 onTap: () {
-                  notifier.tap(true);
+                  notifier.tap();
                   onSnack('Help center coming soon');
                 },
               ),
@@ -797,7 +472,7 @@ class _SettingsView extends ConsumerWidget {
                 label: 'Terms of Service',
                 value: '',
                 onTap: () {
-                  notifier.tap(true);
+                  notifier.tap();
                   onSnack('Terms coming soon');
                 },
               ),
@@ -806,7 +481,7 @@ class _SettingsView extends ConsumerWidget {
                 label: 'Privacy Policy',
                 value: '',
                 onTap: () {
-                  notifier.tap(true);
+                  notifier.tap();
                   onSnack('Privacy policy coming soon');
                 },
               ),
@@ -827,18 +502,6 @@ class _SettingsView extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 24),
-
-          const Center(
-            child: Text(
-              'Made with \u2764\ufe0f for students',
-              style: TextStyle(
-                fontSize: 12,
-                color: PennyPalColors.muted,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -849,7 +512,6 @@ class _SettingsView extends ConsumerWidget {
   Future<void> _confirmReset(
     BuildContext context,
     _SettingsNotifier notifier,
-    void Function(AppSettings) update,
   ) async {
     notifier.impact(true);
     final r = await showDialog<bool>(
@@ -866,23 +528,12 @@ class _SettingsView extends ConsumerWidget {
       await notifier.update(AppSettings(
         currencySymbol: '\u20A6',
         currencyCode: 'NGN',
-        dateFormat: 'dd MMM yyyy',
         themeMode: 'dark',
-        hapticEnabled: true,
         notifTransactions: true,
         notifBudgets: true,
         notifGoals: true,
-        notifTips: false,
         reminderDaily: false,
         reminderTime: '20:00',
-        secureApp: false,
-        biometricEnabled: false,
-        autoBackup: true,
-        analyticsEnabled: true,
-        decimalPlaces: 0,
-        firstDayOfWeek: 1,
-        groupByCategory: true,
-        includePendingInReports: false,
       ));
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -905,47 +556,6 @@ class _SettingsView extends ConsumerWidget {
         );
       }
     }
-  }
-
-  Future<void> _confirmRestore(BuildContext context, VoidCallback onOk) async {
-    final r = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => const _ConfirmDialog(
-        title: 'Restore from Backup?',
-        body:
-            'Restoring a backup will replace all current data on this device with the backed-up version. This cannot be undone.',
-        confirmText: 'Restore',
-        danger: true,
-      ),
-    );
-    if (r == true) onOk();
-  }
-
-  Future<void> _confirmClear(BuildContext context, VoidCallback onOk) async {
-    final r = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => const _ConfirmDialog(
-        title: 'Clear Local Cache?',
-        body:
-            'Temporary cached images and files will be removed. This will free up storage and will not delete your saved data.',
-        confirmText: 'Clear',
-      ),
-    );
-    if (r == true) onOk();
-  }
-
-  Future<void> _confirmDeleteAll(BuildContext context, VoidCallback onOk) async {
-    final r = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => const _ConfirmDialog(
-        title: 'Delete All Your Data?',
-        body:
-            'This will permanently delete all transactions, budgets, savings goals and account data from PennyPal. This action is irreversible.',
-        confirmText: 'Delete Everything',
-        danger: true,
-      ),
-    );
-    if (r == true) onOk();
   }
 
   Future<void> _confirmLogout(BuildContext context, VoidCallback onOk) async {

@@ -2,20 +2,13 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:bootstrap_flutter/core/storage/preferences_storage.dart';
 import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../data/finance_providers.dart';
 import '../../../../data/models/financial_models.dart';
 import '../../../auth/providers/auth_providers.dart';
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Currency formatter
-// ─────────────────────────────────────────────────────────────────────────────
-
-final _fmt = NumberFormat.currency(symbol: '₦', decimalDigits: 0);
-String _c(double v) => _fmt.format(v);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Plan screen — custom pill tab switcher (Budget | Savings)
