@@ -22,10 +22,11 @@ class NotificationsScreen extends ConsumerWidget {
           TextButton(
             onPressed: () async {
               for (final n in ref.read(notificationsProvider).value ?? []) {
-                if (n.data()['read'] != true)
+                if (n.data()['read'] != true) {
                   await ref
                       .read(financeRepositoryProvider)
                       .markNotificationRead(n.id);
+                }
               }
             },
             child: const Text('Mark all read'),
@@ -50,7 +51,7 @@ class NotificationsScreen extends ConsumerWidget {
             : ListView.separated(
                 padding: const EdgeInsets.all(20),
                 itemCount: items.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                separatorBuilder: (_, _) => const SizedBox(height: 10),
                 itemBuilder: (_, i) {
                   final doc = items[i];
                   final data = doc.data();

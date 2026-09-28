@@ -213,7 +213,7 @@ class _BrandBar extends StatelessWidget {
               child: const AppIcon(
                 AppIcons.wallet,
                 color: PennyPalColors.white,
-                size: 20,
+                size: 18,
               ),
             ),
             const SizedBox(width: 11),
@@ -384,28 +384,45 @@ class _AuthInputState extends State<_AuthInput> {
             color: PennyPalColors.white,
           ),
           decoration: InputDecoration(
+            isDense: true,
             hintText: widget.hint,
             hintStyle: const TextStyle(
               fontSize: 14.5,
               color: PennyPalColors.muted,
             ),
-            prefixIcon: AppIcon(widget.prefixIcon, size: 19, color: accent),
+            prefixIcon: SizedBox(
+              width: 34,
+              height: 34,
+              child: Center(
+                child: AppIcon(widget.prefixIcon, size: 13, color: accent),
+              ),
+            ),
+            prefixIconConstraints:
+                const BoxConstraints(minWidth: 34, minHeight: 34, maxWidth: 34, maxHeight: 34),
             suffixIcon: widget.obscure
-                ? IconButton(
-                    onPressed: () => setState(() => _obscure = !_obscure),
-                    tooltip: _obscure ? 'Show password' : 'Hide password',
-                    icon: AppIcon(
-                      _obscure ? AppIcons.view : AppIcons.viewOff,
-                      size: 19,
-                      color: accent,
+                ? SizedBox(
+                    width: 34,
+                    height: 34,
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () => setState(() => _obscure = !_obscure),
+                      tooltip: _obscure ? 'Show password' : 'Hide password',
+                      icon: AppIcon(
+                        _obscure ? AppIcons.view : AppIcons.viewOff,
+                        size: 13,
+                        color: accent,
+                      ),
                     ),
                   )
                 : null,
+            suffixIconConstraints:
+                const BoxConstraints(minWidth: 34, minHeight: 34, maxWidth: 34, maxHeight: 34),
             filled: true,
             fillColor: PennyPalColors.card,
             contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 18,
+              horizontal: 12,
+              vertical: 12,
             ),
             border: _fieldBorder(PennyPalColors.border),
             enabledBorder: _fieldBorder(PennyPalColors.border),

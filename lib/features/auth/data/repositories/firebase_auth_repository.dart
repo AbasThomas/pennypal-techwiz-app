@@ -23,6 +23,10 @@ abstract interface class AuthGateway {
   });
   Future<void> deactivateAccount();
   Future<void> deleteAccount();
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  });
 }
 
 class FirebaseAuthRepository implements AuthGateway {
@@ -75,6 +79,15 @@ class FirebaseAuthRepository implements AuthGateway {
 
   @override
   Future<void> deleteAccount() => _source.deleteAccount();
+
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) => _source.changePassword(
+    currentPassword: currentPassword,
+    newPassword: newPassword,
+  );
 
   Future<void> forgotPassword(String email) => _source.forgot(email);
   Future<void> resendVerification() => _source.verifyEmail();

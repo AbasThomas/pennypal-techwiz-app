@@ -54,16 +54,21 @@ class MoreScreen extends ConsumerWidget {
                       CircleAvatar(
                         radius: 26,
                         backgroundColor: PennyPalColors.elevated,
-                        child: Text(
-                          name.isNotEmpty
-                              ? name[0].toUpperCase()
-                              : 'S',
-                          style: const TextStyle(
-                            color: PennyPalColors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
+                        backgroundImage: user?.photoUrl?.isNotEmpty == true
+                            ? NetworkImage(user!.photoUrl!)
+                            : null,
+                        child: user?.photoUrl?.isNotEmpty == true
+                            ? null
+                            : Text(
+                                name.isNotEmpty
+                                    ? name[0].toUpperCase()
+                                    : 'S',
+                                style: const TextStyle(
+                                  color: PennyPalColors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
@@ -136,17 +141,8 @@ class MoreScreen extends ConsumerWidget {
                 ),
                 _MenuItem(
                   icon: AppIcons.lockCheck,
-                  label: 'Security & PIN',
-                  onTap: () {
-                    HapticFeedback.selectionClick();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Security & PIN coming soon'),
-                        backgroundColor: PennyPalColors.surface,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  },
+                  label: 'Security & Password',
+                  onTap: () => context.push('/change-password'),
                 ),
                 _MenuItem(
                   icon: AppIcons.settings,
@@ -172,6 +168,11 @@ class MoreScreen extends ConsumerWidget {
                   icon: AppIcons.support,
                   label: 'Contact Support',
                   onTap: () => context.push('/support'),
+                ),
+                _MenuItem(
+                  icon: AppIcons.help,
+                  label: 'Help & FAQs',
+                  onTap: () => context.push('/help'),
                 ),
                 _MenuItem(
                   icon: AppIcons.info,

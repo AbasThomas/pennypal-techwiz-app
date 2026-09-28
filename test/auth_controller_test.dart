@@ -25,4 +25,5 @@ class _FakeRepository implements AuthGateway {
   @override Future<AuthUser> uploadProfilePictureBytes(Uint8List bytes, {String contentType = 'image/jpeg'}) async => throw UnimplementedError();
   @override Future<void> deactivateAccount() async {}
   @override Future<void> deleteAccount() async {}
+  @override Future<void> changePassword({required String currentPassword, required String newPassword}) async {}
 }

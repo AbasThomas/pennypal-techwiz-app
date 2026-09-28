@@ -143,7 +143,7 @@ class _RegisterHeader extends StatelessWidget {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(28, 20, 28, 0),
+              padding: const EdgeInsets.fromLTRB(28, 14, 28, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -195,11 +195,11 @@ class _RegisterHeader extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
 
               // Step progress bar
               _StepBar(step: step),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
 
               // Lottie zone
               Center(
@@ -210,7 +210,7 @@ class _RegisterHeader extends StatelessWidget {
                         ? 'assets/animations/register.json'
                         : 'assets/animations/onboarding3.json',
                     key: ValueKey(step),
-                    height: 130,
+                    height: 200,
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -291,7 +291,7 @@ class _Step0 extends StatelessWidget {
             'Start by telling us a little about yourself.',
             style: TextStyle(fontSize: 14, color: PennyPalColors.gray, height: 1.4),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 18),
 
           const _FieldLabel('Full name'),
           const SizedBox(height: 8),
@@ -301,7 +301,7 @@ class _Step0 extends StatelessWidget {
             prefixIcon: AppIcons.user,
             validator: (v) => Validators.required(v, label: 'Full name'),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 12),
 
           const _FieldLabel('Email address'),
           const SizedBox(height: 8),
@@ -312,7 +312,7 @@ class _Step0 extends StatelessWidget {
             keyboardType: TextInputType.emailAddress,
             validator: Validators.email,
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 12),
 
           const _FieldLabel('Mobile number'),
           const SizedBox(height: 8),
@@ -324,7 +324,7 @@ class _Step0 extends StatelessWidget {
             textInputAction: TextInputAction.done,
             validator: (v) => Validators.required(v, label: 'Mobile number'),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 22),
 
           SizedBox(
             width: double.infinity,
@@ -583,7 +583,13 @@ class _FormField extends StatelessWidget {
       style: const TextStyle(fontSize: 15, color: PennyPalColors.white),
       decoration: _fieldDecoration(
         hint: hint,
-        prefix: AppIcon(prefixIcon, size: 18, color: PennyPalColors.muted),
+        prefix: SizedBox(
+          width: 34,
+          height: 34,
+          child: Center(
+            child: AppIcon(prefixIcon, size: 13, color: PennyPalColors.muted),
+          ),
+        ),
       ),
     );
   }
@@ -619,14 +625,29 @@ class _PasswordFormFieldState extends State<_PasswordFormField> {
       style: const TextStyle(fontSize: 15, color: PennyPalColors.white),
       decoration: _fieldDecoration(
         hint: widget.hint,
-        prefix:
-            const AppIcon(AppIcons.lock, size: 18, color: PennyPalColors.muted),
-        suffix: IconButton(
-          onPressed: () => setState(() => _obscure = !_obscure),
-          icon: AppIcon(
-            _obscure ? AppIcons.view : AppIcons.viewOff,
-            size: 18,
-            color: PennyPalColors.muted,
+        prefix: const SizedBox(
+          width: 34,
+          height: 34,
+          child: Center(
+            child: AppIcon(
+              AppIcons.lock,
+              size: 13,
+              color: PennyPalColors.muted,
+            ),
+          ),
+        ),
+        suffix: SizedBox(
+          width: 34,
+          height: 34,
+          child: IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            onPressed: () => setState(() => _obscure = !_obscure),
+            icon: AppIcon(
+              _obscure ? AppIcons.view : AppIcons.viewOff,
+              size: 13,
+              color: PennyPalColors.muted,
+            ),
           ),
         ),
       ),
@@ -640,17 +661,22 @@ InputDecoration _fieldDecoration({
   Widget? suffix,
 }) =>
     InputDecoration(
+      isDense: true,
       hintText: hint,
       hintStyle: const TextStyle(
         color: PennyPalColors.muted,
         fontSize: 14,
       ),
       prefixIcon: prefix,
+      prefixIconConstraints:
+          const BoxConstraints(minWidth: 34, minHeight: 34, maxWidth: 34, maxHeight: 34),
       suffixIcon: suffix,
+      suffixIconConstraints:
+          const BoxConstraints(minWidth: 34, minHeight: 34, maxWidth: 34, maxHeight: 34),
       filled: true,
       fillColor: PennyPalColors.surface,
       contentPadding:
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+          const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: PennyPalColors.border),

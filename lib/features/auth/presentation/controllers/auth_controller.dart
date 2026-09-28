@@ -140,6 +140,24 @@ class AuthController extends StateNotifier<AuthState> {
     }
   }
 
+  Future<bool> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      await _repository.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+      return true;
+    } catch (error) {
+      state = state.copyWith(
+        errorMessage: ApiErrorHandler.from(error).message,
+      );
+      return false;
+    }
+  }
+
   Future<bool> _authenticate(Future<AuthUser> Function() action) async {
     state = const AuthState(status: AuthStatus.loading);
     try {

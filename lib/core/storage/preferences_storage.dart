@@ -38,15 +38,45 @@ class AppCurrency {
   final String code;
 
   static const naira = AppCurrency('\u20A6', 'NGN');
+
+  @override
+  bool operator ==(Object other) =>
+      other is AppCurrency && other.symbol == symbol && other.code == code;
+
+  @override
+  int get hashCode => Object.hash(symbol, code);
 }
 
-final appCurrencyProvider = Provider<AppCurrency>((ref) {
-  final prefs = ref.watch(sharedPreferencesProvider);
-  return AppCurrency(
-    prefs.getString('prefs_currency_symbol') ?? '\u20A6',
-    prefs.getString('prefs_currency_code') ?? 'NGN',
-  );
-});
+const _currencySymbolKey = 'prefs_currency_symbol';
+const _currencyCodeKey = 'prefs_currency_code';
+
+/// Owns the app-wide currency. Held at the root scope so writing it here
+/// rebuilds every screen that formats an amount, wherever it sits.
+class AppCurrencyNotifier extends StateNotifier<AppCurrency> {
+  AppCurrencyNotifier(this._prefs)
+      : super(
+          AppCurrency(
+            _prefs.getString(_currencySymbolKey) ?? AppCurrency.naira.symbol,
+            _prefs.getString(_currencyCodeKey) ?? AppCurrency.naira.code,
+          ),
+        );
+
+  final SharedPreferences _prefs;
+
+  Future<void> set(AppCurrency currency) async {
+    if (currency == state) return;
+    state = currency;
+    await Future.wait([
+      _prefs.setString(_currencySymbolKey, currency.symbol),
+      _prefs.setString(_currencyCodeKey, currency.code),
+    ]);
+  }
+}
+
+final appCurrencyProvider =
+    StateNotifierProvider<AppCurrencyNotifier, AppCurrency>(
+  (ref) => AppCurrencyNotifier(ref.watch(sharedPreferencesProvider)),
+);
 
 NumberFormat currencyFormatRef(WidgetRef ref, {int decimalDigits = 0}) {
   final c = ref.watch(appCurrencyProvider);

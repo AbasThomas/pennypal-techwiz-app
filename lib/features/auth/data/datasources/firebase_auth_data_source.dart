@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
+import '../../../../core/errors/app_exception.dart';
 import '../models/auth_user.dart';
 
 class FirebaseAuthDataSource {
@@ -48,8 +50,18 @@ class FirebaseAuthDataSource {
       _auth.currentUser == null ? null : _profile(_auth.currentUser!);
 
   Future<AuthUser> _profile(User user) async {
-    final doc = await _db.collection('userProfiles').doc(user.uid).get();
-    final v = doc.data() ?? {};
+    // Prefer the detailed profile, but fall back to `users` so a manually
+    // promoted administrator is recognised whichever account document was
+    // updated in the Firebase console.
+    final profileDoc =
+        await _db.collection('userProfiles').doc(user.uid).get();
+    final userDoc = await _db.collection('users').doc(user.uid).get();
+    final v = <String, dynamic>{
+      ...?userDoc.data(),
+      ...?profileDoc.data(),
+    };
+    // Visible in `flutter run` logs and useful when configuring an admin.
+    debugPrint('PennyPal auth role for ${user.uid}: ${v['role'] ?? 'student'}');
     final names = (v['fullName'] ?? user.displayName ?? '')
         .toString()
         .trim()
@@ -61,7 +73,7 @@ class FirebaseAuthDataSource {
       firstName: names.isEmpty ? '' : names.first,
       lastName: names.length > 1 ? names.skip(1).join(' ') : '',
       isEmailVerified: user.emailVerified,
-      role: (v['role'] ?? 'student').toString(),
+      role: (v['role'] ?? 'student').toString().trim().toLowerCase(),
       phoneNumber: v['phoneNumber'] as String?,
       photoUrl: (v['photoUrl'] ?? user.photoURL) as String?,
       institution: v['institution'] as String?,
@@ -128,7 +140,8 @@ class FirebaseAuthDataSource {
     final ref = _storage
         .ref()
         .child('profile_pictures')
-        .child('${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg');
+        .child(user.uid)
+        .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
 
     final uploadTask = await ref.putFile(
       file,
@@ -151,7 +164,8 @@ class FirebaseAuthDataSource {
     final ref = _storage
         .ref()
         .child('profile_pictures')
-        .child('${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg');
+        .child(user.uid)
+        .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
 
     final uploadTask = await ref.putData(
       bytes,
@@ -201,6 +215,38 @@ class FirebaseAuthDataSource {
   }
 
   Future<void> logout() => _auth.signOut();
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw const AppException(
+        'No active user found. Please sign in again.',
+      );
+    }
+    final email = user.email;
+    if (email == null || email.isEmpty) {
+      throw const AppException(
+        'This account has no email address to verify against.',
+      );
+    }
+
+    try {
+      await user.reauthenticateWithCredential(
+        EmailAuthProvider.credential(email: email, password: currentPassword),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
+        throw const AppException('Your current password is incorrect.');
+      }
+      rethrow;
+    }
+
+    await user.updatePassword(newPassword);
+  }
+
   Future<void> forgot(String email) => _auth.sendPasswordResetEmail(email: email);
   Future<void> verifyEmail() => _auth.currentUser!.sendEmailVerification();
 }

@@ -3,8 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../core/notifications/notification_service.dart';
+import '../../../core/storage/preferences_storage.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_icon.dart';
+import '../../../data/finance_providers.dart';
 import '../../auth/providers/auth_providers.dart';
 
 // ── Persistent settings state ────────────────────────────────────────────────
@@ -12,8 +15,6 @@ import '../../auth/providers/auth_providers.dart';
 
 class AppSettings {
   AppSettings({
-    required this.currencySymbol,
-    required this.currencyCode,
     required this.themeMode,
     required this.notifTransactions,
     required this.notifBudgets,
@@ -22,8 +23,6 @@ class AppSettings {
     required this.reminderTime,
   });
 
-  final String currencySymbol;
-  final String currencyCode;
   final String themeMode;
   final bool notifTransactions;
   final bool notifBudgets;
@@ -32,8 +31,6 @@ class AppSettings {
   final String reminderTime;
 
   AppSettings copyWith({
-    String? currencySymbol,
-    String? currencyCode,
     String? themeMode,
     bool? notifTransactions,
     bool? notifBudgets,
@@ -42,8 +39,6 @@ class AppSettings {
     String? reminderTime,
   }) {
     return AppSettings(
-      currencySymbol: currencySymbol ?? this.currencySymbol,
-      currencyCode: currencyCode ?? this.currencyCode,
       themeMode: themeMode ?? this.themeMode,
       notifTransactions: notifTransactions ?? this.notifTransactions,
       notifBudgets: notifBudgets ?? this.notifBudgets,
@@ -58,10 +53,6 @@ class _SettingsNotifier extends StateNotifier<AppSettings> {
   _SettingsNotifier(this._prefs)
       : super(
           AppSettings(
-            currencySymbol:
-                _prefs?.getString('prefs_currency_symbol') ?? '\u20A6',
-            currencyCode:
-                _prefs?.getString('prefs_currency_code') ?? 'NGN',
             themeMode: _prefs?.getString('prefs_theme') ?? 'dark',
             notifTransactions:
                 _prefs?.getBool('prefs_notif_tx') ?? true,
@@ -83,8 +74,6 @@ class _SettingsNotifier extends StateNotifier<AppSettings> {
     final p = _prefs;
     if (p == null) return;
     await Future.wait([
-      p.setString('prefs_currency_symbol', s.currencySymbol),
-      p.setString('prefs_currency_code', s.currencyCode),
       p.setString('prefs_theme', s.themeMode),
       p.setBool('prefs_notif_tx', s.notifTransactions),
       p.setBool('prefs_notif_budget', s.notifBudgets),
@@ -225,7 +214,7 @@ class _SettingsView extends ConsumerWidget {
         actions: [
           IconButton(
             tooltip: 'Reset to defaults',
-            onPressed: () => _confirmReset(context, notifier),
+            onPressed: () => _confirmReset(context, ref, notifier),
             icon: const AppIcon(
               AppIcons.refresh,
               size: 19,
@@ -250,70 +239,6 @@ class _SettingsView extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
 
-          // APPEARANCE
-          const _SectionLabel('Appearance'),
-          const SizedBox(height: 8),
-          _Group(
-            items: [
-              _SettingRow(
-                icon: AppIcons.settings,
-                label: 'Theme Mode',
-                subtitle: 'Light, Dark, or System default',
-                value: s.themeMode == 'light'
-                    ? 'Light'
-                    : s.themeMode == 'dark'
-                        ? 'Dark'
-                        : 'System',
-                onTap: () async {
-                  notifier.tap();
-                  final r = await _SingleOptionPicker.show(
-                    context,
-                    title: 'Theme Mode',
-                    options: const ['Light', 'Dark', 'System'],
-                    current: s.themeMode == 'light'
-                        ? 'Light'
-                        : s.themeMode == 'dark'
-                            ? 'Dark'
-                            : 'System',
-                  );
-                  if (r != null) {
-                    update(
-                      s.copyWith(
-                        themeMode: r == 'Light'
-                            ? 'light'
-                            : r == 'Dark'
-                                ? 'dark'
-                                : 'system',
-                      ),
-                    );
-                    onSnack('Theme updated');
-                  }
-                },
-              ),
-              _SettingRow(
-                icon: AppIcons.wallet,
-                label: 'Currency',
-                subtitle: 'Symbol and code for amounts',
-                value: '${s.currencySymbol}  ${s.currencyCode}',
-                onTap: () async {
-                  notifier.tap();
-                  final r = await _CurrencyPicker.show(
-                    context,
-                    currentSymbol: s.currencySymbol,
-                    currentCode: s.currencyCode,
-                  );
-                  if (r != null) {
-                    update(
-                      s.copyWith(currencySymbol: r.$1, currencyCode: r.$2),
-                    );
-                    onSnack('Currency updated to ${r.$2}');
-                  }
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-
           // NOTIFICATIONS
           const _SectionLabel('Notifications'),
           const SizedBox(height: 8),
@@ -324,28 +249,69 @@ class _SettingsView extends ConsumerWidget {
                 label: 'Transaction Alerts',
                 subtitle: 'When income or expense is recorded',
                 value: s.notifTransactions,
-                onChanged: (v) => update(s.copyWith(notifTransactions: v)),
+                onChanged: (v) {
+                  final next = s.copyWith(notifTransactions: v);
+                  update(next);
+                  _syncAlertPreferences(ref, next);
+                  onSnack(v ? 'Transaction alerts enabled' : 'Transaction alerts muted');
+                },
               ),
               _SwitchRow(
                 icon: AppIcons.target,
                 label: 'Budget Alerts',
                 subtitle: 'When spending nears or exceeds limits',
                 value: s.notifBudgets,
-                onChanged: (v) => update(s.copyWith(notifBudgets: v)),
+                onChanged: (v) {
+                  final next = s.copyWith(notifBudgets: v);
+                  update(next);
+                  _syncAlertPreferences(ref, next);
+                  onSnack(v ? 'Budget alerts enabled' : 'Budget alerts muted');
+                },
               ),
               _SwitchRow(
                 icon: AppIcons.piggyBank,
                 label: 'Savings Goal Updates',
                 subtitle: 'Progress milestones and completions',
                 value: s.notifGoals,
-                onChanged: (v) => update(s.copyWith(notifGoals: v)),
+                onChanged: (v) {
+                  final next = s.copyWith(notifGoals: v);
+                  update(next);
+                  _syncAlertPreferences(ref, next);
+                  onSnack(v ? 'Goal updates enabled' : 'Goal updates muted');
+                },
               ),
               _SwitchRow(
                 icon: AppIcons.calendar,
                 label: 'Daily Entry Reminder',
                 subtitle: 'Remind me to log my expenses',
                 value: s.reminderDaily,
-                onChanged: (v) => update(s.copyWith(reminderDaily: v)),
+                onChanged: (v) async {
+                  final next = s.copyWith(reminderDaily: v);
+                  update(next);
+                  _syncAlertPreferences(ref, next);
+                  if (v) {
+                    final allowed =
+                        await NotificationService.instance.requestPermission();
+                    if (!allowed) {
+                      final reverted = ref
+                          .read(_settingsProvider)
+                          .copyWith(reminderDaily: false);
+                      update(reverted);
+                      _syncAlertPreferences(ref, reverted);
+                      onSnack(
+                        'Allow notifications in your phone settings for reminders to appear.',
+                        error: true,
+                      );
+                      return;
+                    }
+                    await NotificationService.instance
+                        .scheduleDailyReminder(next.reminderTime);
+                    onSnack('Daily reminder set for ${next.reminderTime}');
+                  } else {
+                    await NotificationService.instance.cancelDailyReminder();
+                    onSnack('Daily reminder turned off');
+                  }
+                },
               ),
               if (s.reminderDaily)
                 _SettingRow(
@@ -382,10 +348,25 @@ class _SettingsView extends ConsumerWidget {
                     if (t != null) {
                       final hm =
                           '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
-                      update(s.copyWith(reminderTime: hm));
+                      final next = s.copyWith(reminderTime: hm);
+                      update(next);
+                      _syncAlertPreferences(ref, next);
+                      await NotificationService.instance
+                          .scheduleDailyReminder(hm);
+                      onSnack('Reminder rescheduled for $hm');
                     }
                   },
                 ),
+              _SettingRow(
+                icon: AppIcons.notification,
+                label: 'Notification Permissions',
+                subtitle: 'Check access and send a test alert',
+                value: '',
+                onTap: () async {
+                  notifier.tap();
+                  await _showPermissionsSheet(context, onSnack);
+                },
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -398,19 +379,21 @@ class _SettingsView extends ConsumerWidget {
               _SettingRow(
                 icon: AppIcons.lockCheck,
                 label: 'Change Password',
+                subtitle: 'Update your sign-in password',
                 value: '',
                 onTap: () {
                   notifier.tap();
-                  onSnack('Change password coming soon');
+                  context.push('/change-password');
                 },
               ),
               _SettingRow(
                 icon: AppIcons.shield,
                 label: 'Privacy & Permissions',
+                subtitle: 'What PennyPal stores and how to control it',
                 value: '',
                 onTap: () {
                   notifier.tap();
-                  onSnack('Privacy center coming soon');
+                  _showPrivacySheet(context);
                 },
               ),
             ],
@@ -443,10 +426,11 @@ class _SettingsView extends ConsumerWidget {
               _SettingRow(
                 icon: AppIcons.star,
                 label: 'Rate the App',
+                subtitle: 'Tell us how PennyPal is working for you',
                 value: '',
                 onTap: () {
                   notifier.tap();
-                  onSnack('Thanks! Rate dialog coming soon');
+                  _showRatingSheet(context, ref, onSnack);
                 },
               ),
               _SettingRow(
@@ -461,28 +445,11 @@ class _SettingsView extends ConsumerWidget {
               _SettingRow(
                 icon: AppIcons.help,
                 label: 'Help & FAQs',
+                subtitle: 'Answers to common questions',
                 value: '',
                 onTap: () {
                   notifier.tap();
-                  onSnack('Help center coming soon');
-                },
-              ),
-              _SettingRow(
-                icon: AppIcons.security,
-                label: 'Terms of Service',
-                value: '',
-                onTap: () {
-                  notifier.tap();
-                  onSnack('Terms coming soon');
-                },
-              ),
-              _SettingRow(
-                icon: AppIcons.lock,
-                label: 'Privacy Policy',
-                value: '',
-                onTap: () {
-                  notifier.tap();
-                  onSnack('Privacy policy coming soon');
+                  context.push('/help');
                 },
               ),
             ],
@@ -511,6 +478,7 @@ class _SettingsView extends ConsumerWidget {
 
   Future<void> _confirmReset(
     BuildContext context,
+    WidgetRef ref,
     _SettingsNotifier notifier,
   ) async {
     notifier.impact(true);
@@ -525,9 +493,8 @@ class _SettingsView extends ConsumerWidget {
       ),
     );
     if (r == true) {
+      await ref.read(appCurrencyProvider.notifier).set(AppCurrency.naira);
       await notifier.update(AppSettings(
-        currencySymbol: '\u20A6',
-        currencyCode: 'NGN',
         themeMode: 'dark',
         notifTransactions: true,
         notifBudgets: true,
@@ -535,6 +502,14 @@ class _SettingsView extends ConsumerWidget {
         reminderDaily: false,
         reminderTime: '20:00',
       ));
+      await NotificationService.instance.cancelDailyReminder();
+      await NotificationService.instance.syncPreferences(
+        transactions: true,
+        budgets: true,
+        goals: true,
+        reminder: false,
+        reminderTime: '20:00',
+      );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -569,6 +544,430 @@ class _SettingsView extends ConsumerWidget {
       ),
     );
     if (r == true) onOk();
+  }
+}
+
+// ── Settings actions ────────────────────────────────────────────────────────
+
+void _syncAlertPreferences(WidgetRef ref, AppSettings s) {
+  NotificationService.instance.syncPreferences(
+    transactions: s.notifTransactions,
+    budgets: s.notifBudgets,
+    goals: s.notifGoals,
+    reminder: s.reminderDaily,
+    reminderTime: s.reminderTime,
+  );
+}
+
+Future<void> _showRatingSheet(
+  BuildContext context,
+  WidgetRef ref,
+  void Function(String, {bool error}) onSnack,
+) async {
+  final result = await showModalBottomSheet<int>(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (_) => const _RatingSheet(),
+  );
+  if (result == null) return;
+
+  final uid = ref.read(currentUserProvider)?.id;
+  if (uid == null) {
+    onSnack('Sign in again to send your rating.', error: true);
+    return;
+  }
+  try {
+    await ref.read(financeRepositoryProvider).submitFeedback(uid, {
+      'type': 'rating',
+      'rating': result,
+      'source': 'settings',
+    });
+    onSnack('Thanks for rating PennyPal $result/5!');
+  } catch (_) {
+    onSnack('Could not send your rating. Please try again.', error: true);
+  }
+}
+
+Future<void> _showPermissionsSheet(
+  BuildContext context,
+  void Function(String, {bool error}) onSnack,
+) async {
+  final granted = await NotificationService.instance.permissionGranted();
+  if (!context.mounted) return;
+  final action = await showModalBottomSheet<String>(
+    context: context,
+    backgroundColor: Colors.transparent,
+    builder: (_) => _PermissionsSheet(granted: granted),
+  );
+  if (action == 'allow') {
+    final ok = await NotificationService.instance.requestPermission();
+    onSnack(
+      ok
+          ? 'Notifications are allowed on this device.'
+          : 'Notifications are still blocked. Enable them in your phone settings.',
+      error: !ok,
+    );
+  } else if (action == 'test') {
+    final ok = await NotificationService.instance.showTestNotification();
+    onSnack(
+      ok
+          ? 'Test notification sent — check your notification shade.'
+          : 'Notifications are blocked. Allow them to receive alerts.',
+      error: !ok,
+    );
+  }
+}
+
+void _showPrivacySheet(BuildContext context) {
+  showModalBottomSheet<void>(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (_) => const _PrivacySheet(),
+  );
+}
+
+// ── Sheets ──────────────────────────────────────────────────────────────────
+
+class _SheetShell extends StatelessWidget {
+  const _SheetShell({required this.title, required this.subtitle, required this.child});
+  final String title;
+  final String subtitle;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: PennyPalColors.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        border: Border(top: BorderSide(color: PennyPalColors.border)),
+      ),
+      padding: EdgeInsets.fromLTRB(
+        24,
+        12,
+        24,
+        24 + MediaQuery.viewPaddingOf(context).bottom,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: PennyPalColors.darkGray,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: PennyPalColors.white,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              subtitle,
+              style: const TextStyle(
+                fontSize: 13.5,
+                color: PennyPalColors.gray,
+                height: 1.45,
+              ),
+            ),
+            const SizedBox(height: 20),
+            child,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RatingSheet extends StatefulWidget {
+  const _RatingSheet();
+
+  @override
+  State<_RatingSheet> createState() => _RatingSheetState();
+}
+
+class _RatingSheetState extends State<_RatingSheet> {
+  int _stars = 0;
+
+  static const _labels = {
+    1: 'Needs work',
+    2: 'Could be better',
+    3: 'Decent',
+    4: 'Great',
+    5: 'Love it!',
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return _SheetShell(
+      title: 'Rate PennyPal',
+      subtitle: _stars == 0
+          ? 'How has your experience been so far?'
+          : _labels[_stars]!,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              for (var i = 1; i <= 5; i++)
+                IconButton(
+                  onPressed: () {
+                    HapticFeedback.selectionClick();
+                    setState(() => _stars = i);
+                  },
+                  iconSize: 40,
+                  icon: AppIcon(
+                    i <= _stars ? AppIcons.star : AppIcons.starOff,
+                    size: 36,
+                    color: i <= _stars
+                        ? PennyPalColors.white
+                        : PennyPalColors.darkGray,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              onPressed: _stars == 0
+                  ? null
+                  : () => Navigator.of(context).pop(_stars),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: PennyPalColors.white,
+                foregroundColor: PennyPalColors.black,
+                disabledBackgroundColor: PennyPalColors.darkGray,
+                disabledForegroundColor: PennyPalColors.gray,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: const Text(
+                'Submit Rating',
+                style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w700),
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          Center(
+            child: TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: TextButton.styleFrom(
+                foregroundColor: PennyPalColors.gray,
+              ),
+              child: const Text(
+                'Maybe later',
+                style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PermissionsSheet extends StatelessWidget {
+  const _PermissionsSheet({required this.granted});
+  final bool granted;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SheetShell(
+      title: 'Notification Permissions',
+      subtitle:
+          'PennyPal needs notification access to deliver alerts and your daily reminder.',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: PennyPalColors.card,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: PennyPalColors.border),
+            ),
+            child: Row(
+              children: [
+                AppIcon(
+                  granted ? AppIcons.check : AppIcons.warning,
+                  size: 20,
+                  color: granted
+                      ? PennyPalColors.success
+                      : PennyPalColors.danger,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    granted
+                        ? 'Notifications are allowed on this device.'
+                        : 'Notifications are blocked for PennyPal.',
+                    style: const TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
+                      color: PennyPalColors.white,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: () => Navigator.of(context).pop('allow'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: PennyPalColors.white,
+                foregroundColor: PennyPalColors.black,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: Text(
+                granted ? 'Re-check Permission' : 'Allow Notifications',
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: OutlinedButton(
+              onPressed: () => Navigator.of(context).pop('test'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: PennyPalColors.white,
+                side: const BorderSide(
+                  color: PennyPalColors.border,
+                  width: 1.5,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: const Text(
+                'Send Test Notification',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PrivacySheet extends StatelessWidget {
+  const _PrivacySheet();
+
+  static const _points = [
+    (
+      'What we store',
+      'Your transactions, budgets, savings goals, profile details and notification '
+          'preferences. Nothing else is collected.',
+    ),
+    (
+      'Where it lives',
+      'Data is stored in your private PennyPal cloud account (Google Firebase) and '
+          'cached on this device. It is never sold or shared with advertisers.',
+    ),
+    (
+      'Who can see it',
+      'Only you. Each record is tied to your user ID and protected by database rules.',
+    ),
+    (
+      'AI Assistant',
+      'Your figures are sent only to generate an answer and are not used to train models.',
+    ),
+    (
+      'Your controls',
+      'Delete any transaction, budget or goal at any time. Delete your account from '
+          'Profile → Account to erase everything permanently.',
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return _SheetShell(
+      title: 'Privacy & Permissions',
+      subtitle: 'A plain-English summary of how PennyPal handles your data.',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final p in _points) ...[
+            Text(
+              p.$1,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: PennyPalColors.white,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              p.$2,
+              style: const TextStyle(
+                fontSize: 13,
+                color: PennyPalColors.gray,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: OutlinedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.push('/support');
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: PennyPalColors.white,
+                side: const BorderSide(
+                  color: PennyPalColors.border,
+                  width: 1.5,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: const Text(
+                'Ask a Privacy Question',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -748,17 +1147,17 @@ class _SettingRowState extends State<_SettingRow> {
         duration: const Duration(milliseconds: 110),
         curve: Curves.easeOutCubic,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             children: [
               Container(
-                width: 36,
-                height: 36,
+                width: 32,
+                height: 32,
                 decoration: BoxDecoration(
                   color: widget.destructive
                       ? PennyPalColors.dangerSurface
                       : PennyPalColors.elevated,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(9),
                 ),
                 child: Center(
                   child: AppIcon(
@@ -766,11 +1165,11 @@ class _SettingRowState extends State<_SettingRow> {
                     color: widget.destructive
                         ? PennyPalColors.danger
                         : PennyPalColors.white,
-                    size: 18,
+                    size: 16,
                   ),
                 ),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -778,7 +1177,7 @@ class _SettingRowState extends State<_SettingRow> {
                     Text(
                       widget.label,
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 14.5,
                         fontWeight: FontWeight.w500,
                         color: labelColor,
                       ),
@@ -798,13 +1197,13 @@ class _SettingRowState extends State<_SettingRow> {
                 ),
               ),
               if (widget.value.isNotEmpty) ...[
-                const SizedBox(width: 8),
+                  const SizedBox(width: 6),
                 Flexible(
                   child: Text(
                     widget.value,
                     textAlign: TextAlign.right,
                     style: const TextStyle(
-                      fontSize: 13.5,
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: PennyPalColors.gray,
                     ),
@@ -814,11 +1213,11 @@ class _SettingRowState extends State<_SettingRow> {
                 ),
               ],
               if (widget.showChevron) ...[
-                const SizedBox(width: 6),
+                  const SizedBox(width: 4),
                 const AppIcon(
                   AppIcons.chevronRight,
                   color: PennyPalColors.muted,
-                  size: 18,
+                  size: 16,
                 ),
               ],
             ],
@@ -851,22 +1250,21 @@ class _SwitchRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 36,
-            height: 36,
+            width: 32,
+            height: 32,
             decoration: BoxDecoration(
               color: PennyPalColors.elevated,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(9),
             ),
             child: Center(
-              child: AppIcon(icon, color: PennyPalColors.white, size: 18),
+              child: AppIcon(icon, color: PennyPalColors.white, size: 16),
             ),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 2),
                 Text(
                   label,
                   style: const TextStyle(
@@ -999,236 +1397,6 @@ class _ConfirmDialog extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-// ── Picker modals ───────────────────────────────────────────────────────────
-
-class _CurrencyPicker {
-  static const currencies = [
-    ('\u20A6', 'NGN', 'Nigerian Naira'),
-    ('\$', 'USD', 'US Dollar'),
-    ('\u20AC', 'EUR', 'Euro'),
-    ('\u00A3', 'GBP', 'British Pound'),
-    ('R', 'ZAR', 'South African Rand'),
-    ('KSh', 'KES', 'Kenyan Shilling'),
-    ('GH\u20B5', 'GHS', 'Ghanaian Cedi'),
-    ('\u00A5', 'JPY', 'Japanese Yen'),
-    ('\u20B9', 'INR', 'Indian Rupee'),
-    ('C\$', 'CAD', 'Canadian Dollar'),
-    ('AU\$', 'AUD', 'Australian Dollar'),
-  ];
-
-  static Future<(String, String)?> show(
-    BuildContext context, {
-    required String currentSymbol,
-    required String currentCode,
-  }) {
-    return showModalBottomSheet<(String, String)>(
-      context: context,
-      backgroundColor: PennyPalColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: PennyPalColors.muted,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 18),
-                const Text(
-                  'Select Currency',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: PennyPalColors.white,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                SizedBox(
-                  height: 320,
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: currencies.length,
-                    separatorBuilder: (_, _) => const Divider(
-                      height: 1,
-                      color: PennyPalColors.mutedBorder,
-                    ),
-                    itemBuilder: (_, i) {
-                      final c = currencies[i];
-                      final selected = c.$2 == currentCode;
-                      return ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        onTap: () => Navigator.pop(ctx, (c.$1, c.$2)),
-                        leading: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: selected
-                                ? PennyPalColors.successSurface
-                                : PennyPalColors.elevated,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Center(
-                            child: Text(
-                              c.$1,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 16,
-                                color: selected
-                                    ? PennyPalColors.success
-                                    : PennyPalColors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        title: Text(
-                          c.$3,
-                          style: const TextStyle(
-                            color: PennyPalColors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        subtitle: Text(
-                          c.$2,
-                          style: const TextStyle(
-                            color: PennyPalColors.muted,
-                            fontSize: 12,
-                          ),
-                        ),
-                        trailing: selected
-                            ? const AppIcon(
-                                AppIcons.check,
-                                color: PennyPalColors.success,
-                                size: 18,
-                              )
-                            : null,
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _SingleOptionPicker {
-  static Future<String?> show(
-    BuildContext context, {
-    required String title,
-    required List<String> options,
-    required String current,
-  }) {
-    return showModalBottomSheet<String>(
-      context: context,
-      backgroundColor: PennyPalColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: PennyPalColors.muted,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 18),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: PennyPalColors.white,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                SizedBox(
-                  height: options.length > 6 ? 320 : null,
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: options.length,
-                    separatorBuilder: (_, _) => const Divider(
-                      height: 1,
-                      color: PennyPalColors.mutedBorder,
-                    ),
-                    itemBuilder: (_, i) {
-                      final o = options[i];
-                      final selected = o == current;
-                      return ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        onTap: () => Navigator.pop(ctx, o),
-                        leading: Container(
-                          width: 22,
-                          height: 22,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: selected
-                                ? PennyPalColors.success
-                                : Colors.transparent,
-                            border: Border.all(
-                              color: selected
-                                  ? PennyPalColors.success
-                                  : PennyPalColors.mutedBorder,
-                              width: 2,
-                            ),
-                          ),
-                          child: selected
-                              ? const Center(
-                                  child: AppIcon(
-                                    AppIcons.check,
-                                    color: PennyPalColors.black,
-                                    size: 12,
-                                  ),
-                                )
-                              : null,
-                        ),
-                        title: Text(
-                          o,
-                          style: TextStyle(
-                            color: selected
-                                ? PennyPalColors.success
-                                : PennyPalColors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }

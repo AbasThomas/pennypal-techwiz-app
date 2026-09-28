@@ -61,6 +61,12 @@ class _FakeGateway implements AuthGateway {
 
   @override
   Future<void> deleteAccount() async {}
+
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {}
 }
 
 void main() {

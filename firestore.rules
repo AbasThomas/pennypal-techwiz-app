@@ -1,22 +1,94 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedIn() { return request.auth != null; }
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function ownsUser(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
     function admin() {
       return signedIn() &&
-        get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role == 'admin';
+        exists(/databases/$(database)/documents/userProfiles/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role is string &&
+        get(/databases/$(database)/documents/userProfiles/$(request.auth.uid)).data.role.lower().matches('^\\s*admin\\s*$');
     }
-    function ownsUser(userId) { return signedIn() && request.auth.uid == userId; }
 
-    // Financial records are always private to their owning student.
-    match /{collection}/{document} {
-      allow read: if collection in ['transactions', 'budgets', 'savingsGoals', 'reports', 'notifications', 'supportQueries', 'feedback'] && (ownsUser(resource.data.userId) || admin());
-      allow create: if collection in ['transactions', 'budgets', 'savingsGoals', 'reports', 'notifications', 'supportQueries', 'feedback'] && (ownsUser(request.resource.data.userId) || admin());
-      allow update, delete: if collection in ['transactions', 'budgets', 'savingsGoals', 'reports', 'notifications', 'supportQueries', 'feedback'] && (ownsUser(resource.data.userId) || admin());
+    // User account/profile data, including the profile photo URL.
+    match /users/{userId} {
+      allow create: if ownsUser(userId);
+      allow read, update, delete: if ownsUser(userId) || admin();
     }
-    match /users/{userId} { allow read, update: if ownsUser(userId) || admin(); allow create: if ownsUser(userId); }
-    match /userProfiles/{userId} { allow read, update: if ownsUser(userId) || admin(); allow create: if ownsUser(userId); }
-    match /learningContent/{id} { allow read: if signedIn(); allow write: if admin(); }
-    match /categories/{id} { allow read: if signedIn(); allow write: if admin(); }
+
+    match /userProfiles/{userId} {
+      allow create: if ownsUser(userId);
+      allow read, update, delete: if ownsUser(userId) || admin();
+    }
+
+    // Per-user app records. Admin access supports the admin dashboard.
+    // Note: this grants admins access to the underlying documents, not only
+    // aggregate counts. Use server-generated aggregate metrics if that access
+    // should remain unavailable to administrators.
+    match /transactions/{documentId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if signedIn() &&
+        (resource.data.userId == request.auth.uid || admin());
+    }
+
+    match /budgets/{documentId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if signedIn() &&
+        (resource.data.userId == request.auth.uid || admin());
+    }
+
+    match /savingsGoals/{documentId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if signedIn() &&
+        (resource.data.userId == request.auth.uid || admin());
+    }
+
+    match /reports/{documentId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if signedIn() &&
+        (resource.data.userId == request.auth.uid || admin());
+    }
+
+    match /notifications/{documentId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if signedIn() &&
+        (resource.data.userId == request.auth.uid || admin());
+    }
+
+    match /feedback/{documentId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if signedIn() &&
+        (resource.data.userId == request.auth.uid || admin());
+    }
+
+    match /supportQueries/{documentId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if signedIn() &&
+        (resource.data.userId == request.auth.uid || admin());
+    }
+
+    match /aiUsage/{documentId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if signedIn() &&
+        (resource.data.userId == request.auth.uid || admin());
+    }
+
+    // Shared learning materials and categories.
+    match /learningContent/{documentId} {
+      allow read: if signedIn();
+      allow write: if admin();
+    }
+
+    match /categories/{documentId} {
+      allow read: if signedIn();
+      allow write: if admin();
+    }
   }
 }

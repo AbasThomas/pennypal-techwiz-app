@@ -138,7 +138,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     _pickImage(ImageSource.camera);
                   },
                 ),
-                if (ref.read(currentUserProvider)?.photoUrl != null)
+                if (ref.read(currentUserProvider)?.photoUrl?.isNotEmpty == true)
                   ListTile(
                     leading: const CircleAvatar(
                       backgroundColor: PennyPalColors.dangerSurface,

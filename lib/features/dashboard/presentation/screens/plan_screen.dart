@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:bootstrap_flutter/core/storage/preferences_storage.dart';
 import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
@@ -479,7 +480,7 @@ class _BudgetTab extends ConsumerWidget {
 
 // ── Monthly budget overview card ────────────────────────────────────────────
 
-class _MonthlyCard extends StatelessWidget {
+class _MonthlyCard extends ConsumerWidget {
   const _MonthlyCard({
     required this.budget,
     required this.spent,
@@ -490,11 +491,12 @@ class _MonthlyCard extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final remaining = (budget - spent).clamp(0.0, double.infinity);
     final over = spent > budget ? spent - budget : 0.0;
     final ratio = budget == 0 ? 0.0 : (spent / budget).clamp(0.0, 1.0);
     final pct = (ratio * 100).toStringAsFixed(1);
+    String c(double v) => currencyFormatNum(ref, v);
 
     Color barColor = PennyPalColors.white;
     if (ratio >= 1.0) {
@@ -540,17 +542,17 @@ class _MonthlyCard extends StatelessWidget {
             // Three value row
             Row(
               children: [
-                _MiniStat(label: 'Budget', value: _c(budget)),
+                _MiniStat(label: 'Budget', value: c(budget)),
                 const SizedBox(width: 1),
                 _VertDivider(),
                 const SizedBox(width: 1),
-                _MiniStat(label: 'Spent', value: _c(spent)),
+                _MiniStat(label: 'Spent', value: c(spent)),
                 const SizedBox(width: 1),
                 _VertDivider(),
                 const SizedBox(width: 1),
                 _MiniStat(
                   label: over > 0 ? 'Over' : 'Left',
-                  value: _c(over > 0 ? over : remaining),
+                  value: c(over > 0 ? over : remaining),
                   valueColor: over > 0
                       ? PennyPalColors.danger
                       : PennyPalColors.success,
@@ -582,7 +584,7 @@ class _MonthlyCard extends StatelessWidget {
                 const Spacer(),
                 if (over > 0)
                   Text(
-                    '${_c(over)} over budget',
+                    '${c(over)} over budget',
                     style: const TextStyle(
                       fontSize: 12,
                       color: PennyPalColors.danger,
@@ -591,7 +593,7 @@ class _MonthlyCard extends StatelessWidget {
                   )
                 else
                   Text(
-                    '${_c(remaining)} remaining',
+                    '${c(remaining)} remaining',
                     style: const TextStyle(
                       fontSize: 12,
                       color: PennyPalColors.gray,
@@ -655,7 +657,7 @@ class _VertDivider extends StatelessWidget {
 
 // ── Category limit row ───────────────────────────────────────────────────────
 
-class _CategoryLimitRow extends StatelessWidget {
+class _CategoryLimitRow extends ConsumerWidget {
   const _CategoryLimitRow({
     required this.category,
     required this.spent,
@@ -666,11 +668,12 @@ class _CategoryLimitRow extends StatelessWidget {
   final double limit;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final ratio = limit == 0 ? 0.0 : (spent / limit).clamp(0.0, 1.5);
     final pct = (spent / limit * 100).toStringAsFixed(0);
     final isOver = spent > limit;
     final remaining = limit - spent;
+    String c(double v) => currencyFormatNum(ref, v);
 
     Color barColor = PennyPalColors.white;
     if (isOver) {
@@ -705,7 +708,7 @@ class _CategoryLimitRow extends StatelessWidget {
               ),
               const Spacer(),
               Text(
-                '${_c(spent)} / ${_c(limit)}  ·  $pct%',
+                '${c(spent)} / ${c(limit)}  ·  $pct%',
                 style: const TextStyle(
                   fontSize: 12,
                   color: PennyPalColors.gray,
@@ -726,7 +729,7 @@ class _CategoryLimitRow extends StatelessWidget {
           const SizedBox(height: 8),
           isOver
               ? Text(
-                  '${_c(spent - limit)} over budget',
+                  '${c(spent - limit)} over budget',
                   style: const TextStyle(
                     fontSize: 12,
                     color: PennyPalColors.danger,
@@ -734,7 +737,7 @@ class _CategoryLimitRow extends StatelessWidget {
                   ),
                 )
               : Text(
-                  '${_c(remaining)} remaining',
+                  '${c(remaining)} remaining',
                   style: const TextStyle(
                     fontSize: 12,
                     color: PennyPalColors.gray,
@@ -860,7 +863,7 @@ class _SavingsTab extends ConsumerWidget {
 
 // ── Total saved card ──────────────────────────────────────────────────────────
 
-class _TotalSavedCard extends StatelessWidget {
+class _TotalSavedCard extends ConsumerWidget {
   const _TotalSavedCard({
     required this.totalSaved,
     required this.totalTarget,
@@ -871,8 +874,9 @@ class _TotalSavedCard extends StatelessWidget {
   final double ratio;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final left = (totalTarget - totalSaved).clamp(0.0, double.infinity);
+    String c(double v) => currencyFormatNum(ref, v);
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -910,7 +914,7 @@ class _TotalSavedCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            _c(totalSaved),
+            c(totalSaved),
             style: const TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.w800,
@@ -940,7 +944,7 @@ class _TotalSavedCard extends StatelessWidget {
               ),
               const Spacer(),
               Text(
-                '${_c(left)} left',
+                '${c(left)} left',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -957,13 +961,13 @@ class _TotalSavedCard extends StatelessWidget {
 
 // ── Goal card ────────────────────────────────────────────────────────────────
 
-class _GoalCard extends StatelessWidget {
+class _GoalCard extends ConsumerWidget {
   const _GoalCard({required this.goal, required this.onTap});
   final SavingsGoal goal;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final ratio = goal.progress;
     final pct = (ratio * 100).toStringAsFixed(0);
     final remaining = (goal.targetAmount - goal.currentAmount).clamp(
@@ -971,6 +975,7 @@ class _GoalCard extends StatelessWidget {
       double.infinity,
     );
     final isComplete = goal.currentAmount >= goal.targetAmount;
+    String c(double v) => currencyFormatNum(ref, v);
 
     return GestureDetector(
       onTap: onTap,
@@ -1026,7 +1031,7 @@ class _GoalCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${_c(goal.currentAmount)} / ${_c(goal.targetAmount)}',
+                        '${c(goal.currentAmount)} / ${c(goal.targetAmount)}',
                         style: const TextStyle(
                           fontSize: 12,
                           color: PennyPalColors.gray,
@@ -1079,7 +1084,7 @@ class _GoalCard extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  isComplete ? 'Goal reached!' : '${_c(remaining)} remaining',
+                  isComplete ? 'Goal reached!' : '${c(remaining)} remaining',
                   style: TextStyle(
                     fontSize: 12,
                     color: isComplete
@@ -1127,6 +1132,7 @@ class _GoalDetailSheet extends ConsumerWidget {
       double.infinity,
     );
     final isComplete = goal.currentAmount >= goal.targetAmount;
+    String c(double v) => currencyFormatNum(ref, v);
 
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 32),
@@ -1181,7 +1187,7 @@ class _GoalDetailSheet extends ConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '${_c(goal.currentAmount)} of ${_c(goal.targetAmount)}',
+              '${c(goal.currentAmount)} of ${c(goal.targetAmount)}',
               style: const TextStyle(fontSize: 14, color: PennyPalColors.gray),
             ),
             const SizedBox(height: 20),
@@ -1208,7 +1214,7 @@ class _GoalDetailSheet extends ConsumerWidget {
                   ),
                 ),
                 Text(
-                  isComplete ? 'Goal reached!' : '${_c(remaining)} remaining',
+                  isComplete ? 'Goal reached!' : '${c(remaining)} remaining',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -1226,7 +1232,7 @@ class _GoalDetailSheet extends ConsumerWidget {
             // Detail rows
             _DetailRow(
               label: 'Monthly contribution',
-              value: _c(goal.monthlyContribution),
+              value: c(goal.monthlyContribution),
             ),
             _DetailRow(
               label: 'Target date',
@@ -1628,12 +1634,14 @@ class _CreateGoalSheetState extends ConsumerState<_CreateGoalSheet> {
 // Goal created celebration dialog
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _GoalCreatedDialog extends StatelessWidget {
+class _GoalCreatedDialog extends ConsumerWidget {
   const _GoalCreatedDialog({required this.goal});
   final SavingsGoal goal;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    String c(double v) => currencyFormatNum(ref, v);
+
     return Dialog(
       backgroundColor: PennyPalColors.surface,
       shape: RoundedRectangleBorder(
@@ -1662,7 +1670,7 @@ class _GoalCreatedDialog extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'You\u2019re on your way to ${goal.goalName}. Keep contributing to reach ${_c(goal.targetAmount)}.',
+              'You\u2019re on your way to ${goal.goalName}. Keep contributing to reach ${c(goal.targetAmount)}.',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 14,

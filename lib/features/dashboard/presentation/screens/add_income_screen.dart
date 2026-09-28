@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../data/finance_providers.dart';
 import '../../../../data/models/financial_models.dart';
 import '../../../auth/providers/auth_providers.dart';
+import '../../../../shared/widgets/save_success_dialog.dart';
+import 'package:go_router/go_router.dart';
 
 class AddIncomeScreen extends ConsumerStatefulWidget {
   const AddIncomeScreen({super.key});
@@ -65,7 +67,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Income saved.')));
-        Navigator.pop(context);
+        await showTransactionSavedDialog(context, 'income');
       }
     } catch (e) {
       if (mounted) {
@@ -95,7 +97,7 @@ class _AddIncomeScreenState extends ConsumerState<AddIncomeScreen> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.go('/home'),
           icon: const AppIcon(AppIcons.arrowBack, color: PennyPalColors.white),
         ),
         title: const Text(

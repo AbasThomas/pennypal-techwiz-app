@@ -7,6 +7,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/models/financial_models.dart';
 import '../../features/admin/presentation/admin_dashboard_screen.dart';
 import '../../features/auth/presentation/controllers/auth_controller.dart';
+import '../../features/auth/presentation/screens/change_password_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
@@ -24,6 +25,7 @@ import '../../features/dashboard/presentation/screens/plan_screen.dart';
 import '../../features/more/presentation/about_screen.dart';
 import '../../features/more/presentation/ai_assistant_screen.dart';
 import '../../features/more/presentation/feedback_screen.dart';
+import '../../features/more/presentation/help_screen.dart';
 import '../../features/more/presentation/notifications_screen.dart';
 import '../../features/more/presentation/profile_screen.dart';
 import '../../features/more/presentation/reports_screen.dart';
@@ -38,6 +40,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     initialLocation: '/splash',
+    debugLogDiagnostics: true,
     refreshListenable: notifier,
     redirect: (context, state) async {
       final status = ref.read(authControllerProvider).status;
@@ -59,10 +62,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       // Authenticated
       if (status == AuthStatus.authenticated) {
-        final isAdmin =
-            ref.read(authControllerProvider).user?.role == 'admin';
-        if (loc == '/admin' && !isAdmin) return '/home';
-        if (isSplash || isOnboarding || isAuth) return '/home';
+        final isAdmin = ref
+                .read(authControllerProvider)
+                .user
+                ?.role
+                .trim()
+                .toLowerCase() ==
+            'admin';
+        if (loc.startsWith('/admin') && !isAdmin) return '/home';
+        // Keep administrator accounts in the admin console even when a
+        // restored student route or another screen is still in the stack.
+        if (isAdmin && !loc.startsWith('/admin')) return '/admin';
+        // Send an authenticated administrator to the admin console rather
+        // than the student shell after a new login or app launch.
+        if (isSplash || isOnboarding || isAuth) {
+          return isAdmin ? '/admin' : '/home';
+        }
         return null;
       }
 
@@ -82,12 +97,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           loc.startsWith('/notifications') ||
           loc.startsWith('/profile') ||
           loc.startsWith('/settings') ||
+          loc.startsWith('/change-password') ||
+          loc.startsWith('/help') ||
           loc.startsWith('/feedback') ||
           loc.startsWith('/support') ||
           loc.startsWith('/about') ||
           loc.startsWith('/learn') ||
           loc.startsWith('/goals') ||
-          loc == '/admin' ||
+          loc.startsWith('/admin') ||
           loc == '/verify-email';
 
       if (isProtected) return '/login';
@@ -146,6 +163,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           path: '/profile', builder: (_, _) => const ProfileScreen()),
       GoRoute(
           path: '/settings', builder: (_, _) => const SettingsScreen()),
+      GoRoute(
+          path: '/change-password',
+          builder: (_, _) => const ChangePasswordScreen()),
+      GoRoute(path: '/help', builder: (_, _) => const HelpScreen()),
       GoRoute(
           path: '/feedback', builder: (_, _) => const FeedbackScreen()),
       GoRoute(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class AboutScreen extends StatelessWidget {
@@ -26,15 +28,15 @@ class AboutScreen extends StatelessWidget {
           children: [
             // Logo
             Container(
-              width: 80,
-              height: 80,
+              width: 60,
+              height: 60,
               decoration: BoxDecoration(
                 color: PennyPalColors.elevated,
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(18),
                 border: Border.all(color: PennyPalColors.border),
               ),
               child: const AppIcon(AppIcons.wallet,
-                  color: PennyPalColors.white, size: 42),
+                  color: PennyPalColors.white, size: 28),
             ),
             const SizedBox(height: 16),
             const Text(
@@ -96,14 +98,14 @@ class AboutScreen extends StatelessWidget {
                 ),
                 child: Row(children: [
                   Container(
-                    width: 36,
-                    height: 36,
+                    width: 32,
+                    height: 32,
                     decoration: BoxDecoration(
                       color: PennyPalColors.elevated,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const AppIcon(AppIcons.check,
-                        color: PennyPalColors.white, size: 20),
+                        color: PennyPalColors.white, size: 16),
                   ),
                   const SizedBox(width: 14),
                   Column(
@@ -124,13 +126,170 @@ class AboutScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
+            // Support & legal
+            Container(
+              decoration: BoxDecoration(
+                color: PennyPalColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: PennyPalColors.border),
+              ),
+              child: Column(
+                children: [
+                  _LinkRow(
+                    icon: AppIcons.help,
+                    label: 'Help & FAQs',
+                    subtitle: 'Answers to common questions',
+                    onTap: () => context.push('/help'),
+                  ),
+                  const _RowDivider(),
+                  _LinkRow(
+                    icon: AppIcons.support,
+                    label: 'Contact Support',
+                    subtitle: 'Reach the PennyPal team',
+                    onTap: () => context.push('/support'),
+                  ),
+                  const _RowDivider(),
+                  _LinkRow(
+                    icon: AppIcons.bulb,
+                    label: 'Send Feedback',
+                    subtitle: 'Suggest an improvement',
+                    onTap: () => context.push('/feedback'),
+                  ),
+                  const _RowDivider(),
+                  _LinkRow(
+                    icon: AppIcons.security,
+                    label: 'Open Source Licenses',
+                    subtitle: 'Packages that power PennyPal',
+                    onTap: () => _showLicenses(context),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
             // Version
             const Text(
-              'Version 1.0',
+              'Version 1.0.0',
               style: TextStyle(
                 fontSize: 13,
                 color: PennyPalColors.muted,
               ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Made for students, by students.',
+              style: TextStyle(
+                fontSize: 12,
+                color: PennyPalColors.muted,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLicenses(BuildContext context) {
+    HapticFeedback.selectionClick();
+    showLicensePage(
+      context: context,
+      applicationName: 'PennyPal',
+      applicationVersion: '1.0.0',
+      applicationLegalese: '\u00A9 2026 PennyPal',
+      applicationIcon: Padding(
+        padding: const EdgeInsets.only(right: 12),
+        child: Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: PennyPalColors.elevated,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: PennyPalColors.border),
+          ),
+          child: const AppIcon(
+            AppIcons.wallet,
+            color: PennyPalColors.white,
+            size: 24,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RowDivider extends StatelessWidget {
+  const _RowDivider();
+
+  @override
+  Widget build(BuildContext context) => const Divider(
+    height: 1,
+    indent: 60,
+    endIndent: 16,
+    color: PennyPalColors.mutedBorder,
+  );
+}
+
+class _LinkRow extends StatelessWidget {
+  const _LinkRow({
+    required this.icon,
+    required this.label,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final List<List<dynamic>> icon;
+  final String label;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: PennyPalColors.elevated,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: AppIcon(icon, color: PennyPalColors.white, size: 19),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w600,
+                      color: PennyPalColors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: PennyPalColors.gray,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const AppIcon(
+              AppIcons.chevronRight,
+              color: PennyPalColors.gray,
+              size: 18,
             ),
           ],
         ),
