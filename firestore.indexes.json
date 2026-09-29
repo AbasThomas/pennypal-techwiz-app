@@ -1,0 +1,149 @@
+{
+  "indexes": [
+    {
+      "_comment": "transactions: per-user list sorted newest-first (finance_repository.dart)",
+      "collectionGroup": "transactions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId",   "order": "ASCENDING" },
+        { "fieldPath": "date",     "order": "DESCENDING" }
+      ]
+    },
+    {
+      "_comment": "transactions: per-user filtered by type (income/expense), sorted newest-first",
+      "collectionGroup": "transactions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId",   "order": "ASCENDING" },
+        { "fieldPath": "type",     "order": "ASCENDING" },
+        { "fieldPath": "date",     "order": "DESCENDING" }
+      ]
+    },
+    {
+      "_comment": "transactions: per-user filtered by category, sorted newest-first",
+      "collectionGroup": "transactions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId",     "order": "ASCENDING" },
+        { "fieldPath": "categoryId", "order": "ASCENDING" },
+        { "fieldPath": "date",       "order": "DESCENDING" }
+      ]
+    },
+    {
+      "_comment": "transactions: admin analytics – all transactions in a date range (admin_analytics_tab.dart)",
+      "collectionGroup": "transactions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "date", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "_comment": "budgets: per-user list (finance_repository.dart)",
+      "collectionGroup": "budgets",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "month",  "order": "DESCENDING" }
+      ]
+    },
+    {
+      "_comment": "savingsGoals: per-user list (finance_repository.dart)",
+      "collectionGroup": "savingsGoals",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId",   "order": "ASCENDING" },
+        { "fieldPath": "status",   "order": "ASCENDING" }
+      ]
+    },
+    {
+      "_comment": "savingsGoals: per-user, ordered by targetDate for upcoming deadlines",
+      "collectionGroup": "savingsGoals",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId",     "order": "ASCENDING" },
+        { "fieldPath": "targetDate", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "_comment": "notifications: per-user list sorted newest-first (finance_providers.dart)",
+      "collectionGroup": "notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId",    "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "_comment": "notifications: per-user unread count / badge",
+      "collectionGroup": "notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "read",   "order": "ASCENDING" }
+      ]
+    },
+    {
+      "_comment": "learningContent: sorted by creation date for the learn feed (learn_screen.dart, admin_learning_tab.dart)",
+      "collectionGroup": "learningContent",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "_comment": "userProfiles: admin student list sorted by sign-up date (admin_students_tab.dart)",
+      "collectionGroup": "userProfiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "_comment": "userProfiles: admin analytics – new signups in a date range (admin_analytics_tab.dart)",
+      "collectionGroup": "userProfiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "role",      "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "_comment": "feedback: per-user list sorted newest-first",
+      "collectionGroup": "feedback",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId",    "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "_comment": "supportQueries: per-user list sorted newest-first",
+      "collectionGroup": "supportQueries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId",    "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "_comment": "supportQueries: admin view – open tickets sorted by date",
+      "collectionGroup": "supportQueries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status",    "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": [
+    {
+      "_comment": "Disable the automatic single-field index on userId in transactions — always queried with a second field, never alone.",
+      "collectionGroup": "transactions",
+      "fieldPath": "syncStatus",
+      "indexes": [
+        { "queryScope": "COLLECTION", "order": "ASCENDING" },
+        { "queryScope": "COLLECTION", "order": "DESCENDING" }
+      ]
+    }
+  ]
+}
