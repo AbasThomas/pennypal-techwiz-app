@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
+import 'package:pennypal/core/widgets/app_icon.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/errors/api_error_handler.dart';
 import '../../../../core/theme/app_theme.dart';

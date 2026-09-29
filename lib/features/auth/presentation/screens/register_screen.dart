@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
+import 'package:pennypal/core/widgets/app_icon.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -150,26 +150,18 @@ class _RegisterHeader extends StatelessWidget {
               // Brand row
               Row(
                 children: [
-                  Container(
-                    width: 34,
-                    height: 34,
-                    decoration: BoxDecoration(
-                      color: PennyPalColors.elevated,
-                      borderRadius: BorderRadius.circular(9),
-                      border: Border.all(color: PennyPalColors.border),
-                    ),
-                    child: const AppIcon(
-                      AppIcons.wallet,
-                      color: PennyPalColors.white,
-                      size: 19,
-                    ),
+                  Image.asset(
+                    'assets/images/app-logo.png',
+                    width: 45,
+                    height: 45,
+                    fit: BoxFit.contain,
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   const Text(
                     'PennyPal',
                     style: TextStyle(
                       color: PennyPalColors.white,
-                      fontSize: 17,
+                      fontSize: 20,
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.2,
                     ),

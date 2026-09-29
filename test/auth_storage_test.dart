@@ -1,4 +1,4 @@
-import 'package:bootstrap_flutter/core/storage/auth_storage.dart';
+import 'package:pennypal/core/storage/auth_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

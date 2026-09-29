@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
+import 'package:pennypal/core/widgets/app_icon.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 
@@ -27,16 +27,11 @@ class AboutScreen extends StatelessWidget {
         child: Column(
           children: [
             // Logo
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: PennyPalColors.elevated,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: PennyPalColors.border),
-              ),
-              child: const AppIcon(AppIcons.wallet,
-                  color: PennyPalColors.white, size: 28),
+            Image.asset(
+              'assets/images/app-logo.png',
+              width: 80,
+              height: 80,
+              fit: BoxFit.contain,
             ),
             const SizedBox(height: 16),
             const Text(
@@ -198,19 +193,11 @@ class AboutScreen extends StatelessWidget {
       applicationLegalese: '\u00A9 2026 PennyPal',
       applicationIcon: Padding(
         padding: const EdgeInsets.only(right: 12),
-        child: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: PennyPalColors.elevated,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: PennyPalColors.border),
-          ),
-          child: const AppIcon(
-            AppIcons.wallet,
-            color: PennyPalColors.white,
-            size: 24,
-          ),
+        child: Image.asset(
+          'assets/images/app-logo.png',
+          width: 50,
+          height: 50,
+          fit: BoxFit.contain,
         ),
       ),
     );

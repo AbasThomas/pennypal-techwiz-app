@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
+import 'package:pennypal/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../features/auth/providers/auth_providers.dart';
 

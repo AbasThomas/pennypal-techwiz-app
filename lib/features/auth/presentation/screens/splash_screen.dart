@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lottie/lottie.dart';
 import '../../providers/auth_providers.dart';
 import '../../../../core/theme/app_theme.dart';
 
@@ -47,11 +46,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               children: [
                 const Spacer(),
 
-                // ── Brand animation (splash.json as logo) ────────────────────
-                Lottie.asset(
-                  'assets/animations/splash.json',
-                  width: 340,
-                  height: 340,
+                // ── Brand logo (app-logo.png) ────────────────────────────────
+                Image.asset(
+                  'assets/images/app-logo.png',
+                  width: 200,
+                  height: 200,
                   fit: BoxFit.contain,
                 ),
                 const SizedBox(height: 8),

@@ -1,4 +1,4 @@
-import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
+import 'package:pennypal/core/widgets/app_icon.dart';
 
 class LearningBook {
   final String id;

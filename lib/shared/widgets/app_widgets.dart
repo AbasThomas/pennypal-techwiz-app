@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
+import 'package:pennypal/core/widgets/app_icon.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/constants/app_constants.dart';

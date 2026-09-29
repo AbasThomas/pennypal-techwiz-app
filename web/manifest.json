@@ -1,6 +1,6 @@
 {
-    "name": "bootstrap_flutter",
-    "short_name": "bootstrap_flutter",
+    "name": "pennypal",
+    "short_name": "pennypal",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -33,10 +33,10 @@ class DashboardScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Lottie.asset(
-                'assets/animations/splash.json',
-                width: 220,
-                height: 220,
+              Image.asset(
+                'assets/images/app-logo.png',
+                width: 150,
+                height: 150,
                 fit: BoxFit.contain,
               ),
               const SizedBox(height: 18),

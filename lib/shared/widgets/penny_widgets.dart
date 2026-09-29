@@ -46,23 +46,13 @@ class BalanceCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: PennyPalColors.elevated,
-                  borderRadius: BorderRadius.circular(11),
-                  border: Border.all(color: PennyPalColors.border),
-                ),
-                child: const Center(
-                  child: AppIcon(
-                    AppIcons.wallet,
-                    size: 19,
-                    color: PennyPalColors.white,
-                  ),
-                ),
+              Image.asset(
+                'assets/images/app-logo.png',
+                width: 45,
+                height: 45,
+                fit: BoxFit.contain,
               ),
-              const SizedBox(width: 11),
+              const SizedBox(width: 12),
               const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

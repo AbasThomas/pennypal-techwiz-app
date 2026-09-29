@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bootstrap_flutter/core/widgets/app_icon.dart';
+import 'package:pennypal/core/widgets/app_icon.dart';
 import '../../../../core/theme/app_theme.dart';
 
 /// A clean top section used on auth screens.
@@ -22,28 +22,20 @@ class AuthFormHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Brand mark
+        // Brand mark with logo
         Row(
           children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: PennyPalColors.elevated,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: PennyPalColors.border),
-              ),
-              child: const AppIcon(
-                AppIcons.wallet,
-                color: PennyPalColors.white,
-                size: 20,
-              ),
+            Image.asset(
+              'assets/images/app-logo.png',
+              width: 50,
+              height: 50,
+              fit: BoxFit.contain,
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 12),
             const Text(
               'PennyPal',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.3,
                 color: PennyPalColors.white,

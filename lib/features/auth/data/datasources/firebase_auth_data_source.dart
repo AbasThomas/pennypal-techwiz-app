@@ -20,7 +20,14 @@ class FirebaseAuthDataSource {
       email: email,
       password: password,
     );
-    return _profile(credential.user!);
+    final profile = await _profile(credential.user!);
+    if (profile.isDeactivated == true) {
+      await _auth.signOut();
+      throw const AppException(
+        'This account has been deactivated. Please contact support.',
+      );
+    }
+    return profile;
   }
 
   Future<AuthUser> register(Map<String, dynamic> data) async {

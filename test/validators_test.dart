@@ -1,4 +1,4 @@
-import 'package:bootstrap_flutter/core/utils/validators.dart';
+import 'package:pennypal/core/utils/validators.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -202,26 +202,18 @@ class _BrandBar extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
         child: Row(
           children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: PennyPalColors.elevated,
-                borderRadius: BorderRadius.circular(11),
-                border: Border.all(color: PennyPalColors.border),
-              ),
-              child: const AppIcon(
-                AppIcons.wallet,
-                color: PennyPalColors.white,
-                size: 18,
-              ),
+            Image.asset(
+              'assets/images/app-logo.png',
+              width: 45,
+              height: 45,
+              fit: BoxFit.contain,
             ),
-            const SizedBox(width: 11),
+            const SizedBox(width: 12),
             const Text(
               'PennyPal',
               style: TextStyle(
                 color: PennyPalColors.white,
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.3,
               ),

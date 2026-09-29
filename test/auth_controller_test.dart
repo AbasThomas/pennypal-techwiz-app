@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:bootstrap_flutter/features/auth/data/models/auth_user.dart';
-import 'package:bootstrap_flutter/features/auth/data/repositories/firebase_auth_repository.dart';
-import 'package:bootstrap_flutter/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:pennypal/features/auth/data/models/auth_user.dart';
+import 'package:pennypal/features/auth/data/repositories/firebase_auth_repository.dart';
+import 'package:pennypal/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
